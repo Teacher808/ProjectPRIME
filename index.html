@@ -104,7 +104,6 @@
           <span class="hidden md:inline">Home</span>
         </button>
 
-        <!-- Teacher Portal / Login Button -->
         <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
           <i class="fa-solid fa-user-tie text-gold-400"></i>
           <span id="nav-teacher-label">Teacher Portal</span>
@@ -965,11 +964,58 @@
 
       switchTab('results');
 
-      // Automatic submission trigger if student name was previously saved
       const savedName = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
       if (savedName && savedName.trim() !== '') {
         triggerAutoSaveSubmission();
       }
+    }
+
+    // --- JSONP/APPS SCRIPT CALL DISPATCHER (Zero CORS Issues) ---
+    function callAppsScriptApi(params) {
+      return new Promise((resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          if (params.action === 'teacher_register') {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).registerTeacher(params);
+            return;
+          }
+          if (params.action === 'teacher_login') {
+            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).loginTeacher(params.username, params.password);
+            return;
+          }
+        }
+
+        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
+        const script = document.createElement('script');
+        let baseUrl = window.location.href.split('?')[0];
+
+        const url = new URL(baseUrl);
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        url.searchParams.set('callback', callbackName);
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('Connection timed out. Ensure the Web App is deployed with "Anyone" access.'));
+        }, 12000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error('Network error connecting to central storage.'));
+        };
+
+        script.src = url.toString();
+        document.body.appendChild(script);
+      });
     }
 
     // --- AUTOMATIC SCORE SAVING ENGINE ---
@@ -1010,7 +1056,6 @@
       const statusEl = document.getElementById('results-sync-status');
       statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
 
-      // 1. Apps Script Bridge
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(() => {
@@ -1024,7 +1069,6 @@
         return;
       }
 
-      // 2. Fetch GET Fallback
       try {
         const url = new URL(window.location.href);
         url.searchParams.set('action', 'log');
@@ -1070,7 +1114,7 @@
       }
     }
 
-    function handleTeacherRegister() {
+    async function handleTeacherRegister() {
       const fullName = document.getElementById('reg-fullname').value.trim();
       const username = document.getElementById('reg-username').value.trim().toUpperCase();
       const password = document.getElementById('reg-password').value.trim();
@@ -1085,78 +1129,72 @@
       btn.disabled = true;
       btn.textContent = 'Registering Account...';
 
-      const payload = { action: 'teacher_register', fullName, username, password, classCode };
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_register',
+          fullName: fullName,
+          username: username,
+          password: password,
+          classCode: classCode
+        });
 
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(res => {
-            btn.disabled = false; btn.textContent = 'Create Teacher Account';
-            if (res.status === 'success') {
-              appState.currentTeacher = res.teacher;
-              localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-              setActiveTeacherCode(res.teacher.classCode);
-              updateTeacherNavUI();
-              toggleTeacherView('dashboard');
-            } else { alert(res.message); }
-          })
-          .registerTeacher(payload);
-        return;
+        btn.disabled = false;
+        btn.textContent = 'Create Teacher Account';
+
+        if (res && res.status === 'success') {
+          appState.currentTeacher = res.teacher;
+          localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          setActiveTeacherCode(res.teacher.classCode);
+          updateTeacherNavUI();
+          toggleTeacherView('dashboard');
+          alert('Account created successfully!');
+        } else {
+          alert(res.message || 'Registration failed.');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Create Teacher Account';
+        alert('Registration error: ' + (err.message || err));
       }
-
-      // Web App Fetch Fallback
-      fetch(`${window.location.href.split('?')[0]}?action=teacher_register&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&fullName=${encodeURIComponent(fullName)}&classCode=${encodeURIComponent(classCode)}`)
-        .then(r => r.json())
-        .then(res => {
-          btn.disabled = false; btn.textContent = 'Create Teacher Account';
-          if (res.status === 'success') {
-            appState.currentTeacher = res.teacher;
-            localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-            setActiveTeacherCode(res.teacher.classCode);
-            updateTeacherNavUI();
-            toggleTeacherView('dashboard');
-          } else { alert(res.message); }
-        })
-        .catch(() => { btn.disabled = false; btn.textContent = 'Create Teacher Account'; alert('Registration failed.'); });
     }
 
-    function handleTeacherLogin() {
+    async function handleTeacherLogin() {
       const username = document.getElementById('login-username').value.trim().toUpperCase();
       const password = document.getElementById('login-password').value.trim();
-      if (!username || !password) { alert('Enter username and password.'); return; }
+
+      if (!username || !password) {
+        alert('Please enter your username and password.');
+        return;
+      }
 
       const btn = document.getElementById('btn-login');
       btn.disabled = true;
       btn.textContent = 'Authenticating...';
 
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(res => {
-            btn.disabled = false; btn.textContent = 'Login to Account';
-            if (res.status === 'success') {
-              appState.currentTeacher = res.teacher;
-              localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-              setActiveTeacherCode(res.teacher.classCode);
-              updateTeacherNavUI();
-              toggleTeacherView('dashboard');
-            } else { alert(res.message); }
-          })
-          .loginTeacher(username, password);
-        return;
-      }
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_login',
+          username: username,
+          password: password
+        });
 
-      fetch(`${window.location.href.split('?')[0]}?action=teacher_login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
-        .then(r => r.json())
-        .then(res => {
-          btn.disabled = false; btn.textContent = 'Login to Account';
-          if (res.status === 'success') {
-            appState.currentTeacher = res.teacher;
-            localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-            setActiveTeacherCode(res.teacher.classCode);
-            updateTeacherNavUI();
-            toggleTeacherView('dashboard');
-          } else { alert(res.message); }
-        })
-        .catch(() => { btn.disabled = false; btn.textContent = 'Login to Account'; alert('Login failed.'); });
+        btn.disabled = false;
+        btn.textContent = 'Login to Account';
+
+        if (res && res.status === 'success') {
+          appState.currentTeacher = res.teacher;
+          localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          setActiveTeacherCode(res.teacher.classCode);
+          updateTeacherNavUI();
+          toggleTeacherView('dashboard');
+        } else {
+          alert(res.message || 'Invalid username or password.');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Login to Account';
+        alert('Login error: ' + (err.message || err));
+      }
     }
 
     function handleTeacherLogout() {
