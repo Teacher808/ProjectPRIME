@@ -89,9 +89,11 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base md:text-lg font-black tracking-tight text-white">PROJECT <span class="text-gold-400">PRIME</span></h1>
-            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 border border-gold-500/30">Google Sheet Storage</span>
+            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Auto-Sync
+            </span>
           </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Program for Remediation & Improvement in Mathematics Education</p>
+          <p class="text-[11px] text-slate-400 hidden sm:block">Automated Diagnostic Assessment & Teacher Gradebook</p>
         </div>
       </div>
 
@@ -102,14 +104,10 @@
           <span class="hidden md:inline">Home</span>
         </button>
 
-        <button onclick="openClassCodeModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
-          <i class="fa-solid fa-key text-gold-400"></i>
-          <span>Teacher Code</span>
-        </button>
-
-        <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:bg-blue-800/50 transition" title="Google Sheet Status">
-          <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span class="hidden sm:inline">Cloud DB</span>
+        <!-- Teacher Portal / Login Button -->
+        <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
+          <i class="fa-solid fa-user-tie text-gold-400"></i>
+          <span id="nav-teacher-label">Teacher Portal</span>
         </button>
 
         <button onclick="switchTab('scores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
@@ -128,10 +126,10 @@
     <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/80 via-emerald-900/50 to-navy-900/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs text-emerald-300 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-school text-gold-400"></i>
-        <span>Active Teacher Code: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
+        <span>Active Teacher Profile: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores beam straight to central Google Sheet</span>
+        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores save automatically to this teacher's account</span>
         <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
       </div>
     </div>
@@ -140,7 +138,7 @@
   <!-- MAIN CONTENT CONTAINER -->
   <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
 
-    <!-- 1. HOME VIEW -->
+    <!-- 1. HOME VIEW (DOMAINS) -->
     <section id="view-home" class="space-y-6">
       <div class="text-center space-y-2 py-4">
         <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
@@ -148,13 +146,13 @@
         </span>
         <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
         <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
-          Multi-digit problem generators, customizable number fields (tables 1–12), true mathematical exponents, and instant step-by-step worked solutions.
+          Scores are saved automatically to your teacher's profile as soon as you finish your session.
         </p>
       </div>
       <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
     </section>
 
-    <!-- 2. PRACTICE SETUP VIEW -->
+    <!-- 2. PRACTICE CONFIGURATION VIEW -->
     <section id="view-config" class="hidden max-w-2xl mx-auto space-y-6">
       <div class="glass-panel p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
         <div class="flex items-center justify-between border-b border-gold-500/20 pb-4">
@@ -168,6 +166,7 @@
         </div>
 
         <div class="space-y-5">
+          <!-- Item Count -->
           <div>
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Number of Questions (5 to 100)</label>
             <div class="flex items-center gap-3">
@@ -176,6 +175,7 @@
             </div>
           </div>
 
+          <!-- Table Focus -->
           <div id="config-numberfield-box" class="hidden">
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
               <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
@@ -198,14 +198,16 @@
             </select>
           </div>
 
+          <!-- Digits -->
           <div id="config-digits-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Number of Digits per Number (1 to 10 Digits)</label>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Number of Digits (1 to 10 Digits)</label>
             <div class="flex items-center gap-3">
               <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
               <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
             </div>
           </div>
 
+          <!-- Regrouping -->
           <div id="config-regrouping-box">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Regrouping (Carrying / Borrowing)</label>
             <div class="grid grid-cols-2 gap-3">
@@ -214,6 +216,7 @@
             </div>
           </div>
 
+          <!-- Integers -->
           <div id="config-integers-box" class="hidden">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sign Distribution Mode</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
@@ -223,6 +226,7 @@
             </div>
           </div>
 
+          <!-- Operations -->
           <div id="config-operations-box">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Operations Included</label>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -256,7 +260,7 @@
       </div>
     </section>
 
-    <!-- 3. QUIZ VIEW -->
+    <!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
     <section id="view-quiz" class="hidden h-full flex flex-col justify-between max-w-3xl mx-auto space-y-3">
       <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
@@ -308,15 +312,15 @@
       </div>
     </section>
 
-    <!-- 4. RESULTS & CERTIFICATE VIEW -->
+    <!-- 4. RESULTS & AUTOMATIC SCORE SAVING VIEW -->
     <section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
       <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
         <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
           <i class="fa-solid fa-award"></i>
         </div>
         <div>
-          <h3 class="text-2xl md:text-3xl font-extrabold text-white">Session Completed!</h3>
-          <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement in the Google Sheet.</p>
+          <h3 class="text-2xl md:text-3xl font-extrabold text-white">Quiz Completed!</h3>
+          <p class="text-xs text-slate-400 mt-1">Please confirm your student name to automatically submit to your teacher.</p>
         </div>
 
         <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
@@ -344,42 +348,42 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
-              <input type="text" id="student-section-input" placeholder="e.g., Grade 8 - Rizal" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+              <input type="text" id="student-section-input" placeholder="e.g., Grade 9 - Einstein" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
-              <input type="text" id="student-code-input" placeholder="e.g., NEGRILLO-8A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+              <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
             </div>
           </div>
         </div>
 
         <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
           <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span>Ready to record to central Google Sheet</span>
+          <span>Ready to automatically save to teacher's gradebook</span>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
           <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">Return Home</button>
-          <button onclick="finalizeStudentSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
-            <span>Save & View Certificate</span>
+          <button onclick="triggerAutoSaveSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
+            <span>Confirm & View Certificate</span>
             <i class="fa-solid fa-check-double"></i>
           </button>
         </div>
       </div>
     </section>
 
-    <!-- 5. SCORES REGISTRY VIEW -->
+    <!-- 5. TEACHER REGISTRY & GRADEBOOK VIEW -->
     <section id="view-scores" class="hidden space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
         <div>
-          <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
+          <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Teacher Ledger</span>
           <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-          <p class="text-xs text-slate-400">Student submissions pooled directly from the central Google Sheet across devices.</p>
+          <p class="text-xs text-slate-400">Scores submitted by students automatically pool here in real-time.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
           <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
             <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
-            <span>Pull From Google Sheet</span>
+            <span>Refresh Ledger</span>
           </button>
           <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
             <i class="fa-solid fa-file-excel"></i>
@@ -391,7 +395,7 @@
       <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
         <div class="relative flex-grow w-full">
           <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
-          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., NEGRILLO-8A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., REYES-9A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
         </div>
         <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">Apply My Code</button>
       </div>
@@ -417,7 +421,7 @@
       </div>
     </section>
 
-    <!-- 6. GUIDES VIEW -->
+    <!-- 6. STUDY GUIDES VIEW -->
     <section id="view-guides" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="border-b border-gold-500/20 pb-4 flex items-center justify-between">
         <div>
@@ -433,61 +437,92 @@
 
   </main>
 
-  <!-- MODAL 1: TEACHER CLASS CODE -->
-  <div id="modal-class-code" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-purple-500/40">
+  <!-- MODAL: TEACHER ACCOUNT & LINK GENERATOR PORTAL -->
+  <div id="modal-teacher-portal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-purple-500/40 max-h-[90vh] overflow-y-auto">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-key text-gold-400"></i>
-          <h3 class="text-base font-bold text-white">Teacher Class Code Setup</h3>
+          <i class="fa-solid fa-user-tie text-gold-400"></i>
+          <h3 class="text-base font-bold text-white" id="teacher-modal-title">Teacher Portal</h3>
         </div>
-        <button onclick="closeClassCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+        <button onclick="closeTeacherAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <p class="text-xs text-slate-300">Generate your unique class code. Students using this code will automatically record their scores into the central Google Sheet!</p>
-      <div class="space-y-3">
+
+      <!-- VIEW A: TEACHER LOGIN FORM -->
+      <div id="teacher-view-login" class="space-y-3">
+        <p class="text-xs text-slate-300">Log in to view student scores and generate shareable practice links.</p>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
-          <input type="text" id="teacher-lastname-input" placeholder="e.g., NEGRILLO" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
+          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Grade & Section</label>
-          <input type="text" id="teacher-section-input" placeholder="e.g., 8A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
         </div>
-        <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Generate & Activate Class Code</button>
+        <button onclick="handleTeacherLogin()" id="btn-login" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Login to Account</button>
+        <div class="text-center pt-2">
+          <button onclick="toggleTeacherView('register')" class="text-xs text-gold-400 underline hover:text-gold-300">Don't have a teacher account? Register here</button>
+        </div>
       </div>
-      <div id="generated-code-box" class="hidden bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/40 space-y-2">
-        <div class="text-[11px] text-slate-400">Your Shareable Class Code:</div>
-        <div class="flex items-center justify-between">
-          <span id="display-generated-code" class="text-xl font-mono font-black text-gold-400 tracking-wider"></span>
-          <button onclick="copyGeneratedCode()" class="px-2.5 py-1 rounded-lg text-xs font-bold navy-btn"><i class="fa-solid fa-copy mr-1"></i> Copy</button>
+
+      <!-- VIEW B: TEACHER REGISTRATION FORM -->
+      <div id="teacher-view-register" class="hidden space-y-3">
+        <p class="text-xs text-slate-300">Create your teacher profile to generate automated student links.</p>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Full Name</label>
+          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
         </div>
-        <div class="text-[11px] text-slate-400 pt-1">Direct Student Link (Auto-fills Code):</div>
-        <div class="flex items-center gap-1.5">
-          <input type="text" id="display-generated-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-1.5 text-[10px] font-mono text-slate-300">
-          <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">Copy Link</button>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher ID / Username</label>
+          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Class Code (Optional)</label>
+          <input type="text" id="reg-classcode" placeholder="e.g., REYES-9A (Defaults to Username)" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+        </div>
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Create Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
+        </div>
+        <button onclick="handleTeacherRegister()" id="btn-register" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Create Teacher Account</button>
+        <div class="text-center pt-2">
+          <button onclick="toggleTeacherView('login')" class="text-xs text-gold-400 underline hover:text-gold-300">Already registered? Log in</button>
+        </div>
+      </div>
+
+      <!-- VIEW C: ACTIVE TEACHER DASHBOARD & LINK GENERATOR -->
+      <div id="teacher-view-dashboard" class="hidden space-y-4">
+        <div class="bg-navy-900/90 p-3 rounded-xl border border-gold-500/30 space-y-1">
+          <div class="text-xs text-slate-400">Logged in as: <strong id="dash-teacher-name" class="text-white"></strong></div>
+          <div class="text-xs text-slate-400">Active Code: <strong id="dash-teacher-code" class="text-gold-300 font-mono"></strong></div>
+        </div>
+
+        <div class="space-y-2">
+          <label class="block text-[11px] font-bold text-slate-400 uppercase">Generate Student App Link</label>
+          <div class="flex items-center gap-2">
+            <input type="text" id="gen-section-subcode" placeholder="Optional Section (e.g., 9A)" class="w-1/2 bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white uppercase outline-none">
+            <button onclick="generateCustomStudentLink()" class="w-1/2 py-2 rounded-xl font-bold gold-btn text-xs">Update Link</button>
+          </div>
+          <p class="text-[10px] text-slate-400">Students opening this link will have their scores auto-saved to your profile.</p>
+        </div>
+
+        <div class="space-y-1.5 pt-1">
+          <div class="text-[11px] text-slate-400 font-bold">Your Shareable Student Link:</div>
+          <div class="flex items-center gap-1.5">
+            <input type="text" id="display-student-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-2 text-[10px] font-mono text-slate-300">
+            <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-3 py-2 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">Copy Link</button>
+          </div>
+        </div>
+
+        <div class="pt-2 flex gap-2">
+          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-sky-900/60 border border-sky-500/40 text-sky-200 text-xs">View My Ledger</button>
+          <button onclick="handleTeacherLogout()" class="w-1/2 py-2 rounded-xl font-bold navy-btn text-xs text-red-400 hover:text-red-300">Log Out</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 2: GOOGLE SHEET STATUS -->
-  <div id="modal-cloud-sync" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-sky-500/40">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
-        <div class="flex items-center gap-2">
-          <i class="fa-solid fa-cloud text-sky-400"></i>
-          <h3 class="text-base font-bold text-white">Central Google Sheet Storage</h3>
-        </div>
-        <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-      </div>
-      <div class="space-y-3 text-xs text-slate-300">
-        <p>This application is hosted directly on your Google Sheet Apps Script Web App. All student submissions automatically log to the <code class="text-sky-300 font-mono">Student_Scores</code> worksheet.</p>
-        <button onclick="closeCloudSyncModal()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Close</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- MODAL 3: CERTIFICATE -->
+  <!-- MODAL: CERTIFICATE -->
   <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="max-w-2xl w-full space-y-4">
       <div id="certificate-print-area" class="glass-panel p-8 md:p-10 rounded-3xl border-2 border-gold-400 text-center space-y-5 shadow-2xl relative overflow-hidden">
@@ -497,8 +532,7 @@
         <div id="cert-student-name" class="text-2xl md:text-3xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-2 inline-block px-8">Juan Dela Cruz</div>
         <div id="cert-student-section" class="text-xs font-semibold text-slate-400">Grade 8 - Section</div>
         <p class="text-xs text-slate-300 max-w-md mx-auto">
-          has successfully completed the interactive diagnostic & practice session in
-          <strong id="cert-category" class="text-white">Whole Numbers</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
+          has completed the practice session in <strong id="cert-category" class="text-white">Whole Numbers</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
         </p>
         <div class="grid grid-cols-3 gap-3 max-w-md mx-auto bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/30">
           <div>
@@ -515,171 +549,68 @@
           </div>
         </div>
         <div class="flex items-center justify-between text-[11px] text-slate-400 pt-4 border-t border-slate-800">
-          <span>Class Code: <strong id="cert-code" class="text-gold-300 font-mono">GENERAL</strong></span>
+          <span>Teacher Code: <strong id="cert-code" class="text-gold-300 font-mono">GENERAL</strong></span>
           <span id="cert-date">Date</span>
         </div>
       </div>
       <div class="flex justify-center gap-3">
         <button onclick="window.print()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center gap-2"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
-        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl font-bold navy-btn text-xs">View Score Registry</button>
+        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl font-bold navy-btn text-xs">View Registry</button>
       </div>
     </div>
   </div>
 
-  <!-- APPLICATION JAVASCRIPT & GOOGLE APPS SCRIPT ENGINE -->
+  <!-- APPLICATION ENGINE -->
   <script>
     const STORAGE_KEYS = {
-      CLASS_CODE: 'PRIME_ACTIVE_CLASS_CODE'
+      ACTIVE_CODE: 'PRIME_ACTIVE_TEACHER_CODE',
+      TEACHER_PROFILE: 'PRIME_LOGGED_TEACHER',
+      SAVED_STUDENT_NAME: 'PRIME_SAVED_STUDENT_NAME',
+      SAVED_STUDENT_SEC: 'PRIME_SAVED_STUDENT_SEC'
     };
 
-    const SUPERSCRIPT_MAP = {
-      '0': '⁰', '1': '¹', '2': '²', '3': '³', '4': '⁴',
-      '5': '⁵', '6': '⁶', '7': '⁷', '8': '⁸', '9': '⁹',
-      '-': '⁻', '+': '⁺'
-    };
-    const NORMAL_MAP = {
-      '⁰': '0', '¹': '1', '²': '2', '³': '3', '⁴': '4',
-      '⁵': '5', '⁶': '6', '⁷': '7', '⁸': '8', '⁹': '9',
-      '⁻': '-', '⁺': '+'
-    };
+    const SUPERSCRIPT_MAP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'⁺' };
+    const NORMAL_MAP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+' };
 
-    function toSuperscript(str) {
-      return String(str).split('').map(c => SUPERSCRIPT_MAP[c] || c).join('');
-    }
-
+    function toSuperscript(str) { return String(str).split('').map(c => SUPERSCRIPT_MAP[c] || c).join(''); }
     function normalizeMathInput(str) {
-      let s = String(str || '').trim().replace(/\s+/g, '');
-      s = s.replace(/−/g, '-');
-      let out = '';
-      let inSup = false;
+      let s = String(str || '').trim().replace(/\s+/g, '').replace(/−/g, '-');
+      let out = ''; let inSup = false;
       for (const ch of s) {
         if (NORMAL_MAP[ch] !== undefined) {
           if (!inSup) { out += '^'; inSup = true; }
           out += NORMAL_MAP[ch];
-        } else {
-          inSup = false;
-          out += ch;
-        }
+        } else { inSup = false; out += ch; }
       }
       return out.toLowerCase();
     }
 
     const DOMAINS = [
-      {
-        id: 'whole',
-        title: 'Whole Numbers',
-        badge: 'Domain 1 • Core Arithmetic',
-        icon: 'fa-hashtag',
-        desc: 'Multi-digit addition, subtraction, multiplication, and division with customizable number fields (1–12) and regrouping.',
-        hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true
-      },
-      {
-        id: 'integers',
-        title: 'Signed Integers',
-        badge: 'Domain 2 • Directed Numbers',
-        icon: 'fa-plus-minus',
-        desc: 'Operations on positive and negative integers across mixed, all-negative, or all-positive sign distributions.',
-        hasDigits: true, hasIntegersMode: true, hasOperations: true
-      },
-      {
-        id: 'fractions',
-        title: 'Rational Fractions',
-        badge: 'Domain 3 • Proportions',
-        icon: 'fa-divide',
-        desc: 'Addition, subtraction, multiplication, and division of proper and improper fractions in simplest form.',
-        hasOperations: true
-      },
-      {
-        id: 'decimals',
-        title: 'Decimal Operations',
-        badge: 'Domain 4 • Place Value',
-        icon: 'fa-bullseye',
-        desc: 'Precision arithmetic with tenths and hundredths across all four fundamental operations.',
-        hasDigits: true, hasOperations: true
-      },
-      {
-        id: 'exponents',
-        title: 'Exponents & Powers',
-        badge: 'Domain 5 • Exponential Laws',
-        icon: 'fa-superscript',
-        desc: 'Evaluate powers, product/quotient rules, and power-of-a-power expressions with true superscript notation.',
-        hasOperations: false
-      },
-      {
-        id: 'radicals',
-        title: 'Roots & Radicals',
-        badge: 'Domain 6 • Radical Expressions',
-        icon: 'fa-square-root-variable',
-        desc: 'Principal square roots, cube roots, fourth roots, and simplifying radical expressions.',
-        hasOperations: false
-      },
-      {
-        id: 'algebra',
-        title: 'Linear Equations',
-        badge: 'Domain 7 • Algebraic Reasoning',
-        icon: 'fa-scale-balanced',
-        desc: 'Solve one-step and two-step linear equations for the unknown variable x.',
-        hasOperations: false
-      }
+      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1 • Core Arithmetic', icon: 'fa-hashtag', desc: 'Multi-digit operations (1–12) with regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true },
+      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2 • Directed Numbers', icon: 'fa-plus-minus', desc: 'Positive and negative operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 3 • Proportions', icon: 'fa-divide', desc: 'Proper/improper fraction calculations in simplest form.', hasOperations: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 4 • Place Value', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths.', hasDigits: true, hasOperations: true },
+      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 5 • Exponential Laws', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false },
+      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 6 • Radical Expressions', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false },
+      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 7 • Algebraic Reasoning', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false }
     ];
 
     const STUDY_GUIDES = [
-      {
-        title: '1. Whole Numbers & Regrouping Rules',
-        rules: [
-          'Addition with Regrouping: When the sum of a place-value column is 10 or greater, carry the tens digit to the next column on the left.',
-          'Subtraction with Borrowing: When the top digit is smaller than the bottom digit, borrow 1 unit (worth 10) from the next higher place value.',
-          'Division Check: Dividend = (Divisor × Quotient) + Remainder.'
-        ]
-      },
-      {
-        title: '2. Rules of Signed Integers',
-        rules: [
-          'Addition (Same Signs): Add absolute values and keep the common sign.',
-          'Addition (Different Signs): Subtract smaller absolute value from larger, keeping the sign of the larger.',
-          'Subtraction: Add the opposite (Keep-Change-Change).'
-        ]
-      },
-      {
-        title: '3. Fractions & Simplification',
-        rules: [
-          'Adding/Subtracting: Convert to a Common Denominator (LCD) and combine numerators.',
-          'Multiplying: Multiply numerators and denominators straight across.',
-          'Dividing: Multiply by the reciprocal of the second fraction.'
-        ]
-      },
-      {
-        title: '4. Laws of Exponents & Radicals',
-        rules: [
-          'Zero Exponent: a⁰ = 1.',
-          'Product Rule: aᵐ · aⁿ = aᵐ⁺ⁿ.',
-          'Principal n-th Root: ⁿ√(a) = b means bⁿ = a.'
-        ]
-      }
+      { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Division Check: Dividend = (Divisor × Quotient) + Remainder.'] },
+      { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).'] },
+      { title: '3. Rational Fractions', rules: ['Add/Subtract: Find LCD, combine numerators, simplify with GCD.', 'Multiply: Multiply straight across.', 'Divide: Multiply by the reciprocal.'] }
     ];
 
     const appState = {
       activeTab: 'home',
       selectedDomain: DOMAINS[0],
-      config: {
-        count: 10,
-        numberField: 'none',
-        digits: 2,
-        regrouping: 'with',
-        integerMode: 'mixed',
-        operations: ['+', '-', '*', '/']
-      },
-      quiz: {
-        questions: [],
-        currentIndex: 0,
-        score: 0,
-        chances: 3,
-        answeredCurrent: false
-      },
-      scores: []
+      config: { count: 10, numberField: 'none', digits: 2, regrouping: 'with', integerMode: 'mixed', operations: ['+', '-', '*', '/'] },
+      quiz: { questions: [], currentIndex: 0, score: 0, chances: 3, answeredCurrent: false },
+      scores: [],
+      activeClassCode: '',
+      currentTeacher: null
     };
 
-    // INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
       loadSavedState();
       renderCategoriesGrid();
@@ -690,13 +621,23 @@
 
     function loadSavedState() {
       try {
-        const savedCode = localStorage.getItem(STORAGE_KEYS.CLASS_CODE);
+        const savedTeacher = localStorage.getItem(STORAGE_KEYS.TEACHER_PROFILE);
+        if (savedTeacher) {
+          appState.currentTeacher = JSON.parse(savedTeacher);
+          updateTeacherNavUI();
+        }
+
+        const savedCode = localStorage.getItem(STORAGE_KEYS.ACTIVE_CODE);
         if (savedCode) {
-          appState.activeClassCode = savedCode;
-          document.getElementById('banner-code-display').textContent = savedCode;
-          document.getElementById('classroom-banner').classList.remove('hidden');
+          setActiveTeacherCode(savedCode);
           document.getElementById('filter-classcode').value = savedCode;
         }
+
+        const savedName = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+        if (savedName) document.getElementById('student-name-input').value = savedName;
+
+        const savedSec = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_SEC);
+        if (savedSec) document.getElementById('student-section-input').value = savedSec;
       } catch (e) {
         console.warn('LocalStorage unavailable:', e);
       }
@@ -704,19 +645,22 @@
 
     function checkUrlParameters() {
       const params = new URLSearchParams(window.location.search);
-      const codeParam = params.get('code');
-      if (codeParam) {
-        const cleanCode = codeParam.trim().toUpperCase();
+      const teacherParam = params.get('teacher') || params.get('code');
+      const secParam = params.get('sec') || params.get('section');
+
+      if (teacherParam) {
+        const cleanCode = (secParam ? `${teacherParam}-${secParam}` : teacherParam).trim().toUpperCase();
         setActiveTeacherCode(cleanCode);
         document.getElementById('filter-classcode').value = cleanCode;
       }
+      if (secParam) {
+        document.getElementById('student-section-input').value = secParam.toUpperCase();
+      }
     }
 
-    // NAVIGATION
     function switchTab(tabName) {
       appState.activeTab = tabName;
-      const views = ['home', 'config', 'quiz', 'results', 'scores', 'guides'];
-      views.forEach(v => {
+      ['home', 'config', 'quiz', 'results', 'scores', 'guides'].forEach(v => {
         const el = document.getElementById('view-' + v);
         if (el) el.classList.toggle('hidden', v !== tabName);
       });
@@ -748,7 +692,6 @@
     function openDomainConfig(domainId) {
       const domain = DOMAINS.find(d => d.id === domainId) || DOMAINS[0];
       appState.selectedDomain = domain;
-
       document.getElementById('config-domain-badge').textContent = domain.badge;
       document.getElementById('config-domain-title').textContent = domain.title;
 
@@ -757,7 +700,6 @@
       document.getElementById('config-regrouping-box').classList.toggle('hidden', !domain.hasRegrouping);
       document.getElementById('config-integers-box').classList.toggle('hidden', !domain.hasIntegersMode);
       document.getElementById('config-operations-box').classList.toggle('hidden', !domain.hasOperations);
-
       switchTab('config');
     }
 
@@ -802,7 +744,6 @@
       appState.config.operations = checkedOps;
     }
 
-    // MATH GENERATOR
     function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
     function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
     function generateOperandByDigits(digits) {
@@ -875,8 +816,7 @@
       }
 
       if (domainId === 'exponents') {
-        const base = randInt(2, 9);
-        const exp = randInt(2, 4);
+        const base = randInt(2, 9); const exp = randInt(2, 4);
         const ans = Math.pow(base, exp);
         return { display: `${base}${toSuperscript(exp)} = ?`, answer: String(ans), hint: `${base} to power ${exp} is ${ans}.`, submode: 'Evaluating Powers', tip: 'Type evaluated numeric value.' };
       }
@@ -886,14 +826,10 @@
         return { display: `√(${r * r}) = ?`, answer: String(r), hint: `Square root is ${r}.`, submode: 'Principal Square Root', tip: 'Type positive root.' };
       }
 
-      const x = randInt(-10, 12) || 3;
-      const m = randInt(2, 9);
-      const b = randInt(-15, 15);
-      const rhs = m * x + b;
+      const x = randInt(-10, 12) || 3; const m = randInt(2, 9); const b = randInt(-15, 15); const rhs = m * x + b;
       return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
     }
 
-    // QUIZ LIFECYCLE
     function startQuizSession() {
       const questions = [];
       for (let i = 0; i < appState.config.count; i++) {
@@ -979,7 +915,7 @@
     function lockQuestionAndShowNext() {
       const btn = document.getElementById('btn-check-answer');
       const isLast = appState.quiz.currentIndex >= appState.quiz.questions.length - 1;
-      btn.innerHTML = isLast ? `<span>Finish</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
+      btn.innerHTML = isLast ? `<span>Finish & Auto-Save</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
       btn.onclick = nextQuestion;
     }
 
@@ -1022,21 +958,40 @@
       document.getElementById('results-score-display').textContent = `${score} / ${total}`;
       document.getElementById('results-percentage-display').textContent = `${pct}%`;
       document.getElementById('results-mastery-display').textContent = getMasteryRating(pct);
-      if (appState.activeClassCode) document.getElementById('student-code-input').value = appState.activeClassCode;
+
+      if (appState.activeClassCode) {
+        document.getElementById('student-code-input').value = appState.activeClassCode;
+      }
+
       switchTab('results');
+
+      // Automatic submission trigger if student name was previously saved
+      const savedName = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+      if (savedName && savedName.trim() !== '') {
+        triggerAutoSaveSubmission();
+      }
     }
 
-    // --- GOOGLE APPS SCRIPT SUBMISSION & CLOUD PULL ---
-    async function finalizeStudentSubmission() {
+    // --- AUTOMATIC SCORE SAVING ENGINE ---
+    async function triggerAutoSaveSubmission() {
       const nameInput = document.getElementById('student-name-input');
       const studentName = nameInput.value.trim();
-      if (!studentName) { alert('Please enter your Full Name.'); nameInput.focus(); return; }
+      if (!studentName) {
+        alert('Please enter your Full Name so your teacher can credit your work.');
+        nameInput.focus();
+        return;
+      }
 
       const studentSection = document.getElementById('student-section-input').value.trim() || 'General';
       const classCode = (document.getElementById('student-code-input').value.trim() || appState.activeClassCode || 'GENERAL').toUpperCase();
       const score = appState.quiz.score;
       const total = appState.quiz.questions.length;
       const percentage = Math.round((score / total) * 100);
+
+      try {
+        localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_NAME, studentName);
+        localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
+      } catch (e) {}
 
       const record = {
         timestamp: new Date().toISOString(),
@@ -1053,12 +1008,13 @@
       };
 
       const statusEl = document.getElementById('results-sync-status');
-      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Recording to central Google Sheet...</span>`;
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
 
+      // 1. Apps Script Bridge
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(() => {
-            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Google Sheet!</span>`;
+            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score automatically recorded to teacher gradebook!</span>`;
             openCertificateModal(record);
           })
           .withFailureHandler(() => {
@@ -1068,20 +1024,191 @@
         return;
       }
 
-      // Standalone web app fetch fallback
+      // 2. Fetch GET Fallback
       try {
         const url = new URL(window.location.href);
         url.searchParams.set('action', 'log');
         Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
         await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Google Sheet!</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score automatically recorded to teacher gradebook!</span>`;
       } catch (err) {
-        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Recorded offline</span>`;
       }
 
       openCertificateModal(record);
     }
 
+    // --- TEACHER PROFILE & AUTHENTICATION LOGIC ---
+    function openTeacherAuthModal() {
+      document.getElementById('modal-teacher-portal').classList.remove('hidden');
+      if (appState.currentTeacher) {
+        toggleTeacherView('dashboard');
+      } else {
+        toggleTeacherView('login');
+      }
+    }
+
+    function closeTeacherAuthModal() {
+      document.getElementById('modal-teacher-portal').classList.add('hidden');
+    }
+
+    function toggleTeacherView(viewName) {
+      document.getElementById('teacher-view-login').classList.toggle('hidden', viewName !== 'login');
+      document.getElementById('teacher-view-register').classList.toggle('hidden', viewName !== 'register');
+      document.getElementById('teacher-view-dashboard').classList.toggle('hidden', viewName !== 'dashboard');
+    }
+
+    function updateTeacherNavUI() {
+      const btnLabel = document.getElementById('nav-teacher-label');
+      if (appState.currentTeacher) {
+        btnLabel.textContent = appState.currentTeacher.username;
+        document.getElementById('dash-teacher-name').textContent = appState.currentTeacher.fullName;
+        document.getElementById('dash-teacher-code').textContent = appState.currentTeacher.classCode;
+        generateCustomStudentLink();
+      } else {
+        btnLabel.textContent = 'Teacher Portal';
+      }
+    }
+
+    function handleTeacherRegister() {
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim().toUpperCase();
+      const password = document.getElementById('reg-password').value.trim();
+      const classCode = (document.getElementById('reg-classcode').value.trim() || username).toUpperCase();
+
+      if (!fullName || !username || !password) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-register');
+      btn.disabled = true;
+      btn.textContent = 'Registering Account...';
+
+      const payload = { action: 'teacher_register', fullName, username, password, classCode };
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            btn.disabled = false; btn.textContent = 'Create Teacher Account';
+            if (res.status === 'success') {
+              appState.currentTeacher = res.teacher;
+              localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+              setActiveTeacherCode(res.teacher.classCode);
+              updateTeacherNavUI();
+              toggleTeacherView('dashboard');
+            } else { alert(res.message); }
+          })
+          .registerTeacher(payload);
+        return;
+      }
+
+      // Web App Fetch Fallback
+      fetch(`${window.location.href.split('?')[0]}?action=teacher_register&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}&fullName=${encodeURIComponent(fullName)}&classCode=${encodeURIComponent(classCode)}`)
+        .then(r => r.json())
+        .then(res => {
+          btn.disabled = false; btn.textContent = 'Create Teacher Account';
+          if (res.status === 'success') {
+            appState.currentTeacher = res.teacher;
+            localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+            setActiveTeacherCode(res.teacher.classCode);
+            updateTeacherNavUI();
+            toggleTeacherView('dashboard');
+          } else { alert(res.message); }
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = 'Create Teacher Account'; alert('Registration failed.'); });
+    }
+
+    function handleTeacherLogin() {
+      const username = document.getElementById('login-username').value.trim().toUpperCase();
+      const password = document.getElementById('login-password').value.trim();
+      if (!username || !password) { alert('Enter username and password.'); return; }
+
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+      btn.textContent = 'Authenticating...';
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(res => {
+            btn.disabled = false; btn.textContent = 'Login to Account';
+            if (res.status === 'success') {
+              appState.currentTeacher = res.teacher;
+              localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+              setActiveTeacherCode(res.teacher.classCode);
+              updateTeacherNavUI();
+              toggleTeacherView('dashboard');
+            } else { alert(res.message); }
+          })
+          .loginTeacher(username, password);
+        return;
+      }
+
+      fetch(`${window.location.href.split('?')[0]}?action=teacher_login&username=${encodeURIComponent(username)}&password=${encodeURIComponent(password)}`)
+        .then(r => r.json())
+        .then(res => {
+          btn.disabled = false; btn.textContent = 'Login to Account';
+          if (res.status === 'success') {
+            appState.currentTeacher = res.teacher;
+            localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+            setActiveTeacherCode(res.teacher.classCode);
+            updateTeacherNavUI();
+            toggleTeacherView('dashboard');
+          } else { alert(res.message); }
+        })
+        .catch(() => { btn.disabled = false; btn.textContent = 'Login to Account'; alert('Login failed.'); });
+    }
+
+    function handleTeacherLogout() {
+      appState.currentTeacher = null;
+      localStorage.removeItem(STORAGE_KEYS.TEACHER_PROFILE);
+      updateTeacherNavUI();
+      toggleTeacherView('login');
+    }
+
+    function generateCustomStudentLink() {
+      if (!appState.currentTeacher) return;
+      const baseCode = appState.currentTeacher.classCode;
+      const subSec = document.getElementById('gen-section-subcode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+      let link = `${window.location.origin}${window.location.pathname}?teacher=${encodeURIComponent(baseCode)}`;
+      if (subSec) link += `&sec=${encodeURIComponent(subSec)}`;
+
+      document.getElementById('display-student-link').value = link;
+    }
+
+    function copyGeneratedLink() {
+      navigator.clipboard.writeText(document.getElementById('display-student-link').value);
+      const btn = document.getElementById('btn-copy-link');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Link', 1500);
+    }
+
+    function viewTeacherScores() {
+      closeTeacherAuthModal();
+      if (appState.currentTeacher) {
+        document.getElementById('filter-classcode').value = appState.currentTeacher.classCode;
+        pullScoresFromCloud();
+      }
+      switchTab('scores');
+    }
+
+    function setActiveTeacherCode(code) {
+      appState.activeClassCode = code;
+      try { localStorage.setItem(STORAGE_KEYS.ACTIVE_CODE, code); } catch (e) {}
+      document.getElementById('banner-code-display').textContent = code;
+      document.getElementById('classroom-banner').classList.remove('hidden');
+    }
+
+    function clearActiveTeacherCode() {
+      appState.activeClassCode = '';
+      try { localStorage.removeItem(STORAGE_KEYS.ACTIVE_CODE); } catch (e) {}
+      document.getElementById('classroom-banner').classList.add('hidden');
+      document.getElementById('filter-classcode').value = 'ALL';
+      pullScoresFromCloud();
+    }
+
+    // --- GRADEBOOK RETRIEVAL ---
     async function pullScoresFromCloud() {
       const spinner = document.getElementById('sync-spinner');
       if (spinner) spinner.classList.add('fa-spin');
@@ -1130,11 +1257,11 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found for code: <strong class="text-gold-400">${filterVal || 'ALL'}</strong>. Click "Pull From Google Sheet".</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found for: <strong class="text-gold-400">${filterVal || 'ALL'}</strong>.</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.slice(0, 50).map(s => `
+      tbody.innerHTML = filtered.slice(0, 100).map(s => `
         <tr class="hover:bg-navy-900/60 transition">
           <td class="py-3 px-4 text-slate-400 whitespace-nowrap">${new Date(s.timestamp).toLocaleString()}</td>
           <td class="py-3 px-4 font-bold text-white">${escapeHtml(s.studentName)}</td>
@@ -1156,7 +1283,7 @@
       const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
       const link = document.createElement('a');
       link.href = URL.createObjectURL(blob);
-      link.download = `PROJECT_PRIME_Registry_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.download = `PROJECT_PRIME_Gradebook_${new Date().toISOString().slice(0, 10)}.csv`;
       link.click();
     }
 
@@ -1165,50 +1292,8 @@
         document.getElementById('filter-classcode').value = appState.activeClassCode;
         pullScoresFromCloud();
       } else {
-        openClassCodeModal();
+        openTeacherAuthModal();
       }
-    }
-
-    function openClassCodeModal() { document.getElementById('modal-class-code').classList.remove('hidden'); }
-    function closeClassCodeModal() { document.getElementById('modal-class-code').classList.add('hidden'); }
-    function openCloudSyncModal() { document.getElementById('modal-cloud-sync').classList.remove('hidden'); }
-    function closeCloudSyncModal() { document.getElementById('modal-cloud-sync').classList.add('hidden'); }
-
-    function generateTeacherClassCode() {
-      const last = document.getElementById('teacher-lastname-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const sec = document.getElementById('teacher-section-input').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
-      if (!last) { alert('Please enter your Teacher Last Name.'); return; }
-      const code = sec ? `${last}-${sec}` : last;
-      setActiveTeacherCode(code);
-      document.getElementById('display-generated-code').textContent = code;
-      const shareUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(code)}`;
-      document.getElementById('display-generated-link').value = shareUrl;
-      document.getElementById('generated-code-box').classList.remove('hidden');
-      document.getElementById('filter-classcode').value = code;
-      pullScoresFromCloud();
-    }
-
-    function setActiveTeacherCode(code) {
-      appState.activeClassCode = code;
-      try { localStorage.setItem(STORAGE_KEYS.CLASS_CODE, code); } catch (e) {}
-      document.getElementById('banner-code-display').textContent = code;
-      document.getElementById('classroom-banner').classList.remove('hidden');
-    }
-
-    function clearActiveTeacherCode() {
-      appState.activeClassCode = '';
-      try { localStorage.removeItem(STORAGE_KEYS.CLASS_CODE); } catch (e) {}
-      document.getElementById('classroom-banner').classList.add('hidden');
-      document.getElementById('filter-classcode').value = 'ALL';
-      pullScoresFromCloud();
-    }
-
-    function copyGeneratedCode() { navigator.clipboard.writeText(appState.activeClassCode); }
-    function copyGeneratedLink() {
-      navigator.clipboard.writeText(document.getElementById('display-generated-link').value);
-      const btn = document.getElementById('btn-copy-link');
-      btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy Link', 1500);
     }
 
     function openCertificateModal(rec) {
