@@ -81,7 +81,6 @@
   <!-- TOP NAVIGATION HEADER -->
   <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20 px-4 py-3">
     <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <!-- Brand Logo -->
       <div onclick="switchTab('home')" class="flex items-center gap-3 cursor-pointer group">
         <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-black text-xl shadow-lg shadow-gold-500/20 group-hover:scale-105 transition">
           <i class="fa-solid fa-square-root-variable"></i>
@@ -97,7 +96,6 @@
         </div>
       </div>
 
-      <!-- Action Navigation Buttons -->
       <div class="flex items-center gap-2">
         <button onclick="switchTab('home')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
           <i class="fa-solid fa-house"></i>
@@ -561,6 +559,13 @@
 
   <!-- APPLICATION ENGINE -->
   <script>
+    /**
+     * Optional: Paste your public Web App URL (/exec) here if serving externally
+     * (e.g. from GitHub Pages or Firebase). If hosting inside Google Apps Script,
+     * leaving it empty is completely fine.
+     */
+    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
+
     const STORAGE_KEYS = {
       ACTIVE_CODE: 'PRIME_ACTIVE_TEACHER_CODE',
       TEACHER_PROFILE: 'PRIME_LOGGED_TEACHER',
@@ -970,32 +975,58 @@
       }
     }
 
-    // --- JSONP/APPS SCRIPT CALL DISPATCHER (Zero CORS Issues) ---
+    // --- UNIVERSAL API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
+        // Direct Native Call (When served inside Apps Script)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
-            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).registerTeacher(params);
+            google.script.run
+              .withSuccessHandler(res => {
+                if (typeof res === 'string') { try { res = JSON.parse(res); } catch(e){} }
+                resolve(res);
+              })
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .registerTeacher(params);
             return;
           }
           if (params.action === 'teacher_login') {
-            google.script.run.withSuccessHandler(resolve).withFailureHandler(reject).loginTeacher(params.username, params.password);
+            google.script.run
+              .withSuccessHandler(res => {
+                if (typeof res === 'string') { try { res = JSON.parse(res); } catch(e){} }
+                resolve(res);
+              })
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .loginTeacher(params.username, params.password);
             return;
           }
         }
 
-        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 10000);
-        const script = document.createElement('script');
-        let baseUrl = window.location.href.split('?')[0];
+        // External / JSONP Dispatch
+        let targetUrl = WEB_APP_EXEC_URL.trim();
+        if (!targetUrl || targetUrl.includes('AKfycb...')) {
+          targetUrl = window.location.href.split('?')[0];
+        }
 
-        const url = new URL(baseUrl);
+        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const script = document.createElement('script');
+
+        let url;
+        try {
+          url = new URL(targetUrl);
+        } catch (e) {
+          reject(new Error('Invalid URL endpoint. If hosting externally, set WEB_APP_EXEC_URL in Index.html.'));
+          return;
+        }
+
         Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
         url.searchParams.set('callback', callbackName);
+        url.searchParams.set('_nocache', Date.now());
 
         const timeout = setTimeout(() => {
           cleanup();
-          reject(new Error('Connection timed out. Ensure the Web App is deployed with "Anyone" access.'));
-        }, 12000);
+          reject(new Error('Connection timed out. Ensure the Web App is published with "Who has access: Anyone".'));
+        }, 15000);
 
         function cleanup() {
           clearTimeout(timeout);
@@ -1010,11 +1041,11 @@
 
         script.onerror = function() {
           cleanup();
-          reject(new Error('Network error connecting to central storage.'));
+          reject(new Error('Network error. Check network connectivity or deployment settings.'));
         };
 
         script.src = url.toString();
-        document.body.appendChild(script);
+        document.head.appendChild(script);
       });
     }
 
@@ -1070,7 +1101,8 @@
       }
 
       try {
-        const url = new URL(window.location.href);
+        let endpoint = WEB_APP_EXEC_URL.trim() || window.location.href;
+        const url = new URL(endpoint);
         url.searchParams.set('action', 'log');
         Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
         await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
@@ -1269,7 +1301,8 @@
       }
 
       try {
-        const url = new URL(window.location.href);
+        let endpoint = WEB_APP_EXEC_URL.trim() || window.location.href;
+        const url = new URL(endpoint);
         url.searchParams.set('action', 'fetch');
         url.searchParams.set('code', filterCode);
         const res = await fetch(url.toString());
