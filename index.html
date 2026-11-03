@@ -1,462 +1,2253 @@
-  <!-- Action Navigation Buttons -->
-  <div class="flex items-center gap-2">
-    <button onclick="switchTab('home')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
-      <i class="fa-solid fa-house"></i>
-      <span class="hidden md:inline">Home</span>
-    </button>
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>PROJECT PRIME: Program for Remediation and Improvement in Mathematics Education</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Font Awesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <button onclick="openClassCodeModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
-      <i class="fa-solid fa-key text-gold-400"></i>
-      <span>Teacher Code</span>
-    </button>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              950: '#060a17',
+              900: '#0a0f24',
+              800: '#0f172a',
+              700: '#1e3a8a',
+              600: '#1d4ed8'
+            },
+            gold: {
+              200: '#fef08a',
+              300: '#fde047',
+              400: '#fbbf24',
+              500: '#d4af37',
+              600: '#b48a1e',
+              700: '#926f14'
+            }
+          }
+        }
+      }
+    };
+  </script>
 
-    <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:bg-blue-800/50 transition" title="Google Sheet Cloud Sync">
-      <i class="fa-solid fa-cloud text-sky-400"></i>
-      <span class="hidden sm:inline">Google Sync</span>
-    </button>
+  <style>
+    body {
+      background: radial-gradient(circle at top right, #1e3a8a 0%, #0f172a 45%, #060a17 100%);
+      color: #f8fafc;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
 
-    <button onclick="switchTab('scores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
-      <i class="fa-solid fa-chart-simple text-gold-400"></i>
-      <span class="hidden md:inline">Registry</span>
-    </button>
+    /* Screen-fitting compact layout mode for quiz */
+    body.quiz-active {
+      height: 100vh;
+      overflow: hidden;
+    }
+    body.quiz-active header {
+      padding-top: 0.35rem !important;
+      padding-bottom: 0.35rem !important;
+    }
+    body.quiz-active footer {
+      display: none !important;
+    }
+    body.quiz-active main {
+      padding-top: 0.5rem !important;
+      padding-bottom: 0.5rem !important;
+      height: calc(100vh - 65px);
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
 
-    <button onclick="switchTab('guides')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
-      <i class="fa-solid fa-book-open"></i>
-      <span class="hidden md:inline">Guides</span>
-    </button>
-  </div>
-</div>
+    .royal-card {
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(212, 175, 55, 0.35);
+      box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.6), 0 0 18px rgba(212, 175, 55, 0.08);
+    }
 
-<!-- Active Class Code Banner (Visible when a teacher code is set) -->
-<div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/80 via-emerald-900/50 to-navy-900/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs text-emerald-300 flex items-center justify-between">
-  <div class="flex items-center gap-2">
-    <i class="fa-solid fa-school text-gold-400"></i>
-    <span>Active Teacher Code: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
-  </div>
-  <div class="flex items-center gap-2">
-    <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores beam to teacher across devices</span>
-    <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
-  </div>
-</div>
+    .royal-card-hover {
+      transition: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .royal-card-hover:hover {
+      transform: translateY(-4px);
+      border-color: rgba(251, 191, 36, 0.75);
+      box-shadow: 0 16px 36px -4px rgba(0, 0, 0, 0.75), 0 0 25px rgba(251, 191, 36, 0.22);
+    }
 
+    .gold-gradient-text {
+      background: linear-gradient(135deg, #fef08a 0%, #fbbf24 45%, #d4af37 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
 
-<!-- 1. HOME VIEW (MATH DOMAINS) -->
-<section id="view-home" class="space-y-6">
-  <div class="text-center space-y-2 py-4">
-    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
-      Interactive Diagnostic & Practice Suite
-    </span>
-    <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
-    <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
-      Multi-digit problem generators, customizable number fields (tables 1–12), true mathematical exponents, and instant step-by-step worked solutions.
-    </p>
-  </div>
+    .gold-btn {
+      background: linear-gradient(135deg, #fbbf24 0%, #d4af37 55%, #b48a1e 100%);
+      color: #060a17;
+      font-weight: 700;
+      box-shadow: 0 4px 15px rgba(212, 175, 55, 0.35);
+      transition: all 0.2s ease;
+    }
+    .gold-btn:hover {
+      filter: brightness(1.08);
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(251, 191, 36, 0.5);
+    }
+    .gold-btn:active { transform: translateY(0); }
 
-  <!-- Categories Grid -->
-  <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-    <!-- Rendered via JavaScript -->
-  </div>
-</section>
+    .navy-btn {
+      background: rgba(30, 58, 138, 0.55);
+      border: 1px solid rgba(212, 175, 55, 0.45);
+      color: #fef08a;
+      transition: all 0.2s ease;
+    }
+    .navy-btn:hover {
+      background: rgba(30, 58, 138, 0.85);
+      border-color: #fbbf24;
+    }
 
-<!-- 2. PRACTICE SETUP VIEW -->
-<section id="view-config" class="hidden max-w-2xl mx-auto space-y-6">
-  <div class="glass-panel p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
-    <div class="flex items-center justify-between border-b border-gold-500/20 pb-4">
-      <div>
-        <span id="config-domain-badge" class="text-xs font-bold text-gold-400 uppercase tracking-wider">Category</span>
-        <h3 id="config-domain-title" class="text-xl md:text-2xl font-bold text-white">Configure Practice</h3>
+    .math-expr {
+      font-family: 'Cambria Math', 'Times New Roman', serif;
+      letter-spacing: 0.03em;
+    }
+    .math-frac {
+      display: inline-flex;
+      flex-direction: column;
+      vertical-align: middle;
+      text-align: center;
+      padding: 0 0.2em;
+      font-size: 0.92em;
+    }
+    .math-frac-num {
+      border-bottom: 2px solid #fbbf24;
+      padding: 0 0.25em 0.05em;
+      line-height: 1.15;
+    }
+    .math-frac-den {
+      padding: 0.08em 0.25em 0;
+      line-height: 1.15;
+    }
+
+    #math-bg-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    #math-editor {
+      min-height: 54px;
+      outline: none;
+      white-space: pre-wrap;
+      word-break: break-word;
+      cursor: text;
+    }
+    #math-editor:empty:before {
+      content: attr(data-placeholder);
+      color: #64748b;
+      pointer-events: none;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.95rem;
+      font-weight: 400;
+    }
+    #math-editor sup {
+      font-size: 0.72em;
+      vertical-align: super;
+      line-height: 0;
+      color: #fde047;
+      font-weight: 700;
+      padding: 0 1px;
+    }
+
+    @media print {
+      .no-print { display: none !important; }
+      body { background: #ffffff !important; color: #000000 !important; }
+      .royal-card { border: 2px solid #b48a1e !important; background: #fff !important; color: #000 !important; box-shadow: none !important; }
+    }
+  </style>
+</head>
+<body class="relative selection:bg-gold-400 selection:text-navy-950">
+
+  <canvas id="math-bg-canvas"></canvas>
+
+  <div class="relative z-10 flex flex-col min-h-screen">
+    <!-- Header Navbar -->
+    <header class="sticky top-0 z-40 royal-card border-t-0 border-x-0 border-b border-gold-500/40 px-4 py-3 sm:px-6 no-print">
+      <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-3">
+        <div onclick="switchTab('home')" class="flex items-center gap-3 cursor-pointer group">
+          <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400 via-gold-500 to-gold-700 p-0.5 shadow-lg group-hover:scale-105 transition">
+            <div class="w-full h-full bg-navy-950 rounded-[10px] flex items-center justify-center">
+              <span class="font-serif font-extrabold text-xl gold-gradient-text">P′</span>
+            </div>
+          </div>
+          <div>
+            <h1 class="font-serif font-bold text-lg sm:text-xl tracking-wider gold-gradient-text leading-tight">
+              PROJECT PRIME
+            </h1>
+            <p class="text-[11px] sm:text-xs text-slate-300 font-medium">
+              Program for Remediation and Improvement in Mathematics Education
+            </p>
+          </div>
+        </div>
+
+        <nav class="flex flex-wrap items-center justify-center gap-2">
+          <button onclick="switchTab('home')" id="nav-home" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 gold-btn">
+            <i class="fa-solid fa-compass"></i><span>Home</span>
+          </button>
+          <button onclick="switchTab('scores')" id="nav-scores" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 navy-btn">
+            <i class="fa-solid fa-chart-column"></i><span>Registry</span>
+            <span id="nav-scores-count" class="px-1.5 py-0.5 text-[10px] rounded-full bg-gold-500/20 border border-gold-400/50 text-gold-300 font-mono">0</span>
+          </button>
+          <button onclick="switchTab('guides')" id="nav-guides" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 navy-btn">
+            <i class="fa-solid fa-book-open-reader"></i><span>Rules</span>
+          </button>
+          <button onclick="switchTab('howto')" id="nav-howto" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 navy-btn">
+            <i class="fa-solid fa-circle-question"></i><span>Guide</span>
+          </button>
+          <button onclick="openClassCodeModal()" class="px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 bg-indigo-900/60 border border-gold-400/40 text-gold-300 hover:bg-indigo-800" title="Class Code & Teacher Manager">
+            <i class="fa-solid fa-key text-gold-400"></i>
+            <span class="hidden sm:inline text-xs font-semibold">Teacher Code</span>
+          </button>
+        </nav>
       </div>
-      <button onclick="switchTab('home')" class="text-slate-400 hover:text-gold-400 text-sm font-semibold">
-        <i class="fa-solid fa-arrow-left mr-1"></i> Back
-      </button>
-    </div>
+    </header>
 
-    <!-- Dynamic Configuration Fields -->
-    <div class="space-y-5">
-      <!-- Item Count -->
-      <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Number of Questions (5 to 100)</label>
+    <main class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 py-6 sm:py-8">
+
+      <!-- Classroom Banner -->
+      <div id="classroom-banner" class="hidden mb-6 royal-card border-emerald-400/60 bg-emerald-950/40 p-4 rounded-2xl flex flex-col sm:flex-row items-center justify-between gap-3 shadow-lg">
         <div class="flex items-center gap-3">
-          <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
-          <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+          <div class="w-10 h-10 rounded-xl bg-emerald-500/20 border border-emerald-400 flex items-center justify-center text-emerald-300 text-lg">
+            <i class="fa-solid fa-chalkboard-user"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] uppercase font-bold tracking-widest text-emerald-400">Connected Classroom</span>
+              <span id="classroom-teacher-badge" class="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/20 text-emerald-200 border border-emerald-400/40"></span>
+            </div>
+            <p id="classroom-info-text" class="text-xs sm:text-sm text-slate-200 font-medium"></p>
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-[11px] text-emerald-300 font-mono bg-navy-950/80 px-3 py-1 rounded-full border border-emerald-500/30">
+            <i class="fa-solid fa-shield-halved text-emerald-400"></i> Linked to Teacher Gradebook
+          </span>
         </div>
       </div>
 
-      <!-- Whole Numbers: Number Field / Times Table Focus (Tables 1 to 12) -->
-      <div id="config-numberfield-box" class="hidden">
-        <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
-          <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
-        </label>
-        <p class="text-[11px] text-slate-400 mb-2">Focus on a specific number family or times table for addition, subtraction, multiplication, or division.</p>
-        <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
-          <option value="none">Free Number Field (Use Digits Count Only)</option>
-          <option value="1">Field of 1 (Table of 1 Focus)</option>
-          <option value="2">Field of 2 (Table of 2 Focus)</option>
-          <option value="3">Field of 3 (Table of 3 Focus)</option>
-          <option value="4">Field of 4 (Table of 4 Focus)</option>
-          <option value="5">Field of 5 (Table of 5 Focus)</option>
-          <option value="6">Field of 6 (Table of 6 Focus)</option>
-          <option value="7">Field of 7 (Table of 7 Focus)</option>
-          <option value="8">Field of 8 (Table of 8 Focus)</option>
-          <option value="9">Field of 9 (Table of 9 Focus)</option>
-          <option value="10">Field of 10 (Table of 10 Focus)</option>
-          <option value="11">Field of 11 (Table of 11 Focus)</option>
-          <option value="12">Field of 12 (Table of 12 Focus)</option>
-          <option value="random">Random Mixed Fields (1 to 12 Drill)</option>
-        </select>
-      </div>
+      <!-- VIEW 1: HOME DASHBOARD -->
+      <section id="view-home" class="space-y-8">
+        <div class="royal-card rounded-2xl p-6 sm:p-8 lg:p-10 relative overflow-hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+            <div class="lg:col-span-7 space-y-4">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-gold-500/15 border border-gold-400/40 text-gold-300 text-xs font-semibold tracking-wide uppercase">
+                <i class="fa-solid fa-graduation-cap"></i> High School Mathematics Remediation Suite
+              </div>
+              <h2 class="font-serif font-extrabold text-2xl sm:text-4xl lg:text-5xl leading-tight">
+                Master Fundamental Operations, <span class="gold-gradient-text">Radicals & Exponents</span>
+              </h2>
+              <p class="text-slate-300 text-sm sm:text-base leading-relaxed">
+                Welcome to <strong class="text-gold-300">PROJECT PRIME</strong>. Select a mathematical domain below, customize your difficulty (1 to 10 digits, regrouping options, multi-term operations, radicals, and exponents up to 1,000), and build deep computational fluency with step-by-step guided solutions.
+              </p>
+              <div class="flex flex-wrap gap-3 pt-2">
+                <a href="#categories-grid" class="gold-btn px-5 py-2.5 rounded-xl text-sm flex items-center gap-2">
+                  <i class="fa-solid fa-play"></i> Choose a Category
+                </a>
+                <button onclick="switchTab('scores')" class="navy-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
+                  <i class="fa-solid fa-trophy text-gold-400"></i> View Last 50 Scores
+                </button>
+                <button onclick="switchTab('guides')" class="navy-btn px-5 py-2.5 rounded-xl text-sm font-semibold flex items-center gap-2">
+                  <i class="fa-solid fa-scroll"></i> Review Rules
+                </button>
+              </div>
+            </div>
 
-      <!-- Multi-Digit Count (1 to 10 Digits) -->
-      <div id="config-digits-box">
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-          Number of Digits per Number (1 to 10 Digits)
-        </label>
-        <p class="text-[11px] text-slate-400 mb-2">Controls operand size for multi-digit arithmetic up to 10-digit numbers.</p>
-        <div class="flex items-center gap-3">
-          <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
-          <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+            <div class="lg:col-span-5 flex justify-center">
+              <div class="w-full max-w-md">
+                <svg viewBox="0 0 460 320" class="w-full h-auto drop-shadow-2xl" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="boardGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stop-color="#0f172a" />
+                      <stop offset="100%" stop-color="#1e3a8a" />
+                    </linearGradient>
+                    <linearGradient id="goldFrame" x1="0%" y1="0%" x2="100%" y2="0%">
+                      <stop offset="0%" stop-color="#b48a1e" />
+                      <stop offset="50%" stop-color="#fef08a" />
+                      <stop offset="100%" stop-color="#d4af37" />
+                    </linearGradient>
+                  </defs>
+                  <rect x="30" y="20" width="400" height="210" rx="16" fill="url(#boardGrad)" stroke="url(#goldFrame)" stroke-width="5" />
+                  <rect x="42" y="32" width="376" height="186" rx="10" fill="none" stroke="#fbbf24" stroke-opacity="0.25" stroke-dasharray="6 6" />
+                  <text x="65" y="75" fill="#fef08a" font-family="serif" font-size="20" font-weight="bold">
+                    x<tspan baseline-shift="super" font-size="13">m</tspan> · x<tspan baseline-shift="super" font-size="13">n</tspan> = x<tspan baseline-shift="super" font-size="13">m+n</tspan>
+                  </text>
+                  <text x="255" y="75" fill="#93c5fd" font-family="serif" font-size="19" font-weight="bold">
+                    √<tspan text-decoration="overline">a</tspan> · √<tspan text-decoration="overline">b</tspan> = √<tspan text-decoration="overline">ab</tspan>
+                  </text>
+                  <text x="65" y="125" fill="#6ee7b7" font-family="serif" font-size="19" font-weight="bold">
+                    b<tspan baseline-shift="super" font-size="13">m/n</tspan> = <tspan baseline-shift="super" font-size="12">n</tspan>√<tspan text-decoration="overline">b<tspan baseline-shift="super" font-size="11">m</tspan></tspan>
+                  </text>
+                  <text x="245" y="125" fill="#fde047" font-family="monospace" font-size="16" font-weight="bold">
+                    (-15) + (+28) = +13
+                  </text>
+                  <circle cx="375" cy="165" r="20" fill="#10b981" fill-opacity="0.2" stroke="#10b981" stroke-width="2.5" />
+                  <path d="M366 165 L373 172 L386 158" stroke="#34d399" stroke-width="3.5" fill="none" stroke-linecap="round" />
+                </svg>
+              </div>
+            </div>
+          </div>
         </div>
-      </div>
 
-      <!-- Regrouping Option (Whole Numbers) -->
-      <div id="config-regrouping-box">
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Regrouping (Carrying / Borrowing)</label>
-        <div class="grid grid-cols-2 gap-3">
-          <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">
-            <i class="fa-solid fa-check-circle mr-1"></i> With Regrouping
+        <!-- Categories Grid -->
+        <div id="categories-grid" class="space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-gold-500/30 pb-3">
+            <div>
+              <h3 class="font-serif font-bold text-xl sm:text-2xl gold-gradient-text">Select a Mathematics Domain</h3>
+              <p class="text-xs sm:text-sm text-slate-300">Choose from 7 comprehensive high school learning modules.</p>
+            </div>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5" id="category-cards-container"></div>
+        </div>
+
+        <!-- Recent Activity Table Preview -->
+        <div class="royal-card rounded-2xl p-6 sm:p-7 space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gold-500/30 pb-3">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-gold-500/20 border border-gold-400/60 flex items-center justify-center text-gold-300 text-lg">
+                <i class="fa-solid fa-ranking-star"></i>
+              </div>
+              <div>
+                <h3 class="font-serif font-bold text-lg sm:text-xl gold-gradient-text">Recent Student Activity</h3>
+                <p class="text-xs text-slate-300">Live feed of completed practice sessions and assessments.</p>
+              </div>
+            </div>
+            <button onclick="switchTab('scores')" class="gold-btn px-4 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+              <span>Open Full Registry</span> <i class="fa-solid fa-arrow-right"></i>
+            </button>
+          </div>
+
+          <div class="overflow-x-auto">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-gold-500/30 text-gold-300 uppercase text-[11px] tracking-wider bg-navy-950/60">
+                  <th class="py-2.5 px-3">#</th>
+                  <th class="py-2.5 px-3">Student Name</th>
+                  <th class="py-2.5 px-3">Grade & Section</th>
+                  <th class="py-2.5 px-3">Category</th>
+                  <th class="py-2.5 px-3 text-center">Score</th>
+                  <th class="py-2.5 px-3 text-center">Accuracy</th>
+                  <th class="py-2.5 px-3 text-right">Date & Time</th>
+                </tr>
+              </thead>
+              <tbody id="home-recent-scores-tbody" class="divide-y divide-gold-500/15 text-slate-200"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 2: QUIZ CONFIGURATION -->
+      <section id="view-config" class="max-w-4xl mx-auto hidden">
+        <div class="royal-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="flex items-center justify-between border-b border-gold-500/30 pb-4">
+            <div class="flex items-center gap-3">
+              <div id="config-cat-icon" class="w-12 h-12 rounded-xl bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-300 text-xl"></div>
+              <div>
+                <span class="text-xs uppercase tracking-wider text-gold-400 font-semibold">Customize Practice</span>
+                <h2 id="config-cat-title" class="font-serif font-bold text-xl sm:text-2xl text-white"></h2>
+              </div>
+            </div>
+            <button onclick="switchTab('home')" class="navy-btn px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-1.5">
+              <i class="fa-solid fa-arrow-left"></i> Back
+            </button>
+          </div>
+
+          <p id="config-cat-desc" class="text-sm text-slate-300 leading-relaxed"></p>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Questions Count (5-100) -->
+            <div class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                  <i class="fa-solid fa-list-ol"></i> Number of Questions
+                </label>
+                <span class="text-xs text-slate-400">Min: 5 | Max: 100</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <input type="range" id="cfg-qcount-slider" min="5" max="100" value="10" oninput="syncQuestionCount(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                <input type="number" id="cfg-qcount-num" min="5" max="100" value="10" onchange="syncQuestionCount(this.value)" class="w-20 bg-navy-900 border border-gold-400/50 rounded-lg px-2.5 py-1.5 text-center font-mono font-bold text-gold-300">
+              </div>
+            </div>
+
+            <!-- Operations Mode -->
+            <div id="cfg-operation-box" class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                <i class="fa-solid fa-sliders"></i> Operations Mode
+              </label>
+              <select id="cfg-operation" onchange="updateRegroupingVisibility()" class="w-full bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold-400">
+                <optgroup label="Single Fundamental Operation">
+                  <option value="add">Addition (+)</option>
+                  <option value="sub">Subtraction (−)</option>
+                  <option value="mul">Multiplication (×)</option>
+                  <option value="div">Division (÷)</option>
+                </optgroup>
+                <optgroup label="Combined Multi-Operations (PEMDAS)">
+                  <option value="add_sub">Addition & Subtraction (+, −)</option>
+                  <option value="add_mul">Addition & Multiplication (+, ×)</option>
+                  <option value="mul_div">Multiplication & Division (×, ÷)</option>
+                  <option value="all4">All 4 Fundamental Operations (+, −, ×, ÷)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Exponents Law Submode -->
+            <div id="cfg-exponent-box" class="hidden bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                <i class="fa-solid fa-superscript"></i> Focus Law / Sub-Topic
+              </label>
+              <select id="cfg-exponent-law" class="w-full bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold-400"></select>
+            </div>
+
+            <!-- Number of Terms (2-5) -->
+            <div id="cfg-terms-box" class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                  <i class="fa-solid fa-layer-group"></i> Number of Terms
+                </label>
+                <span id="cfg-terms-badge" class="text-xs font-mono text-gold-400 font-bold">2 Terms</span>
+              </div>
+              <div class="grid grid-cols-4 gap-2">
+                <button type="button" onclick="setTermsCount(2)" id="term-btn-2" class="py-2 rounded-lg text-xs font-bold gold-btn">2</button>
+                <button type="button" onclick="setTermsCount(3)" id="term-btn-3" class="py-2 rounded-lg text-xs font-bold navy-btn">3</button>
+                <button type="button" onclick="setTermsCount(4)" id="term-btn-4" class="py-2 rounded-lg text-xs font-bold navy-btn">4</button>
+                <button type="button" onclick="setTermsCount(5)" id="term-btn-5" class="py-2 rounded-lg text-xs font-bold navy-btn">5</button>
+              </div>
+            </div>
+
+            <!-- Number Field Selector (1-12) for Whole Numbers -->
+            <div id="cfg-number-field-box" class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                  <i class="fa-solid fa-table-cells"></i> Number Field / Times Table Focus
+                </label>
+                <span class="text-xs text-slate-400">1 to 12</span>
+              </div>
+              <select id="cfg-number-field" onchange="handleNumberFieldChange(this.value)" class="w-full bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-2.5 text-sm text-white focus:outline-none focus:border-gold-400">
+                <option value="any">Free Number Field (Use Digits Count Below)</option>
+                <optgroup label="Specific Number Field (1 to 12) - All Operations (+, −, ×, ÷)">
+                  <option value="1">Field of 1 (n + 1, n − 1, n × 1, n ÷ 1)</option>
+                  <option value="2">Field of 2 (n + 2, n − 2, n × 2, n ÷ 2)</option>
+                  <option value="3">Field of 3 (n + 3, n − 3, n × 3, n ÷ 3)</option>
+                  <option value="4">Field of 4 (n + 4, n − 4, n × 4, n ÷ 4)</option>
+                  <option value="5">Field of 5 (n + 5, n − 5, n × 5, n ÷ 5)</option>
+                  <option value="6">Field of 6 (n + 6, n − 6, n × 6, n ÷ 6)</option>
+                  <option value="7">Field of 7 (n + 7, n − 7, n × 7, n ÷ 7)</option>
+                  <option value="8">Field of 8 (n + 8, n − 8, n × 8, n ÷ 8)</option>
+                  <option value="9">Field of 9 (n + 9, n − 9, n × 9, n ÷ 9)</option>
+                  <option value="10">Field of 10 (n + 10, n − 10, n × 10, n ÷ 10)</option>
+                  <option value="11">Field of 11 (n + 11, n − 11, n × 11, n ÷ 11)</option>
+                  <option value="12">Field of 12 (n + 12, n − 12, n × 12, n ÷ 12)</option>
+                  <option value="random_1_12">Random Mixed Fields (1 to 12 Drill: +, −, ×, ÷)</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <!-- Digits Count (1-10) -->
+            <div id="cfg-digits-box" class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3">
+              <div class="flex justify-between items-center">
+                <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                  <i class="fa-solid fa-hashtag"></i> Number of Digits per Term
+                </label>
+                <span class="text-xs text-slate-400">Min: 1 | Max: 10 Digits</span>
+              </div>
+              <div class="flex items-center gap-4">
+                <input type="range" id="cfg-digits-slider" min="1" max="10" value="2" oninput="syncDigitCount(this.value)" class="w-full accent-amber-400 cursor-pointer">
+                <input type="number" id="cfg-digits-num" min="1" max="10" value="2" onchange="syncDigitCount(this.value)" class="w-20 bg-navy-900 border border-gold-400/50 rounded-lg px-2.5 py-1.5 text-center font-mono font-bold text-gold-300">
+              </div>
+            </div>
+
+            <!-- Regrouping Options -->
+            <div id="cfg-regroup-box" class="bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3 md:col-span-2">
+              <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                <i class="fa-solid fa-repeat"></i> Regrouping Preference (Carrying / Borrowing)
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button type="button" onclick="setRegroupMode('with')" id="regroup-with" class="p-3 rounded-xl text-left border transition navy-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>With Regrouping</span><i class="fa-regular fa-circle"></i></div>
+                </button>
+                <button type="button" onclick="setRegroupMode('without')" id="regroup-without" class="p-3 rounded-xl text-left border transition gold-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>Without Regrouping</span><i class="fa-solid fa-check-circle"></i></div>
+                </button>
+                <button type="button" onclick="setRegroupMode('mixed')" id="regroup-mixed" class="p-3 rounded-xl text-left border transition navy-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>Mixed (Both)</span><i class="fa-regular fa-circle"></i></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Integer Signs Mode -->
+            <div id="cfg-int-sign-box" class="hidden bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3 md:col-span-2">
+              <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                <i class="fa-solid fa-plus-minus"></i> Integer Sign Combination
+              </label>
+              <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                <button type="button" onclick="setIntegerSignMode('mixed')" id="intsign-mixed" class="p-3 rounded-xl text-left border transition gold-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>Mixed (+ and −)</span><i class="fa-solid fa-check-circle"></i></div>
+                </button>
+                <button type="button" onclick="setIntegerSignMode('both_pos')" id="intsign-both_pos" class="p-3 rounded-xl text-left border transition navy-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>Both Positive (+a, +b)</span><i class="fa-regular fa-circle"></i></div>
+                </button>
+                <button type="button" onclick="setIntegerSignMode('both_neg')" id="intsign-both_neg" class="p-3 rounded-xl text-left border transition navy-btn">
+                  <div class="font-bold text-xs sm:text-sm flex items-center justify-between"><span>Both Negative (−a, −b)</span><i class="fa-regular fa-circle"></i></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Fraction Mode -->
+            <div id="cfg-frac-type-box" class="hidden bg-navy-950/70 border border-gold-500/25 rounded-xl p-4 space-y-3 md:col-span-2">
+              <label class="text-sm font-semibold text-gold-300 flex items-center gap-2">
+                <i class="fa-solid fa-divide"></i> Fraction Classification
+              </label>
+              <select id="cfg-frac-type" class="w-full bg-navy-900 border border-gold-400/50 rounded-lg px-3.5 py-2.5 text-sm text-white focus:outline-none focus:border-gold-400">
+                <option value="all_mixed_types">All Fraction Types Mixed (Similar, Dissimilar, Proper, Improper & Mixed)</option>
+                <option value="similar_proper">Similar Proper Fractions (Same Denominators, e.g. 3/8 + 2/8)</option>
+                <option value="dissimilar_proper">Dissimilar Proper Fractions (Different Denominators / LCD)</option>
+                <option value="similar_improper">Similar Improper Fractions (Numerator ≥ Denominator)</option>
+                <option value="dissimilar_improper">Dissimilar Improper Fractions</option>
+                <option value="mixed_similar">Mixed Fractions — Similar Fractional Parts</option>
+                <option value="mixed_dissimilar">Mixed Fractions — Dissimilar Fractional Parts</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="pt-4 border-t border-gold-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <button onclick="openTopicQuickGuideModal()" class="navy-btn px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 w-full sm:w-auto justify-center">
+              <i class="fa-solid fa-book-open"></i> Review Rules Before Starting
+            </button>
+            <button onclick="startQuizSession()" class="gold-btn px-8 py-3.5 rounded-xl text-sm sm:text-base font-bold flex items-center gap-2.5 w-full sm:w-auto justify-center">
+              <i class="fa-solid fa-rocket"></i> Start Practice Quiz Now
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 3: ACTIVE QUIZ -->
+      <section id="view-quiz" class="max-w-4xl mx-auto space-y-3 hidden w-full flex-grow flex flex-col justify-between">
+        <!-- Compact Quiz Header Bar -->
+        <div class="royal-card rounded-xl px-4 py-2 flex flex-wrap items-center justify-between gap-2 shrink-0">
+          <div class="flex items-center gap-2">
+            <button onclick="confirmExitQuiz()" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-house"></i> <span class="hidden sm:inline">Home</span>
+            </button>
+            <button onclick="retakeCurrentQuiz()" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1">
+              <i class="fa-solid fa-rotate-right text-gold-300"></i> <span class="hidden sm:inline">Retake</span>
+            </button>
+            <div class="leading-tight ml-1">
+              <h3 id="quiz-header-title" class="font-serif font-bold text-sm sm:text-base gold-gradient-text"></h3>
+              <p id="quiz-header-subtitle" class="text-[11px] text-slate-400 hidden sm:block"></p>
+            </div>
+          </div>
+
+          <div class="flex items-center gap-2">
+            <button onclick="openTopicQuickGuideModal()" class="bg-indigo-950/90 hover:bg-indigo-900 border border-gold-400/60 text-gold-200 px-2.5 py-1 rounded-lg text-xs font-semibold flex items-center gap-1 shadow">
+              <i class="fa-solid fa-lightbulb text-gold-400"></i> <span class="hidden sm:inline">Guide</span>
+            </button>
+            <div class="bg-navy-950/90 border border-gold-500/30 px-2.5 py-1 rounded-lg text-xs font-mono">
+              Item <span id="quiz-q-index" class="text-gold-300 font-bold">1</span>/<span id="quiz-q-total">10</span>
+            </div>
+            <div class="bg-navy-950/90 border border-gold-500/30 px-2.5 py-1 rounded-lg text-xs font-mono">
+              Score: <span id="quiz-score-val" class="text-emerald-400 font-bold">0</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Compact Progress Bar -->
+        <div class="w-full bg-navy-950 h-1.5 rounded-full overflow-hidden border border-gold-500/30 shrink-0">
+          <div id="quiz-progress-bar" class="bg-gradient-to-r from-gold-500 to-gold-300 h-full transition-all duration-300" style="width: 0%;"></div>
+        </div>
+
+        <!-- Main Quiz Interaction Card (Auto-Fits Container) -->
+        <div class="royal-card rounded-2xl p-4 sm:p-5 space-y-3 flex-grow flex flex-col justify-between shadow-2xl relative overflow-hidden">
+          
+          <div class="flex items-center justify-between border-b border-gold-500/20 pb-2 shrink-0">
+            <span class="text-[11px] sm:text-xs font-semibold uppercase tracking-wider text-gold-300">
+              Simplify & Calculate:
+            </span>
+            <div class="flex items-center gap-2">
+              <span class="text-[11px] text-slate-400">Chances:</span>
+              <div id="quiz-attempts-hearts" class="flex items-center gap-1 text-amber-400 text-xs"></div>
+            </div>
+          </div>
+
+          <!-- Problem Expression Box (Optimized Height) -->
+          <div class="bg-navy-950/90 border-2 border-gold-500/40 rounded-xl p-3 sm:p-5 text-center min-h-[75px] sm:min-h-[90px] flex flex-col items-center justify-center shadow-inner shrink-0">
+            <div id="quiz-math-display" class="math-expr text-2xl sm:text-3xl md:text-4xl font-bold text-white tracking-wide leading-tight select-all"></div>
+            <div id="quiz-format-tip" class="mt-1 text-[11px] text-slate-400 font-mono"></div>
+          </div>
+
+          <!-- Feedback & Hint Box (Compact, Inline, Max-Height Scrollable if Long) -->
+          <div id="quiz-feedback-box" class="rounded-xl p-3 border border-emerald-400/60 bg-emerald-950/80 space-y-2 hidden max-h-[125px] overflow-y-auto shrink-0 transition-all">
+            <div class="flex items-start gap-2.5">
+              <div id="quiz-feedback-icon" class="text-xl mt-0.5"></div>
+              <div class="space-y-0.5 flex-grow">
+                <h4 id="quiz-feedback-title" class="font-serif font-bold text-xs sm:text-sm"></h4>
+                <p id="quiz-feedback-msg" class="text-[11px] sm:text-xs text-slate-200 leading-snug"></p>
+              </div>
+            </div>
+            <div id="quiz-hint-solution-box" class="bg-navy-950/90 border border-gold-500/35 rounded-lg p-2.5 text-[11px] sm:text-xs">
+              <div id="quiz-hint-content" class="space-y-1 text-slate-200 leading-snug"></div>
+            </div>
+          </div>
+
+          <!-- Virtual Math Toolbar (Compact & Sleek) -->
+          <div class="space-y-2 shrink-0">
+            <div class="flex flex-wrap items-center justify-between gap-1">
+              <span class="text-[10px] sm:text-[11px] font-semibold text-gold-300 uppercase tracking-wider flex items-center gap-1">
+                <i class="fa-solid fa-keyboard"></i> Math Toolbar:
+              </span>
+              <span id="sup-mode-indicator" class="text-[10px] font-semibold px-2 py-0.2 rounded-full bg-navy-900 border border-gold-500/30 text-slate-300">Normal Mode</span>
+            </div>
+
+            <div class="flex flex-wrap gap-1.5 bg-navy-950/80 p-2 rounded-xl border border-gold-500/30 items-center">
+              <button type="button" onclick="insertMathSymbol('-')" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold">± / −</button>
+              <button type="button" onclick="insertRadicalTemplate(2)" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-gold-300">√(x)</button>
+              <button type="button" onclick="insertRadicalTemplate(3)" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-gold-300"><sup>3</sup>√(x)</button>
+              <button type="button" onclick="insertRadicalTemplate(4)" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-gold-300"><sup>4</sup>√(x)</button>
+              <button type="button" onclick="insertMathSymbol(')')" class="navy-btn px-2 py-1 rounded-lg text-xs font-mono font-bold">)</button>
+              <button type="button" id="btn-toggle-sup" onclick="toggleSuperscriptMode()" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1 border-gold-400">
+                <span class="text-gold-300 font-serif italic">x<sup class="text-[10px] font-bold not-italic">n</sup></span>
+                <span id="btn-toggle-sup-label" class="text-[10px] text-slate-200 font-sans hidden sm:inline">Exponent</span>
+              </button>
+              <button type="button" onclick="triggerExponentHelper()" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold flex items-center gap-1">
+                <i class="fa-solid fa-wand-magic-sparkles text-gold-300 text-[10px]"></i>
+                <span class="text-[10px] text-slate-300 font-sans">Power (2–1000)</span>
+              </button>
+              <button type="button" onclick="insertMathSymbol('/')" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-gold-300">a/b</button>
+              <button type="button" onclick="openMixedFractionHelper()" class="navy-btn px-2.5 py-1 rounded-lg text-xs font-mono font-bold text-gold-300">a b/c</button>
+              <button type="button" onclick="insertMathSymbol('x')" class="navy-btn px-2 py-1 rounded-lg text-xs font-serif italic font-bold">x</button>
+              <button type="button" onclick="insertMathSymbol('y')" class="navy-btn px-2 py-1 rounded-lg text-xs font-serif italic font-bold">y</button>
+              <button type="button" onclick="clearAnswerInput()" class="ml-auto bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 px-2.5 py-1 rounded-lg text-xs font-semibold">
+                <i class="fa-solid fa-eraser"></i> Clear
+              </button>
+            </div>
+
+            <!-- Answer Input Row -->
+            <div class="flex gap-2 items-stretch">
+              <div class="relative flex-grow">
+                <div id="math-editor" contenteditable="true" spellcheck="false" data-placeholder="Type answer here..." oninput="handleMathEditorInput()" onkeydown="handleMathEditorKeydown(event)" onkeyup="syncSupModeIndicator()" onmouseup="syncSupModeIndicator()" class="w-full bg-navy-950 border-2 border-gold-400/60 focus:border-gold-300 rounded-xl px-3 py-2 text-lg sm:text-xl math-expr font-bold text-white shadow-inner flex items-center min-h-[46px]"></div>
+              </div>
+              <button type="button" id="quiz-submit-btn" onclick="handleAnswerSubmission()" class="gold-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-1.5 shrink-0">
+                <i class="fa-solid fa-paper-plane"></i> Check
+              </button>
+              <button type="button" id="quiz-next-btn" onclick="advanceToNextQuestion()" class="gold-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold items-center justify-center gap-1.5 shrink-0 hidden">
+                <span>Next</span> <i class="fa-solid fa-arrow-right"></i>
+              </button>
+            </div>
+
+            <div class="flex items-center justify-between gap-2 bg-navy-950/60 border border-gold-500/20 rounded-lg px-3 py-1 text-[11px]">
+              <span class="text-slate-400 text-[10px]">Formatted Preview:</span>
+              <div id="quiz-live-preview" class="math-expr text-sm sm:text-base font-bold text-gold-300 min-h-[20px]">—</div>
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW 4: RESULTS / CERTIFICATE -->
+      <section id="view-results" class="hidden max-w-4xl mx-auto space-y-6">
+        <div id="results-name-prompt" class="royal-card rounded-2xl p-6 sm:p-8 text-center space-y-6">
+          <div class="w-20 h-20 mx-auto rounded-full bg-gold-500/20 border-2 border-gold-400 flex items-center justify-center text-gold-300 text-3xl shadow-lg">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div class="space-y-2 max-w-lg mx-auto">
+            <span class="text-xs uppercase tracking-widest text-gold-400 font-bold">Quiz Completed!</span>
+            <h2 class="font-serif font-extrabold text-2xl sm:text-3xl text-white">
+              Enter Your Name to Finalize Your Certificate
+            </h2>
+            <p class="text-xs sm:text-sm text-slate-300">
+              Provide your details to generate your official record and save your score.
+            </p>
+          </div>
+
+          <div class="max-w-md mx-auto space-y-4 text-left">
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gold-300 mb-1">Student Full Name <span class="text-rose-400">*</span></label>
+              <input type="text" id="student-fullname-input" placeholder="e.g., Juan Dela Cruz" onkeydown="if(event.key==='Enter') finalizeQuizCertificate()" class="w-full bg-navy-950 border border-gold-400/60 rounded-xl px-4 py-3 text-white font-semibold focus:outline-none focus:border-gold-300">
+            </div>
+            <div>
+              <label class="block text-xs font-semibold uppercase tracking-wider text-gold-300 mb-1">Grade & Section (Optional)</label>
+              <input type="text" id="student-section-input" placeholder="e.g., Grade 9 - Archimedes" onkeydown="if(event.key==='Enter') finalizeQuizCertificate()" class="w-full bg-navy-950 border border-gold-400/40 rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-gold-300">
+            </div>
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="block text-xs font-semibold uppercase tracking-wider text-gold-300">Teacher's Class Code (Optional)</label>
+                <span class="text-[10px] text-slate-400">Given by your teacher</span>
+              </div>
+              <input type="text" id="student-classcode-input" placeholder="e.g., REYES-9A or MATH-101" onkeydown="if(event.key==='Enter') finalizeQuizCertificate()" class="w-full bg-navy-950 border border-gold-400/40 rounded-xl px-4 py-2.5 text-sm font-mono uppercase text-gold-300 font-bold focus:outline-none focus:border-gold-300">
+            </div>
+            <p id="name-error-msg" class="hidden text-xs text-rose-400 font-semibold">
+              <i class="fa-solid fa-triangle-exclamation"></i> Please enter your name.
+            </p>
+            <button onclick="finalizeQuizCertificate()" class="w-full gold-btn py-3.5 rounded-xl text-sm sm:text-base font-bold flex items-center justify-center gap-2">
+              <i class="fa-solid fa-file-signature"></i> Generate Official Certificate & Record Score
+            </button>
+          </div>
+        </div>
+
+        <div id="results-certificate-view" class="hidden space-y-6">
+          <div class="royal-card rounded-2xl p-6 sm:p-10 border-2 border-gold-400 relative overflow-hidden">
+            <div class="text-center space-y-3 border-b border-gold-500/30 pb-6">
+              <div class="inline-flex items-center gap-2 px-4 py-1 rounded-full bg-gold-500/20 border border-gold-400 text-gold-300 text-xs font-bold uppercase tracking-widest">
+                Official Achievement Record
+              </div>
+              <h2 class="font-serif font-extrabold text-2xl sm:text-4xl gold-gradient-text">PROJECT PRIME</h2>
+              <p class="text-xs sm:text-sm text-slate-300 font-serif">Program for Remediation and Improvement in Mathematics Education</p>
+              <p class="text-xs text-slate-400 pt-2">This certifies that</p>
+              <h3 id="cert-student-name" class="font-serif font-bold text-2xl sm:text-3xl text-white underline decoration-gold-400/60 underline-offset-8"></h3>
+              <p id="cert-student-section" class="text-xs sm:text-sm text-gold-300 font-medium"></p>
+              <p class="text-xs sm:text-sm text-slate-300 max-w-xl mx-auto pt-1">
+                has successfully completed the assessment in <strong id="cert-category-name" class="text-gold-300"></strong>.
+              </p>
+            </div>
+
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 my-6">
+              <div class="bg-navy-950/80 border border-gold-500/30 rounded-xl p-4 text-center">
+                <span class="text-xs text-slate-400 block">Final Score</span>
+                <span id="cert-score-ratio" class="font-mono font-extrabold text-xl sm:text-2xl text-gold-300">0 / 10</span>
+              </div>
+              <div class="bg-navy-950/80 border border-gold-500/30 rounded-xl p-4 text-center">
+                <span class="text-xs text-slate-400 block">Accuracy</span>
+                <span id="cert-accuracy" class="font-mono font-extrabold text-xl sm:text-2xl text-emerald-400">100%</span>
+              </div>
+              <div class="bg-navy-950/80 border border-gold-500/30 rounded-xl p-4 text-center">
+                <span class="text-xs text-slate-400 block">Mastery Rating</span>
+                <span id="cert-mastery-badge" class="font-serif font-bold text-sm sm:text-base text-amber-300">Mastered</span>
+              </div>
+              <div class="bg-navy-950/80 border border-gold-500/30 rounded-xl p-4 text-center">
+                <span class="text-xs text-slate-400 block">Date Completed</span>
+                <span id="cert-date" class="font-mono font-semibold text-xs sm:text-sm text-slate-200"></span>
+              </div>
+            </div>
+
+            <div id="gas-sync-status" class="text-center text-xs font-semibold py-2 px-4 rounded-lg bg-navy-950/50 border border-slate-600"></div>
+
+            <div class="flex flex-wrap items-center justify-center gap-3 pt-4 no-print">
+              <button onclick="retakeCurrentQuiz()" class="gold-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2">
+                <i class="fa-solid fa-rotate-right"></i> Retake Quiz
+              </button>
+              <button onclick="switchTab('scores')" class="navy-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2 border-gold-400">
+                <i class="fa-solid fa-chart-column text-gold-300"></i> View Registry
+              </button>
+              <button onclick="window.print()" class="navy-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-print"></i> Print / PDF
+              </button>
+              <button onclick="switchTab('home')" class="navy-btn px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold flex items-center gap-2">
+                <i class="fa-solid fa-house"></i> Home
+              </button>
+            </div>
+          </div>
+
+          <div class="royal-card rounded-2xl p-6 space-y-4 no-print">
+            <h4 class="font-serif font-bold text-lg gold-gradient-text flex items-center gap-2">
+              <i class="fa-solid fa-clipboard-check"></i> Item-by-Item Review
+            </h4>
+            <div id="results-log-list" class="space-y-3 max-h-96 overflow-y-auto pr-2"></div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 5: SCORES REGISTRY -->
+      <section id="view-scores" class="space-y-6 hidden">
+        <div class="royal-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-gold-500/30 pb-5">
+            <div class="flex items-center gap-3.5">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400/30 to-gold-600/20 border border-gold-400 flex items-center justify-center text-gold-300 text-2xl">
+                <i class="fa-solid fa-trophy"></i>
+              </div>
+              <div>
+                <div class="flex items-center gap-2">
+                  <span class="text-xs uppercase tracking-widest text-gold-400 font-bold">Registry</span>
+                  <span class="px-2.5 py-0.5 rounded-full text-[11px] font-mono bg-amber-500/20 border border-amber-400/50 text-amber-300">Practice Log</span>
+                </div>
+                <h2 class="font-serif font-extrabold text-2xl sm:text-3xl text-white">Scores & Achievement Registry</h2>
+              </div>
+            </div>
+            <div class="flex flex-wrap items-center gap-2.5">
+              <button onclick="exportScoresToCSV()" class="gold-btn px-4 py-2 rounded-lg text-xs font-bold flex items-center gap-1.5">
+                <i class="fa-solid fa-file-csv"></i> Export Filtered CSV
+              </button>
+              <button onclick="switchTab('home')" class="navy-btn px-3.5 py-2 rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                <i class="fa-solid fa-house"></i> Home
+              </button>
+            </div>
+          </div>
+
+          <!-- Class Code Filter for Teachers -->
+          <div class="bg-navy-950/80 border border-gold-500/30 rounded-xl p-3.5 flex flex-col sm:flex-row items-center justify-between gap-3">
+            <div class="flex items-center gap-2 w-full sm:w-auto">
+              <i class="fa-solid fa-filter text-gold-400"></i>
+              <label for="filter-classcode" class="text-xs font-semibold text-slate-300 whitespace-nowrap">Filter by Teacher Code:</label>
+              <input type="text" id="filter-classcode" placeholder="All / Type Code (e.g. REYES-9A)" oninput="renderScoresRegistry()" class="bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-1.5 text-xs text-gold-300 font-mono font-bold uppercase focus:outline-none focus:border-gold-300 w-full sm:w-48">
+            </div>
+            <div class="text-[11px] text-slate-400 text-right w-full sm:w-auto">
+              Showing students matching your active filter.
+            </div>
+          </div>
+
+          <div class="overflow-x-auto rounded-xl border border-gold-500/30 bg-navy-950/80">
+            <table class="w-full text-left border-collapse text-xs sm:text-sm">
+              <thead>
+                <tr class="border-b border-gold-500/30 text-gold-300 uppercase text-[11px] tracking-wider bg-navy-900/90">
+                  <th class="py-3 px-3 text-center">#</th>
+                  <th class="py-3 px-3">Student Name</th>
+                  <th class="py-3 px-3">Grade & Section</th>
+                  <th class="py-3 px-3">Class Code</th>
+                  <th class="py-3 px-3">Category</th>
+                  <th class="py-3 px-3">Config</th>
+                  <th class="py-3 px-3 text-center">Score</th>
+                  <th class="py-3 px-3 text-center">Accuracy</th>
+                </tr>
+              </thead>
+              <tbody id="scores-registry-tbody" class="divide-y divide-gold-500/15 text-slate-200"></tbody>
+            </table>
+          </div>
+
+          <div class="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2 text-xs text-slate-400">
+            <p>Showing up to the <strong>last 50 users</strong>.</p>
+            <div class="flex gap-2">
+              <button onclick="restoreSampleScores()" class="navy-btn px-3 py-1.5 rounded-lg text-xs font-semibold">Restore Demo Records</button>
+              <button onclick="clearAllLocalScores()" class="bg-rose-950/80 hover:bg-rose-900 border border-rose-500/40 text-rose-200 px-3 py-1.5 rounded-lg text-xs font-semibold">Clear Records</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- VIEW 6: RULES & STUDY GUIDES -->
+      <section id="view-guides" class="hidden max-w-5xl mx-auto space-y-6">
+        <div class="royal-card rounded-2xl p-6 sm:p-8 space-y-6">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-gold-500/30 pb-5">
+            <div>
+              <h2 class="font-serif font-extrabold text-2xl sm:text-3xl text-white">Mathematics Rules & Reference Guides</h2>
+              <p class="text-xs sm:text-sm text-slate-300 pt-1">Detailed steps and examples for each mathematical domain.</p>
+            </div>
+            <button onclick="switchTab('home')" class="navy-btn px-4 py-2 rounded-xl text-xs sm:text-sm font-semibold"><i class="fa-solid fa-house"></i> Home</button>
+          </div>
+          <div id="guide-topic-pills" class="flex flex-wrap gap-2"></div>
+          <div id="guide-detail-container" class="mt-4"></div>
+        </div>
+      </section>
+
+      <!-- VIEW 7: HOW-TO GUIDE -->
+      <section id="view-howto" class="hidden max-w-4xl mx-auto space-y-6">
+        <div class="royal-card rounded-2xl p-6 sm:p-8 space-y-4">
+          <h2 class="font-serif font-extrabold text-2xl text-white border-b border-gold-500/30 pb-3">How to Use PROJECT PRIME</h2>
+          <ul class="list-disc list-inside text-sm text-slate-300 space-y-2">
+            <li>Select any of the 7 mathematics modules from the Home dashboard.</li>
+            <li>For Whole Numbers, choose whether to practice standard digits (1–10 digits) or focus on specific number fields / multiplication tables from 1 to 12.</li>
+            <li>Customize parameters: 5–100 questions, regrouping modes, and multi-term operations.</li>
+            <li>Type answers directly in the visual math box. Use <strong class="text-gold-300">xⁿ</strong> to type raised superscripts without needing any <code class="text-gold-300">^</code> caret characters.</li>
+            <li>Take advantage of 3 attempts per problem with progressive hints and sample solutions.</li>
+            <li>Enter your name at the end to create your printable certificate and record your score.</li>
+          </ul>
+          <button onclick="switchTab('home')" class="gold-btn mt-4 px-5 py-2.5 rounded-xl text-sm font-bold flex items-center gap-2">
+            <i class="fa-solid fa-arrow-left"></i> Return Home
           </button>
-          <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">
-            <i class="fa-solid fa-circle mr-1"></i> Without Regrouping
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Modals -->
+    <!-- Class Code Modal -->
+    <div id="modal-class-code" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="royal-card rounded-2xl max-w-lg w-full p-6 space-y-4 border-2 border-gold-400">
+        <div class="flex items-center justify-between border-b border-gold-500/30 pb-3">
+          <div class="flex items-center gap-2.5">
+            <div class="w-8 h-8 rounded-lg bg-gold-500/20 border border-gold-400 flex items-center justify-center text-gold-300">
+              <i class="fa-solid fa-key"></i>
+            </div>
+            <div>
+              <span class="text-[10px] font-bold uppercase tracking-widest text-gold-400">Teacher Utility</span>
+              <h3 class="font-serif font-bold text-lg gold-gradient-text">Class Code Generator</h3>
+            </div>
+          </div>
+          <button onclick="closeClassCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+
+        <div class="space-y-4 text-xs sm:text-sm text-slate-300 leading-relaxed">
+          <p>
+            Create a unique <strong>Class Code</strong> for your class. You do not need to write code or create Google Apps Scripts! Simply give this code to your learners.
+          </p>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="bg-navy-950/80 p-3 rounded-xl border border-gold-500/25">
+              <label class="block text-[11px] font-semibold text-gold-300 mb-1">Teacher Last Name / Initials</label>
+              <input type="text" id="code-teacher-name" placeholder="e.g. REYES or SANTOS" class="w-full bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-2 text-xs font-mono uppercase text-white focus:outline-none focus:border-gold-300">
+            </div>
+            <div class="bg-navy-950/80 p-3 rounded-xl border border-gold-500/25">
+              <label class="block text-[11px] font-semibold text-gold-300 mb-1">Grade & Section</label>
+              <input type="text" id="code-teacher-sec" placeholder="e.g. 9A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-400/40 rounded-lg px-3 py-2 text-xs font-mono uppercase text-white focus:outline-none focus:border-gold-300">
+            </div>
+          </div>
+
+          <button onclick="generateTeacherClassCode()" class="w-full gold-btn py-2.5 rounded-xl text-xs sm:text-sm font-bold flex items-center justify-center gap-2">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate My Class Code
           </button>
-        </div>
-      </div>
 
-      <!-- Integers Submode Selection -->
-      <div id="config-integers-box" class="hidden">
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sign Distribution Mode</label>
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2.5 rounded-lg text-xs font-bold border gold-btn">
-            Mixed (+ & -)
-          </button>
-          <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
-            Both Negative (- & -)
-          </button>
-          <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
-            Both Positive (+ & +)
-          </button>
+          <!-- Generated Code Box -->
+          <div id="code-display-box" class="hidden bg-emerald-950/50 border border-emerald-400/60 rounded-xl p-4 space-y-3">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-bold text-emerald-300">Your Class Code:</span>
+              <span id="active-class-code-badge" class="font-mono text-base font-extrabold px-3 py-1 rounded bg-navy-950 border border-gold-400 text-gold-300 select-all"></span>
+            </div>
+            <p class="text-[11px] text-slate-300">Direct Link with Code Pre-Filled:</p>
+            <div class="flex items-center gap-2">
+              <input type="text" id="code-direct-url" readonly class="w-full bg-navy-950 border border-emerald-400/40 rounded-lg p-2 text-xs font-mono text-emerald-200 select-all">
+              <button onclick="copyClassCodeLink()" id="btn-copy-code-link" class="gold-btn px-3 py-2 rounded text-xs font-bold shrink-0">
+                <i class="fa-solid fa-copy"></i> Copy
+              </button>
+            </div>
+            <button onclick="applyFilterWithCode()" class="navy-btn w-full py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center gap-1.5">
+              <i class="fa-solid fa-table-list"></i> View My Students' Scores in Registry Now
+            </button>
+          </div>
         </div>
-      </div>
 
-      <!-- Operations Selection -->
-      <div id="config-operations-box">
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Operations Included</label>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-            <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-gold-400 w-4 h-4">
-            <span class="text-xs font-bold">Addition (+)</span>
-          </label>
-          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-            <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-gold-400 w-4 h-4">
-            <span class="text-xs font-bold">Subtraction (−)</span>
-          </label>
-          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-            <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-gold-400 w-4 h-4">
-            <span class="text-xs font-bold">Multiplication (×)</span>
-          </label>
-          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-            <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-gold-400 w-4 h-4">
-            <span class="text-xs font-bold">Division (÷)</span>
-          </label>
+        <div class="flex justify-end gap-2 pt-3 border-t border-gold-500/25">
+          <button onclick="closeClassCodeModal()" class="navy-btn px-4 py-2 rounded-lg text-xs font-semibold">Close</button>
         </div>
       </div>
     </div>
 
-    <!-- Start Button -->
-    <div class="pt-4 flex gap-3">
-      <button onclick="switchTab('home')" class="w-1/3 py-3 rounded-xl font-bold navy-btn text-xs md:text-sm">
-        Cancel
-      </button>
-      <button onclick="startQuizSession()" class="w-2/3 py-3 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20">
-        <span>Start Practice Quiz Now</span>
-        <i class="fa-solid fa-play"></i>
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
-<section id="view-quiz" class="hidden h-full flex flex-col justify-between max-w-3xl mx-auto space-y-2">
-  <!-- Quiz Progress & Chances Bar -->
-  <div class="glass-panel px-4 py-2 rounded-xl flex items-center justify-between text-xs">
-    <div class="flex items-center gap-2">
-      <span class="font-bold text-gold-400" id="quiz-progress-text">Q 1 of 10</span>
-      <span class="text-slate-400">|</span>
-      <span class="text-slate-300 font-semibold" id="quiz-cat-name">Whole Numbers</span>
-    </div>
-    <div class="flex items-center gap-3">
-      <div class="flex items-center gap-1" id="quiz-chances-container">
-        <!-- 3 Attempt Hearts -->
-        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-      </div>
-      <span class="text-[11px] text-slate-400 font-mono" id="quiz-score-preview">Score: 0</span>
-    </div>
-  </div>
-
-  <!-- Problem Presentation Card -->
-  <div class="glass-panel p-4 md:p-6 rounded-2xl text-center relative flex flex-col items-center justify-center min-h-[140px] md:min-h-[170px] shadow-2xl border-gold-500/30">
-    <div class="text-[11px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">
-      Solve The Equation
-    </div>
-    <div id="quiz-problem-display" class="font-mono text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider my-2 break-all select-all">
-      12 + 15 = ?
-    </div>
-    <div id="quiz-problem-tip" class="text-xs text-slate-400 italic">
-      Type your exact numeric answer below.
-    </div>
-  </div>
-
-  <!-- Inline Feedback & Worked Hint Panel -->
-  <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300">
-    <!-- Rendered via JS -->
-  </div>
-
-  <!-- Compact Input & Math Toolbar Controls -->
-  <div class="glass-panel p-3 md:p-4 rounded-2xl space-y-2">
-    <div class="flex gap-2">
-      <input type="text" id="quiz-answer-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer here..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border-2 border-gold-500/40 focus:border-gold-400 rounded-xl px-4 py-2.5 text-lg md:text-xl font-bold font-mono text-gold-300 outline-none transition">
-      <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center gap-1.5 whitespace-nowrap">
-        <span>Check</span>
-        <i class="fa-solid fa-circle-check"></i>
-      </button>
-    </div>
-
-    <!-- Virtual Math Symbol Toolbar -->
-    <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-1">
-      <button type="button" onclick="insertToolbarSymbol('⁻')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Negative Sign">(-)</button>
-      <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fraction Bar">a/b</button>
-      <button type="button" onclick="insertToolbarSymbol('√')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Square Root">√(x)</button>
-      <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Cube Root">³√(x)</button>
-      <button type="button" onclick="insertToolbarSymbol('∜')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fourth Root">⁴√(x)</button>
-      <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1.5 rounded-lg bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold" title="Type raised exponent">xⁿ Exp</button>
-      <button type="button" onclick="insertToolbarSymbol('(')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">(</button>
-      <button type="button" onclick="insertToolbarSymbol(')')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">)</button>
-    </div>
-  </div>
-
-  <!-- Quit Practice Early Option -->
-  <div class="text-center pt-1">
-    <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">
-      Exit Practice Session
-    </button>
-  </div>
-</section>
-
-<!-- 4. END QUIZ NAME ENCODING & CERTIFICATE VIEW -->
-<section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
-  <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
-    <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
-      <i class="fa-solid fa-award"></i>
-    </div>
-
-    <div>
-      <h3 class="text-2xl md:text-3xl font-extrabold text-white">Session Completed!</h3>
-      <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement.</p>
-    </div>
-
-    <!-- Score Overview -->
-    <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
-      <div>
-        <div class="text-3xl font-black text-gold-400 font-mono" id="results-score-display">0 / 0</div>
-        <div class="text-[11px] text-slate-400 uppercase font-semibold">Final Score</div>
-      </div>
-      <div class="h-8 w-px bg-slate-700"></div>
-      <div>
-        <div class="text-3xl font-black text-emerald-400 font-mono" id="results-percentage-display">0%</div>
-        <div class="text-[11px] text-slate-400 uppercase font-semibold">Accuracy</div>
-      </div>
-      <div class="h-8 w-px bg-slate-700"></div>
-      <div>
-        <div class="text-xs font-bold text-gold-300" id="results-mastery-display">Proficient</div>
-        <div class="text-[11px] text-slate-400 uppercase font-semibold">Rating</div>
-      </div>
-    </div>
-
-    <!-- Student Encoding Form -->
-    <div class="space-y-4 text-left">
-      <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-          Student Full Name <span class="text-red-400">*</span>
-        </label>
-        <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
-      </div>
-
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <div>
-          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
-          <input type="text" id="student-section-input" placeholder="e.g., Grade 9 - Einstein" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+    <!-- Quick Study Guide Modal -->
+    <div id="modal-quick-guide" class="fixed inset-0 z-50 hidden bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="royal-card rounded-2xl max-w-2xl w-full p-6 space-y-4 border-2 border-gold-400 max-h-[85vh] overflow-y-auto">
+        <div class="flex items-center justify-between border-b border-gold-500/30 pb-3">
+          <h3 class="font-serif font-bold text-lg gold-gradient-text flex items-center gap-2">
+            <i class="fa-solid fa-book-open-reader"></i> Topic Study Guide & Rules
+          </h3>
+          <button onclick="closeTopicQuickGuideModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
         </div>
-        <div>
-          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
-          <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+        <div id="modal-guide-body" class="space-y-4"></div>
+        <div class="flex justify-end pt-3 border-t border-gold-500/25">
+          <button onclick="closeTopicQuickGuideModal()" class="gold-btn px-5 py-2 rounded-lg text-xs font-bold">Resume Quiz</button>
         </div>
       </div>
     </div>
 
-    <!-- Cloud Sync Status Indicator -->
-    <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
-      <i class="fa-solid fa-cloud text-sky-400"></i>
-      <span>Ready to record to cloud & registry</span>
+    <!-- Mixed Fraction Modal -->
+    <div id="modal-mixed-frac-helper" class="fixed inset-0 z-50 hidden bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
+      <div class="royal-card rounded-2xl max-w-md w-full p-6 space-y-4 border-2 border-gold-400">
+        <div class="flex items-center justify-between border-b border-gold-500/30 pb-3">
+          <h3 class="font-serif font-bold text-lg gold-gradient-text">Insert Mixed Fraction</h3>
+          <button onclick="closeMixedFractionHelper()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+        </div>
+        <div class="grid grid-cols-3 gap-3 items-center">
+          <div><label class="block text-xs font-semibold text-gold-300 mb-1">Whole</label><input type="text" id="mixed-helper-whole" placeholder="2" class="w-full bg-navy-950 border border-gold-400/50 rounded-lg px-3 py-2 text-sm font-mono text-white text-center"></div>
+          <div><label class="block text-xs font-semibold text-gold-300 mb-1">Num</label><input type="text" id="mixed-helper-num" placeholder="3" class="w-full bg-navy-950 border border-gold-400/50 rounded-lg px-3 py-2 text-sm font-mono text-white text-center"></div>
+          <div><label class="block text-xs font-semibold text-gold-300 mb-1">Den</label><input type="text" id="mixed-helper-den" placeholder="4" class="w-full bg-navy-950 border border-gold-400/50 rounded-lg px-3 py-2 text-sm font-mono text-white text-center"></div>
+        </div>
+        <div class="flex justify-end gap-2 pt-2">
+          <button onclick="closeMixedFractionHelper()" class="navy-btn px-4 py-2 rounded-lg text-xs font-semibold">Cancel</button>
+          <button onclick="applyMixedFractionHelper()" class="gold-btn px-5 py-2 rounded-lg text-xs font-bold">Insert</button>
+        </div>
+      </div>
     </div>
 
-    <!-- Submission Actions -->
-    <div class="flex flex-col sm:flex-row gap-3 pt-2">
-      <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">
-        Return Home
-      </button>
-      <button onclick="finalizeStudentSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
-        <span>Save & View Certificate</span>
-        <i class="fa-solid fa-check-double"></i>
-      </button>
-    </div>
-  </div>
-</section>
-
-<!-- 5. LAST 50 SCORES REGISTRY VIEW -->
-<section id="view-scores" class="hidden space-y-6">
-  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
-    <div>
-      <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
-      <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-      <p class="text-xs text-slate-400">Student submissions saved locally and pulled directly from Google Sheets across devices.</p>
-    </div>
-
-    <div class="flex flex-wrap items-center gap-2">
-      <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
-        <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
-        <span>Pull From Cloud</span>
-      </button>
-      <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
-        <i class="fa-solid fa-file-excel"></i>
-        <span>Export CSV</span>
-      </button>
-      <button onclick="clearRegistryPromp()" class="px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/30">
-        Clear Local
-      </button>
-    </div>
+    <!-- Footer -->
+    <footer class="mt-auto border-t border-gold-500/25 bg-navy-950/85 py-4 px-6 text-center text-xs text-slate-400 no-print">
+      <div class="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+        <p class="font-serif text-gold-300 font-semibold">PROJECT PRIME — High School Mathematics Remediation</p>
+        <p>GitHub Pages & Google Apps Script Ready</p>
+      </div>
+    </footer>
   </div>
 
-  <!-- Filter by Class Code Bar -->
-  <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
-    <div class="relative flex-grow w-full">
-      <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
-      <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., REYES-9A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
-    </div>
-    <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">
-      Apply My Code
-    </button>
-  </div>
+  <script>
+    const CATEGORIES = [
+      { id: 'whole', title: 'Whole Numbers', subtitle: '4 Fundamental Operations & PEMDAS', icon: 'fa-hashtag', badge: '1–10 Digits', description: 'Master addition, subtraction, multiplication, division, and multi-term order of operations from 1 to 10 digits.' },
+      { id: 'integers', title: 'Integers', subtitle: 'Signed Numbers & Expressions', icon: 'fa-plus-minus', badge: 'Signed Rules • 1–10 Digits', description: 'Apply rules of signs across positive, negative, and mixed integers in single and combined operations.' },
+      { id: 'fractions', title: 'Fractions', subtitle: 'Similar, Dissimilar, Proper, Improper & Mixed', icon: 'fa-divide', badge: 'Proper • Improper • Mixed', description: 'Compute similar, dissimilar, proper, improper, and mixed fractions in lowest simplified terms.' },
+      { id: 'decimals', title: 'Decimals', subtitle: 'Place Value & Regrouping', icon: 'fa-coins', badge: 'Exact Precision', description: 'Compute operations on decimals with customizable digit counts and carrying/borrowing.' },
+      { id: 'radicals', title: 'Radicals', subtitle: 'Square, Cube & 4th Roots', icon: 'fa-square-root-variable', badge: '√ • ³√ • ⁴√ Toolbar', description: 'Add, subtract, multiply, and divide radical expressions having the same index and radicand.' },
+      { id: 'exponents', title: 'Laws of Exponents', subtitle: 'Product, Quotient, Power & Negative', icon: 'fa-superscript', badge: 'Exponents up to 1000', description: 'Simplify exponential expressions using product, quotient, and power rules with exponents up to 1000.' },
+      { id: 'rational_exp', title: 'Non-Integral Exponents', subtitle: 'Rational Exponents & Radicals', icon: 'fa-infinity', badge: 'bᵐ/ⁿ = ⁿ√(bᵐ)', description: 'Evaluate and simplify expressions with fractional exponents and convert between forms.' }
+    ];
 
-  <!-- Scores Table -->
-  <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
-    <div class="overflow-x-auto">
-      <table class="w-full text-left text-xs">
-        <thead class="bg-navy-900 text-gold-400 uppercase font-bold text-[10px] tracking-wider border-b border-gold-500/20">
-          <tr>
-            <th class="py-3 px-4">Date & Time</th>
-            <th class="py-3 px-4">Student</th>
-            <th class="py-3 px-4">Grade & Section</th>
-            <th class="py-3 px-4 text-center">Class Code</th>
-            <th class="py-3 px-4">Category & Submode</th>
-            <th class="py-3 px-4 text-center">Score</th>
-            <th class="py-3 px-4 text-center">Accuracy</th>
-            <th class="py-3 px-4 text-center">Rating</th>
+    const STUDY_GUIDES = {
+      whole: {
+        title: 'Whole Numbers: Rules & Guide',
+        overview: 'Whole numbers are non-negative integers {0, 1, 2, ...}. Align place values from right to left.',
+        rules: [
+          { heading: '1. Addition & Subtraction', steps: ['Align columns by place value.', 'Carry over when column sum is 10 or greater.', 'Borrow from adjacent column when top digit is smaller than bottom digit.'], example: '4,786 + 2,549 = 7,335' },
+          { heading: '2. PEMDAS Rules', steps: ['Parentheses first', 'Exponents second', 'Multiplication & Division from left to right', 'Addition & Subtraction from left to right'], example: '18 + 6 × 4 − 10 = 18 + 24 − 10 = 32' }
+        ]
+      },
+      integers: {
+        title: 'Integers: Rules of Signs',
+        overview: 'Integers include {..., -2, -1, 0, 1, 2, ...}.',
+        rules: [
+          { heading: '1. Addition', steps: ['Same sign: add absolute values and keep the common sign.', 'Different signs: subtract smaller absolute value from larger and take the sign of the larger magnitude.'], example: '(-48) + (+19) = -29' },
+          { heading: '2. Subtraction', steps: ['Keep-Change-Flip (KCF): change subtraction to addition and flip the sign of the second number.'], example: '(+15) − (+28) = (+15) + (-28) = -13' },
+          { heading: '3. Multiplication & Division', steps: ['Same signs result in positive (+).', 'Different signs result in negative (−).'], example: '(-12) × (-6) = +72' }
+        ]
+      },
+      fractions: {
+        title: 'Fractions: Comprehensive Guide',
+        overview: 'Supports similar, dissimilar, proper, improper, and mixed fractions.',
+        rules: [
+          { heading: '1. Addition & Subtraction', steps: ['Similar: combine numerators over the common denominator.', 'Dissimilar: find the Least Common Denominator (LCD), convert each fraction, and combine.'], example: '3/8 + 1/8 = 4/8 = 1/2' },
+          { heading: '2. Mixed Numbers', steps: ['Convert mixed numbers to improper fractions before computing, then simplify.'], example: '1 1/2 + 2 2/3 = 3/2 + 8/3 = 25/6 = 4 1/6' }
+        ]
+      },
+      decimals: {
+        title: 'Decimals Guide',
+        overview: 'Line up decimal points vertically before adding or subtracting.',
+        rules: [
+          { heading: 'Operations', steps: ['Keep decimal points vertically aligned.', 'Pad with trailing zeros if needed.'], example: '4.5 + 3.2 = 7.7' }
+        ]
+      },
+      radicals: {
+        title: 'Radicals with Same Index & Radicand',
+        overview: 'Radicals can only be combined if both their index and radicand match.',
+        rules: [
+          { heading: 'Combining Like Radicals', steps: ['Verify root index and radicand match.', 'Add or subtract the outside coefficients.'], example: '3√(5) + 4√(5) = 7√(5)' }
+        ]
+      },
+      exponents: {
+        title: 'Laws of Exponents (Up to 1000)',
+        overview: 'Apply algebraic power rules to bases with exponents.',
+        rules: [
+          { heading: 'Fundamental Laws', steps: ['Product: xᵐ · xⁿ = xᵐ⁺ⁿ', 'Quotient: xᵐ ÷ xⁿ = xᵐ⁻ⁿ', 'Power of a Power: (xᵐ)ⁿ = xᵐⁿ', 'Negative Power: x⁻ⁿ = 1/xⁿ'], example: 'x⁴⁵⁰ · x³⁸⁰ = x⁸³⁰' }
+        ]
+      },
+      rational_exp: {
+        title: 'Non-Integral (Rational) Exponents',
+        overview: 'Rational exponents represent roots and powers: bᵐ/ⁿ = ⁿ√(bᵐ).',
+        rules: [
+          { heading: 'Evaluation', steps: ['Denominator is the root index.', 'Numerator is the exponent power.'], example: '27²ᐟ³ = (∛27)² = 3² = 9' }
+        ]
+      }
+    };
+
+    const STORAGE_KEY_SCORES = 'project_prime_scores_v2';
+
+    const SAMPLE_DEMO_SCORES = [
+      {
+        timestamp: new Date(Date.now() - 1000 * 60 * 18).toISOString(),
+        studentName: 'Maria Clara Santos',
+        studentSection: 'Grade 10 - Archimedes',
+        classCode: 'REYES-10A',
+        categoryId: 'exponents',
+        categoryTitle: 'Laws of Exponents',
+        submode: 'All Laws Mixed (Up to 1000)',
+        configDetails: '20 Items • Powers up to 1000',
+        score: 19, total: 20, percentage: 95, mastery: 'Distinguished Mastery',
+        isDemo: true
+      },
+      {
+        timestamp: new Date(Date.now() - 1000 * 60 * 42).toISOString(),
+        studentName: 'Juan Mateo Dela Cruz',
+        studentSection: 'Grade 10 - Newton',
+        classCode: 'SANTOS-10B',
+        categoryId: 'radicals',
+        categoryTitle: 'Radicals',
+        submode: 'Addition & Subtraction',
+        configDetails: '15 Items • 3 Terms',
+        score: 14, total: 15, percentage: 93, mastery: 'Distinguished Mastery',
+        isDemo: true
+      }
+    ];
+
+    var appState = {
+      currentView: 'home',
+      selectedCategory: 'whole',
+      config: {
+        questionCount: 10,
+        operation: 'add',
+        termsCount: 2,
+        digitsCount: 2,
+        numberField: 'any',
+        regroupMode: 'with',
+        intSignMode: 'mixed',
+        fractionType: 'all_mixed_types',
+        exponentLaw: 'mixed'
+      },
+      quiz: { questions: [], currentIndex: 0, score: 0, attemptsLeft: 3, questionResolved: false, history: [] },
+      scoreRegistry: [],
+      activeClassCode: ''
+    };
+
+    function parseUrlTeacherParams() {
+      try {
+        const params = new URLSearchParams(window.location.search);
+        const code = params.get('code');
+        if (code) {
+          appState.activeClassCode = code.toUpperCase();
+          const codeInp = document.getElementById('student-classcode-input');
+          if (codeInp) codeInp.value = appState.activeClassCode;
+
+          const filterInp = document.getElementById('filter-classcode');
+          if (filterInp) filterInp.value = appState.activeClassCode;
+
+          const banner = document.getElementById('classroom-banner');
+          const badge = document.getElementById('classroom-teacher-badge');
+          const infoText = document.getElementById('classroom-info-text');
+
+          if (banner && badge && infoText) {
+            badge.textContent = `CODE: ${appState.activeClassCode}`;
+            infoText.textContent = `All quiz results will be linked to Class Code [${appState.activeClassCode}].`;
+            banner.classList.remove('hidden');
+          }
+        }
+      } catch (err) {
+        console.debug('Error parsing URL teacher parameters', err);
+      }
+    }
+
+    function openClassCodeModal() {
+      document.getElementById('modal-class-code').classList.remove('hidden');
+    }
+
+    function closeClassCodeModal() {
+      document.getElementById('modal-class-code').classList.add('hidden');
+    }
+
+    function generateTeacherClassCode() {
+      const teacher = document.getElementById('code-teacher-name').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const sec = document.getElementById('code-teacher-sec').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+      if (!teacher) {
+        alert('Please enter your Last Name or initials.');
+        return;
+      }
+
+      const suffix = sec || Math.floor(100 + Math.random() * 900);
+      const generatedCode = `${teacher}-${suffix}`;
+      appState.activeClassCode = generatedCode;
+
+      document.getElementById('active-class-code-badge').textContent = generatedCode;
+
+      const baseUrl = window.location.origin + window.location.pathname;
+      const directUrl = `${baseUrl}?code=${generatedCode}`;
+      document.getElementById('code-direct-url').value = directUrl;
+
+      document.getElementById('code-display-box').classList.remove('hidden');
+    }
+
+    function copyClassCodeLink() {
+      const input = document.getElementById('code-direct-url');
+      input.select();
+      input.setSelectionRange(0, 99999);
+      document.execCommand('copy');
+
+      const btn = document.getElementById('btn-copy-code-link');
+      const orig = btn.innerHTML;
+      btn.innerHTML = `<i class="fa-solid fa-check"></i> Copied!`;
+      setTimeout(() => { btn.innerHTML = orig; }, 2000);
+    }
+
+    function applyFilterWithCode() {
+      closeClassCodeModal();
+      switchTab('scores');
+      const filterInput = document.getElementById('filter-classcode');
+      if (filterInput && appState.activeClassCode) {
+        filterInput.value = appState.activeClassCode;
+        renderScoresRegistry();
+      }
+    }
+
+    async function finalizeQuizCertificate() {
+      const nameInput = document.getElementById('student-fullname-input').value.trim();
+      const sectionInput = document.getElementById('student-section-input').value.trim();
+      const codeInput = document.getElementById('student-classcode-input').value.trim().toUpperCase();
+
+      if (!nameInput) { 
+        document.getElementById('name-error-msg').classList.remove('hidden'); 
+        return; 
+      }
+
+      const cat = CATEGORIES.find(c => c.id === appState.selectedCategory);
+      const total = appState.quiz.questions.length;
+      const score = appState.quiz.score;
+      const pct = Math.round((score / total) * 100);
+      let mastery = pct >= 90 ? 'Distinguished Mastery' : (pct >= 80 ? 'Proficient Mastery' : 'Approaching Mastery');
+      const { submode, configDetails } = getReadableOperationSummary();
+
+      const newRecord = {
+        timestamp: new Date().toISOString(),
+        studentName: nameInput,
+        studentSection: sectionInput || 'High School',
+        classCode: codeInput || appState.activeClassCode || 'GENERAL',
+        categoryId: cat.id,
+        categoryTitle: cat.title,
+        submode, configDetails, score, total, percentage: pct, mastery, isDemo: false
+      };
+
+      addRecordToLast50Registry(newRecord);
+
+      document.getElementById('cert-student-name').textContent = nameInput;
+      document.getElementById('cert-student-section').textContent = sectionInput ? `Grade & Section: ${sectionInput}` : '';
+      document.getElementById('cert-category-name').textContent = `${cat.title} (${submode})`;
+      document.getElementById('cert-score-ratio').textContent = `${score} / ${total}`;
+      document.getElementById('cert-accuracy').textContent = `${pct}%`;
+      document.getElementById('cert-mastery-badge').textContent = mastery;
+      document.getElementById('cert-date').textContent = new Date().toLocaleDateString();
+
+      const logList = document.getElementById('results-log-list');
+      logList.innerHTML = appState.quiz.history.map((item, idx) => `
+        <div class="bg-navy-950/90 border ${item.isCorrect ? 'border-emerald-500/40' : 'border-rose-500/40'} rounded-xl p-4 text-xs sm:text-sm space-y-1.5">
+          <div class="flex items-center justify-between"><span class="font-mono font-bold text-gold-300">Item #${idx + 1}</span></div>
+          <div class="math-expr text-base text-white">${item.promptHtml}</div>
+          <div class="text-xs text-slate-300">Your Answer: <span class="math-expr text-white">${item.userAnswer}</span> | Correct: <span class="math-expr text-gold-300">${item.correctAnswer}</span></div>
+        </div>
+      `).join('');
+
+      document.getElementById('results-name-prompt').classList.add('hidden');
+      document.getElementById('results-certificate-view').classList.remove('hidden');
+
+      const syncStatusBox = document.getElementById('gas-sync-status');
+      syncStatusBox.classList.remove('hidden');
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        syncStatusBox.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i> Recording directly into Google Spreadsheet...`;
+        google.script.run
+          .withSuccessHandler(function() {
+            syncStatusBox.innerHTML = `<i class="fa-solid fa-check-circle text-emerald-400"></i> Score recorded directly into Google Spreadsheet!`;
+          })
+          .withFailureHandler(function() {
+            syncStatusBox.innerHTML = `<i class="fa-solid fa-hard-drive text-amber-400"></i> Local copy recorded.`;
+          })
+          .saveStudentScore(newRecord);
+      } else {
+        syncStatusBox.innerHTML = `<i class="fa-solid fa-hard-drive text-amber-400"></i> Score recorded locally under Code: <strong class="text-gold-300 font-mono">${newRecord.classCode}</strong>`;
+      }
+    }
+
+    function renderScoresRegistry() {
+      let list = appState.scoreRegistry.slice(0, 50);
+      const navBadge = document.getElementById('nav-scores-count');
+      if (navBadge) navBadge.textContent = list.length;
+
+      const filterInput = document.getElementById('filter-classcode');
+      const activeFilter = filterInput ? filterInput.value.trim().toUpperCase() : '';
+
+      if (activeFilter) {
+        list = list.filter(r => (r.classCode || '').toUpperCase().includes(activeFilter));
+      }
+
+      const homeTbody = document.getElementById('home-recent-scores-tbody');
+      if (homeTbody) {
+        homeTbody.innerHTML = appState.scoreRegistry.length === 0 ? `<tr><td colspan="7" class="py-6 text-center text-slate-400 text-xs">No quiz attempts recorded yet.</td></tr>` :
+          appState.scoreRegistry.slice(0, 5).map((r, idx) => `
+            <tr class="hover:bg-navy-900/60 transition">
+              <td class="py-2.5 px-3 font-mono font-bold text-gold-300">${idx + 1}</td>
+              <td class="py-2.5 px-3 font-semibold text-white">${escapeHtmlStr(r.studentName)}</td>
+              <td class="py-2.5 px-3 text-slate-300 text-xs">${escapeHtmlStr(r.studentSection)}</td>
+              <td class="py-2.5 px-3"><span class="font-semibold text-gold-300 text-xs block">${escapeHtmlStr(r.categoryTitle)}</span></td>
+              <td class="py-2.5 px-3 text-center font-mono font-bold text-white">${r.score} / ${r.total}</td>
+              <td class="py-2.5 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300">${r.percentage}%</span></td>
+              <td class="py-2.5 px-3 text-right font-mono text-[11px] text-slate-400">Recent</td>
+            </tr>
+          `).join('');
+      }
+
+      const mainTbody = document.getElementById('scores-registry-tbody');
+      if (!mainTbody) return;
+      mainTbody.innerHTML = list.length === 0 ? `<tr><td colspan="8" class="py-10 text-center text-slate-400 text-sm">No records found matching code "${activeFilter || 'All'}".</td></tr>` :
+        list.map((r, idx) => `
+          <tr class="hover:bg-navy-900/70 transition">
+            <td class="py-3 px-3 text-center font-mono font-bold text-gold-300">${idx + 1}</td>
+            <td class="py-3 px-3 font-bold text-white">${escapeHtmlStr(r.studentName)}</td>
+            <td class="py-3 px-3 text-slate-300 text-xs">${escapeHtmlStr(r.studentSection)}</td>
+            <td class="py-3 px-3 font-mono text-xs font-bold text-gold-300"><span class="bg-navy-950 px-2 py-0.5 rounded border border-gold-500/30">${escapeHtmlStr(r.classCode || 'GENERAL')}</span></td>
+            <td class="py-3 px-3"><span class="font-semibold text-gold-300 text-xs">${escapeHtmlStr(r.categoryTitle)}</span></td>
+            <td class="py-3 px-3 text-xs text-slate-300 font-mono">${escapeHtmlStr(r.configDetails)}</td>
+            <td class="py-3 px-3 text-center font-mono font-bold text-white">${r.score} / ${r.total}</td>
+            <td class="py-3 px-3 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-300">${r.percentage}%</span></td>
           </tr>
-        </thead>
-        <tbody id="scores-table-body" class="divide-y divide-slate-800">
-          <!-- Rendered via JS -->
-        </tbody>
-      </table>
-    </div>
-  </div>
-</section>
+        `).join('');
+    }
 
-<!-- 6. MATHEMATICS RULES & GUIDES VIEW -->
-<section id="view-guides" class="hidden max-w-4xl mx-auto space-y-6">
-  <div class="border-b border-gold-500/20 pb-4 flex items-center justify-between">
-    <div>
-      <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Formula Reference</span>
-      <h2 class="text-2xl font-black text-white">Mathematics Study Guides & Rules</h2>
-    </div>
-    <button onclick="switchTab('home')" class="text-xs font-bold navy-btn px-3 py-1.5 rounded-lg">
-      <i class="fa-solid fa-arrow-left mr-1"></i> Home
-    </button>
-  </div>
-  <div id="guides-container" class="space-y-4">
-    <!-- Rendered via JS -->
-  </div>
-</section>
+    function exportScoresToCSV() {
+      let list = appState.scoreRegistry;
+      const filterInput = document.getElementById('filter-classcode');
+      const activeFilter = filterInput ? filterInput.value.trim().toUpperCase() : '';
+      if (activeFilter) {
+        list = list.filter(r => (r.classCode || '').toUpperCase().includes(activeFilter));
+      }
 
+      if (list.length === 0) {
+        alert("No records to export.");
+        return;
+      }
+      const headers = ['Name', 'Section', 'Class Code', 'Category', 'Score', 'Total', 'Percentage'];
+      const csv = [headers.join(','), ...list.map(r => `"${r.studentName}","${r.studentSection}","${r.classCode || 'GENERAL'}","${r.categoryTitle}",${r.score},${r.total},${r.percentage}%`)].join('\n');
+      const blob = new Blob([csv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = activeFilter ? `PRIME_Scores_${activeFilter}.csv` : `PROJECT_PRIME_Scores.csv`;
+      a.click();
+    }
 
-  <p class="text-xs text-slate-300">
-    Generate a unique code for your students. You do not need to write any scripts—scores tagged with this code can be pulled and downloaded on any browser or device!
-  </p>
+    function escapeHtmlStr(str) {
+      return str ? String(str).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;') : '';
+    }
 
-  <div class="space-y-3">
-    <div>
-      <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
-      <input type="text" id="teacher-lastname-input" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
-    </div>
-    <div>
-      <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Grade & Section</label>
-      <input type="text" id="teacher-section-input" placeholder="e.g., 9A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
-    </div>
+    function renderStudyGuidePills(activeCatId) {
+      const container = document.getElementById('guide-topic-pills');
+      if (container) {
+        container.innerHTML = CATEGORIES.map(cat => `
+          <button onclick="renderStudyGuidePills('${cat.id}')"
+            class="px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold flex items-center gap-2 transition ${cat.id === activeCatId ? 'gold-btn' : 'navy-btn'}">
+            <i class="fa-solid ${cat.icon}"></i><span>${cat.title}</span>
+          </button>
+        `).join('');
+      }
+      renderStudyGuideTopic(activeCatId, 'guide-detail-container');
+    }
 
-    <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">
-      Generate My Class Code
-    </button>
-  </div>
+    function renderStudyGuideTopic(catId, targetElementId) {
+      const guide = STUDY_GUIDES[catId] || STUDY_GUIDES.whole;
+      const target = document.getElementById(targetElementId);
+      if (!target) return;
+      target.innerHTML = `
+        <div class="space-y-2 border-b border-gold-500/30 pb-4">
+          <h3 class="font-serif font-bold text-xl sm:text-2xl gold-gradient-text">${guide.title}</h3>
+          <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">${guide.overview}</p>
+        </div>
+        <div class="space-y-5">
+          ${guide.rules.map(rule => `
+            <div class="bg-navy-950/85 border border-gold-500/30 rounded-xl p-5 space-y-3">
+              <h4 class="font-serif font-bold text-base sm:text-lg text-gold-300">${rule.heading}</h4>
+              <ul class="list-disc list-inside text-xs sm:text-sm text-slate-200 space-y-1.5 leading-relaxed">
+                ${rule.steps.map(st => `<li>${st}</li>`).join('')}
+              </ul>
+              <div class="bg-indigo-950/70 border border-gold-400/40 rounded-lg p-3.5 text-xs sm:text-sm text-gold-200 font-mono">
+                <strong>Worked Example:</strong> ${rule.example}
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+    }
 
-  <div id="generated-code-box" class="hidden bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/40 space-y-2">
-    <div class="text-[11px] text-slate-400">Your Shareable Class Code:</div>
-    <div class="flex items-center justify-between">
-      <span id="display-generated-code" class="text-xl font-mono font-black text-gold-400 tracking-wider"></span>
-      <button onclick="copyGeneratedCode()" class="px-2.5 py-1 rounded-lg text-xs font-bold navy-btn">
-        <i class="fa-solid fa-copy mr-1"></i> Copy Code
-      </button>
-    </div>
-    <div class="text-[11px] text-slate-400 pt-1">Direct Student Link:</div>
-    <div class="flex items-center gap-1.5">
-      <input type="text" id="display-generated-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-1.5 text-[10px] font-mono text-slate-300">
-      <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">
-        Copy Link
-      </button>
-    </div>
-  </div>
-</div>
+    function openTopicQuickGuideModal() {
+      renderStudyGuideTopic(appState.selectedCategory || 'whole', 'modal-guide-body');
+      document.getElementById('modal-quick-guide').classList.remove('hidden');
+    }
+    function closeTopicQuickGuideModal() { document.getElementById('modal-quick-guide').classList.add('hidden'); }
 
+    // --- CONFIGURATION HANDLERS & GENERATORS ---
+    function openCategoryConfig(catId) {
+      appState.selectedCategory = catId;
+      const cat = CATEGORIES.find(c => c.id === catId);
+      if (!cat) return;
 
-  <div class="space-y-3 text-xs text-slate-300">
-    <p>
-      Connect your Google Sheet Web App URL so that when students submit their quizzes on phones, tablets, or other computers, their scores beam straight into Google Sheets and sync across all devices.
-    </p>
-    
-    <div>
-      <label class="block text-[11px] font-bold text-sky-300 uppercase mb-1">Google Apps Script Web App URL</label>
-      <input type="url" id="cloud-webhook-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full bg-navy-900 border border-sky-500/40 rounded-xl p-2.5 text-xs font-mono text-sky-200 outline-none focus:border-sky-400">
-      <p class="text-[10px] text-slate-400 mt-1">Found in your Google Sheet: Extensions > Apps Script > Deploy > Web App.</p>
-    </div>
+      document.getElementById('config-cat-title').textContent = cat.title;
+      document.getElementById('config-cat-desc').textContent = cat.description;
+      document.getElementById('config-cat-icon').innerHTML = `<i class="fa-solid ${cat.icon}"></i>`;
 
-    <div class="flex items-center gap-2 pt-2">
-      <button onclick="saveCloudWebhookUrl()" class="w-2/3 py-2.5 rounded-xl font-bold bg-sky-600 hover:bg-sky-500 text-white text-xs transition">
-        Save Cloud Endpoint
-      </button>
-      <button onclick="testCloudConnection()" class="w-1/3 py-2.5 rounded-xl font-bold navy-btn text-xs">
-        Test Link
-      </button>
-    </div>
+      const numFieldBox = document.getElementById('cfg-number-field-box');
+      const regroupBox = document.getElementById('cfg-regroup-box');
+      const intSignBox = document.getElementById('cfg-int-sign-box');
+      const fracTypeBox = document.getElementById('cfg-frac-type-box');
+      const expBox = document.getElementById('cfg-exponent-box');
+      const opBox = document.getElementById('cfg-operation-box');
+      const termsBox = document.getElementById('cfg-terms-box');
+      const digitsBox = document.getElementById('cfg-digits-box');
 
-    <div id="cloud-test-result" class="hidden text-center text-xs font-semibold py-1"></div>
-  </div>
-</div>
+      numFieldBox.classList.add('hidden');
+      regroupBox.classList.add('hidden');
+      intSignBox.classList.add('hidden');
+      fracTypeBox.classList.add('hidden');
+      expBox.classList.add('hidden');
+      opBox.classList.remove('hidden');
+      termsBox.classList.remove('hidden');
+      digitsBox.classList.remove('hidden');
+
+      if (catId === 'whole') {
+        numFieldBox.classList.remove('hidden');
+        regroupBox.classList.remove('hidden');
+      } else if (catId === 'integers') {
+        regroupBox.classList.remove('hidden');
+        intSignBox.classList.remove('hidden');
+      } else if (catId === 'fractions') {
+        fracTypeBox.classList.remove('hidden');
+        digitsBox.classList.add('hidden');
+      } else if (catId === 'decimals') {
+        regroupBox.classList.remove('hidden');
+      } else if (catId === 'exponents' || catId === 'rational_exp') {
+        expBox.classList.remove('hidden');
+        digitsBox.classList.add('hidden');
+        populateExponentLawsDropdown(catId);
+      }
+
+      updateRegroupingVisibility();
+      switchTab('config');
+    }
+
+    function syncQuestionCount(val) {
+      const clamped = Math.max(5, Math.min(100, parseInt(val) || 5));
+      appState.config.questionCount = clamped;
+      document.getElementById('cfg-qcount-slider').value = clamped;
+      document.getElementById('cfg-qcount-num').value = clamped;
+    }
+
+    function syncDigitCount(val) {
+      const clamped = Math.max(1, Math.min(10, parseInt(val) || 1));
+      appState.config.digitsCount = clamped;
+      document.getElementById('cfg-digits-slider').value = clamped;
+      document.getElementById('cfg-digits-num').value = clamped;
+    }
+
+    function setTermsCount(count) {
+      appState.config.termsCount = count;
+      [2, 3, 4, 5].forEach(t => {
+        const btn = document.getElementById(`term-btn-${t}`);
+        if (btn) btn.className = (t === count) ? 'py-2 rounded-lg text-xs font-bold gold-btn' : 'py-2 rounded-lg text-xs font-bold navy-btn';
+      });
+      document.getElementById('cfg-terms-badge').textContent = `${count} Terms`;
+    }
+
+    function handleNumberFieldChange(val) {
+      appState.config.numberField = val;
+    }
+
+    function setRegroupMode(mode) {
+      appState.config.regroupMode = mode;
+      ['with', 'without', 'mixed'].forEach(m => {
+        const btn = document.getElementById(`regroup-${m}`);
+        if (btn) {
+          if (m === mode) {
+            btn.className = 'p-3 rounded-xl text-left border transition gold-btn';
+            btn.querySelector('i').className = 'fa-solid fa-check-circle';
+          } else {
+            btn.className = 'p-3 rounded-xl text-left border transition navy-btn';
+            btn.querySelector('i').className = 'fa-regular fa-circle';
+          }
+        }
+      });
+    }
+
+    function setIntegerSignMode(mode) {
+      appState.config.intSignMode = mode;
+      ['mixed', 'both_pos', 'both_neg'].forEach(m => {
+        const btn = document.getElementById(`intsign-${m}`);
+        if (btn) {
+          if (m === mode) {
+            btn.className = 'p-3 rounded-xl text-left border transition gold-btn';
+            btn.querySelector('i').className = 'fa-solid fa-check-circle';
+          } else {
+            btn.className = 'p-3 rounded-xl text-left border transition navy-btn';
+            btn.querySelector('i').className = 'fa-regular fa-circle';
+          }
+        }
+      });
+    }
+
+    function updateRegroupingVisibility() {
+      const op = document.getElementById('cfg-operation').value;
+      appState.config.operation = op;
+      const regroupBox = document.getElementById('cfg-regroup-box');
+      if (['whole', 'integers', 'decimals'].includes(appState.selectedCategory)) {
+        if (op === 'add' || op === 'sub' || op === 'add_sub') {
+          regroupBox.classList.remove('hidden');
+        } else {
+          regroupBox.classList.add('hidden');
+        }
+      }
+    }
+
+    function populateExponentLawsDropdown(catId) {
+      const select = document.getElementById('cfg-exponent-law');
+      if (catId === 'exponents') {
+        select.innerHTML = `
+          <option value="mixed">All Exponent Laws Mixed (Up to 1000)</option>
+          <option value="product">Product of Powers (xᵐ · xⁿ = xᵐ⁺ⁿ)</option>
+          <option value="quotient">Quotient of Powers (xᵐ ÷ xⁿ = xᵐ⁻ⁿ)</option>
+          <option value="power">Power of a Power ((xᵐ)ⁿ = xᵐⁿ)</option>
+          <option value="negative">Law for Negative Exponents (x⁻ⁿ = 1/xⁿ)</option>
+        `;
+      } else {
+        select.innerHTML = `
+          <option value="mixed">All Non-Integral Formats Mixed</option>
+          <option value="evaluate">Evaluate Fractional Exponents (e.g. 16³ᐟ⁴, 27²ᐟ³)</option>
+          <option value="to_radical">Convert Rational Exponent to Radical Form</option>
+          <option value="to_rational">Convert Radical Form to Rational Exponent</option>
+        `;
+      }
+    }
+
+    function getReadableOperationSummary() {
+      const cat = appState.selectedCategory;
+      let submode = 'Standard';
+      let configDetails = `${appState.config.questionCount} Questions`;
+
+      if (cat === 'whole') {
+        const field = appState.config.numberField === 'any' ? 'Free Field' : `Field ${appState.config.numberField}`;
+        submode = `${appState.config.operation.toUpperCase()} (${field})`;
+        configDetails = `${appState.config.digitsCount} Digits • ${appState.config.termsCount} Terms`;
+      } else if (cat === 'integers') {
+        submode = `Sign: ${appState.config.intSignMode.toUpperCase()}`;
+        configDetails = `${appState.config.digitsCount} Digits • ${appState.config.termsCount} Terms`;
+      } else if (cat === 'fractions') {
+        submode = document.getElementById('cfg-frac-type').value.replace(/_/g, ' ');
+      } else if (cat === 'exponents' || cat === 'rational_exp') {
+        submode = document.getElementById('cfg-exponent-law').value;
+      }
+
+      return { submode, configDetails };
+    }
+
+    function getRandomInt(min, max) {
+      return Math.floor(Math.random() * (max - min + 1)) + min;
+    }
+
+    // Helper: generate a pseudo-random BigInt with exact digit count
+    function getRandomBigIntWithDigits(digits) {
+      if (digits <= 1) return BigInt(getRandomInt(1, 9));
+      let str = getRandomInt(1, 9).toString();
+      for (let i = 1; i < digits; i++) {
+        str += getRandomInt(0, 9).toString();
+      }
+      return BigInt(str);
+    }
+
+    function generateQuestionItem(catId, existingSignatures = new Set()) {
+      const { operation, digitsCount, numberField, intSignMode, regroupMode } = appState.config;
+
+      if (catId === 'whole') {
+        let fieldVal = numberField === 'any' ? null : (numberField === 'random_1_12' ? getRandomInt(1, 12) : parseInt(numberField));
+        let num1, num2;
+        
+        if (fieldVal !== null) {
+          num2 = BigInt(fieldVal);
+          num1 = getRandomBigIntWithDigits(digitsCount);
+
+          if (operation === 'add') {
+            const ans = (num1 + num2).toString();
+            return {
+              signature: `whole:add:${num1}:${num2}`,
+              promptHtml: `${num1.toLocaleString()} + ${num2.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Field ${fieldVal}: Add the numbers carefully.`,
+              solutionHtml: `<div>${num1.toLocaleString()} + ${num2.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else if (operation === 'sub') {
+            if (num1 < num2) num1 += num2 + BigInt(getRandomInt(1, 9));
+            const ans = (num1 - num2).toString();
+            return {
+              signature: `whole:sub:${num1}:${num2}`,
+              promptHtml: `${num1.toLocaleString()} − ${num2.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Field ${fieldVal}: Subtract the numbers.`,
+              solutionHtml: `<div>${num1.toLocaleString()} − ${num2.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else if (operation === 'mul') {
+            const ans = (num1 * num2).toString();
+            return {
+              signature: `whole:mul:${num1}:${num2}`,
+              promptHtml: `${num1.toLocaleString()} × ${num2.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Field ${fieldVal}: Multiply by ${fieldVal}.`,
+              solutionHtml: `<div>${num1.toLocaleString()} × ${num2.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else {
+            // Clean division: dividend = num1 * num2
+            const dividend = num1 * num2;
+            const ans = num1.toString();
+            return {
+              signature: `whole:div:${dividend}:${num2}`,
+              promptHtml: `${dividend.toLocaleString()} ÷ ${num2.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Field ${fieldVal}: Divide by ${fieldVal} without remainder.`,
+              solutionHtml: `<div>${dividend.toLocaleString()} ÷ ${num2.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          }
+        } else {
+          // Free field with customizable operations
+          let a = getRandomBigIntWithDigits(digitsCount);
+          let b = getRandomBigIntWithDigits(Math.max(1, Math.min(digitsCount, digitsCount > 2 ? digitsCount - 1 : digitsCount)));
+
+          if (operation === 'add') {
+            const ans = (a + b).toString();
+            return {
+              signature: `whole:add:${a}:${b}`,
+              promptHtml: `${a.toLocaleString()} + ${b.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Add ${digitsCount}-digit whole numbers.`,
+              solutionHtml: `<div>${a.toLocaleString()} + ${b.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else if (operation === 'sub') {
+            if (a < b) { const temp = a; a = b; b = temp; }
+            if (a === b) a += BigInt(getRandomInt(1, 9));
+            const ans = (a - b).toString();
+            return {
+              signature: `whole:sub:${a}:${b}`,
+              promptHtml: `${a.toLocaleString()} − ${b.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Subtract ${digitsCount}-digit whole numbers.`,
+              solutionHtml: `<div>${a.toLocaleString()} − ${b.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else if (operation === 'mul') {
+            // Keep multiplier to manageable size for non-overflow
+            const multiplierDigits = Math.min(3, Math.max(1, Math.floor(digitsCount / 2) || 1));
+            const bMul = getRandomBigIntWithDigits(multiplierDigits);
+            const ans = (a * bMul).toString();
+            return {
+              signature: `whole:mul:${a}:${bMul}`,
+              promptHtml: `${a.toLocaleString()} × ${bMul.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Multiplication with ${digitsCount} digits.`,
+              solutionHtml: `<div>${a.toLocaleString()} × ${bMul.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          } else {
+            // Division
+            const divisor = BigInt(getRandomInt(2, digitsCount > 3 ? 99 : 12));
+            const dividend = a * divisor;
+            const ans = a.toString();
+            return {
+              signature: `whole:div:${dividend}:${divisor}`,
+              promptHtml: `${dividend.toLocaleString()} ÷ ${divisor.toLocaleString()}`,
+              correctAnswer: ans,
+              acceptedAnswers: [ans, ans.replace(/,/g, '')],
+              tip: `Divide and find the exact whole quotient.`,
+              solutionHtml: `<div>${dividend.toLocaleString()} ÷ ${divisor.toLocaleString()} = <strong class="text-gold-300">${ans}</strong></div>`
+            };
+          }
+        }
+      } else if (catId === 'integers') {
+        let a = getRandomInt(2, Math.min(99999, Math.pow(10, digitsCount) - 1));
+        let b = getRandomInt(2, Math.min(99999, Math.pow(10, digitsCount) - 1));
+        
+        if (intSignMode === 'both_neg') { 
+          a = -Math.abs(a); 
+          b = -Math.abs(b); 
+        } else if (intSignMode === 'both_pos') {
+          a = Math.abs(a);
+          b = Math.abs(b);
+        } else {
+          // mixed signs
+          if (Math.random() > 0.5) { a = -Math.abs(a); b = Math.abs(b); }
+          else { a = Math.abs(a); b = -Math.abs(b); }
+        }
+
+        const opList = ['add', 'sub', 'mul'];
+        const chosenOp = (operation === 'add' || operation === 'sub' || operation === 'mul') ? operation : opList[getRandomInt(0, 2)];
+
+        let ans, opSym, prompt;
+        if (chosenOp === 'add') {
+          ans = (a + b).toString();
+          opSym = '+';
+        } else if (chosenOp === 'sub') {
+          ans = (a - b).toString();
+          opSym = '−';
+        } else {
+          // mul: keep smaller to avoid huge numbers
+          const aSmall = (a % 100) || getRandomInt(-12, 12);
+          const bSmall = (b % 100) || getRandomInt(-12, 12);
+          ans = (aSmall * bSmall).toString();
+          a = aSmall;
+          b = bSmall;
+          opSym = '×';
+        }
+
+        const aStr = a < 0 ? `(${a})` : `${a}`;
+        const bStr = b < 0 ? `(${b})` : `${b}`;
+        prompt = `${aStr} ${opSym} ${bStr}`;
+
+        return {
+          signature: `integers:${chosenOp}:${a}:${b}`,
+          promptHtml: prompt,
+          correctAnswer: ans,
+          acceptedAnswers: [ans, ans.replace('+', '')],
+          tip: `Rules of signs: observe same vs different signs carefully.`,
+          solutionHtml: `<div>${prompt} = <strong class="text-gold-300">${ans}</strong></div>`
+        };
+      } else if (catId === 'fractions') {
+        const denominators = [2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 15, 16];
+        const den1 = denominators[getRandomInt(0, denominators.length - 1)];
+        let den2 = den1;
+        
+        // Vary between similar and dissimilar
+        if (Math.random() > 0.45) {
+          den2 = denominators[getRandomInt(0, denominators.length - 1)];
+        }
+
+        const num1 = getRandomInt(1, den1 * 2);
+        const num2 = getRandomInt(1, den2 * 2);
+        const op = Math.random() > 0.5 ? '+' : '−';
+
+        let resNum, resDen;
+        if (op === '+') {
+          resNum = num1 * den2 + num2 * den1;
+          resDen = den1 * den2;
+        } else {
+          // Ensure positive fraction result
+          let left = num1 * den2;
+          let right = num2 * den1;
+          if (left <= right) {
+            resNum = (num2 + 1) * den1 - num1 * den2;
+            resDen = den1 * den2;
+          } else {
+            resNum = left - right;
+            resDen = den1 * den2;
+          }
+        }
+
+        const g = gcd(Math.abs(resNum), resDen);
+        const simpNum = resNum / g;
+        const simpDen = resDen / g;
+
+        let ans = simpDen === 1 ? `${simpNum}` : `${simpNum}/${simpDen}`;
+        let promptHtml = `<span class="math-frac"><span class="math-frac-num">${num1}</span><span class="math-frac-den">${den1}</span></span> ${op} <span class="math-frac"><span class="math-frac-num">${num2}</span><span class="math-frac-den">${den2}</span></span>`;
+
+        return {
+          signature: `fractions:${op}:${num1}/${den1}:${num2}/${den2}`,
+          promptHtml: promptHtml,
+          correctAnswer: ans,
+          acceptedAnswers: [ans, `${resNum}/${resDen}`],
+          tip: den1 === den2 ? `Same denominator: combine numerators.` : `Different denominators: find LCD, convert, and simplify.`,
+          solutionHtml: `<div>${promptHtml} = <strong class="text-gold-300">${ans}</strong></div>`
+        };
+      } else if (catId === 'radicals') {
+        const radicands = [2, 3, 5, 6, 7, 10, 11, 13, 14, 15];
+        const radicand = radicands[getRandomInt(0, radicands.length - 1)];
+        const rootIndex = [2, 3][getRandomInt(0, 1)]; // square root or cube root
+        const coef1 = getRandomInt(2, 12);
+        const coef2 = getRandomInt(1, 10);
+        const op = Math.random() > 0.4 ? '+' : '−';
+
+        const finalCoef = op === '+' ? (coef1 + coef2) : (coef1 + coef2 > 0 ? coef1 : coef1 + coef2 + 1);
+        const actualOp = op === '−' && coef1 <= coef2 ? '+' : op;
+        const effectiveFinal = actualOp === '+' ? (coef1 + coef2) : (coef1 - coef2);
+
+        const prefix = rootIndex === 3 ? '³√' : '√';
+        const templateAns = `${effectiveFinal}${prefix}(${radicand})`;
+        const promptHtml = `${coef1}${prefix}(${radicand}) ${actualOp} ${coef2}${prefix}(${radicand})`;
+
+        return {
+          signature: `radicals:${rootIndex}:${radicand}:${coef1}:${actualOp}:${coef2}`,
+          promptHtml: promptHtml,
+          correctAnswer: templateAns,
+          acceptedAnswers: [
+            templateAns,
+            `${effectiveFinal}${prefix}${radicand}`,
+            `${effectiveFinal}√(${radicand})`,
+            `${effectiveFinal}√${radicand}`
+          ],
+          tip: `Like radicals! Keep the radicand (${radicand}) and combine the outer coefficients (${coef1} ${actualOp} ${coef2}).`,
+          solutionHtml: `<div>(${coef1} ${actualOp} ${coef2})${prefix}(${radicand}) = <strong class="text-gold-300">${templateAns}</strong></div>`
+        };
+      } else if (catId === 'exponents') {
+        const bases = ['x', 'y', 'a', 'b', 'm', 'n', 'z', '2', '3'];
+        const base = bases[getRandomInt(0, bases.length - 1)];
+        const ruleChoice = getRandomInt(1, 4);
+
+        if (ruleChoice === 1) {
+          // Product of Powers
+          const e1 = getRandomInt(2, 500);
+          const e2 = getRandomInt(2, 500);
+          const sumE = e1 + e2;
+          return {
+            signature: `exponents:prod:${base}:${e1}:${e2}`,
+            promptHtml: `${base}<sup>${e1}</sup> · ${base}<sup>${e2}</sup>`,
+            correctAnswer: `${base}<sup>${sumE}</sup>`,
+            acceptedAnswers: [`${base}^${sumE}`, `${base}${sumE}`, `${base}<sup>${sumE}</sup>`],
+            tip: `Product Rule: add exponents (${e1} + ${e2}) when bases are identical.`,
+            solutionHtml: `<div>${base}<sup>${e1} + ${e2}</sup> = <strong class="text-gold-300">${base}<sup>${sumE}</sup></strong></div>`
+          };
+        } else if (ruleChoice === 2) {
+          // Quotient of Powers
+          const e2 = getRandomInt(2, 400);
+          const diff = getRandomInt(2, 400);
+          const e1 = e2 + diff;
+          return {
+            signature: `exponents:quot:${base}:${e1}:${e2}`,
+            promptHtml: `${base}<sup>${e1}</sup> ÷ ${base}<sup>${e2}</sup>`,
+            correctAnswer: `${base}<sup>${diff}</sup>`,
+            acceptedAnswers: [`${base}^${diff}`, `${base}${diff}`, `${base}<sup>${diff}</sup>`],
+            tip: `Quotient Rule: subtract exponents (${e1} − ${e2}).`,
+            solutionHtml: `<div>${base}<sup>${e1} − ${e2}</sup> = <strong class="text-gold-300">${base}<sup>${diff}</sup></strong></div>`
+          };
+        } else if (ruleChoice === 3) {
+          // Power of a Power
+          const e1 = getRandomInt(2, 50);
+          const e2 = getRandomInt(2, 20);
+          const prodE = e1 * e2;
+          return {
+            signature: `exponents:pow:${base}:${e1}:${e2}`,
+            promptHtml: `(${base}<sup>${e1}</sup>)<sup>${e2}</sup>`,
+            correctAnswer: `${base}<sup>${prodE}</sup>`,
+            acceptedAnswers: [`${base}^${prodE}`, `${base}${prodE}`, `${base}<sup>${prodE}</sup>`],
+            tip: `Power of a Power Rule: multiply exponents (${e1} × ${e2}).`,
+            solutionHtml: `<div>${base}<sup>${e1} × ${e2}</sup> = <strong class="text-gold-300">${base}<sup>${prodE}</sup></strong></div>`
+          };
+        } else {
+          // Negative Exponent
+          const e = getRandomInt(2, 300);
+          return {
+            signature: `exponents:neg:${base}:${e}`,
+            promptHtml: `${base}<sup>−${e}</sup>`,
+            correctAnswer: `1/${base}<sup>${e}</sup>`,
+            acceptedAnswers: [`1/${base}^${e}`, `1/${base}${e}`, `1/${base}<sup>${e}</sup>`],
+            tip: `Negative Exponent Rule: x⁻ⁿ = 1/xⁿ`,
+            solutionHtml: `<div>${base}<sup>−${e}</sup> = <strong class="text-gold-300">1/${base}<sup>${e}</sup></strong></div>`
+          };
+        }
+      } else {
+        // Decimals
+        const decPlaces = getRandomInt(1, 3);
+        const factor = Math.pow(10, decPlaces);
+        const aVal = (getRandomInt(10, 999) / factor).toFixed(decPlaces);
+        const bVal = (getRandomInt(5, 500) / factor).toFixed(decPlaces);
+        const op = Math.random() > 0.4 ? '+' : '−';
+
+        let numA = parseFloat(aVal);
+        let numB = parseFloat(bVal);
+        if (op === '−' && numA < numB) { const t = numA; numA = numB; numB = t; }
+
+        const ans = (op === '+' ? numA + numB : numA - numB).toFixed(decPlaces);
+        return {
+          signature: `decimals:${op}:${numA}:${numB}`,
+          promptHtml: `${numA} ${op} ${numB}`,
+          correctAnswer: ans,
+          acceptedAnswers: [ans, parseFloat(ans).toString()],
+          tip: `Line up decimal points vertically and calculate.`,
+          solutionHtml: `<div>${numA} ${op} ${numB} = <strong class="text-gold-300">${ans}</strong></div>`
+        };
+      }
+    }
+
+    function gcd(a, b) { return b === 0 ? a : gcd(b, a % b); }
+
+    // --- QUIZ EXECUTION WITH STRICT NO-REPEAT SET ---
+    function startQuizSession() {
+      const cat = CATEGORIES.find(c => c.id === appState.selectedCategory);
+      appState.quiz.questions = [];
+      appState.quiz.currentIndex = 0;
+      appState.quiz.score = 0;
+      appState.quiz.history = [];
+
+      const usedSignatures = new Set();
+      const targetCount = appState.config.questionCount;
+      const MAX_RETRIES_PER_ITEM = 50;
+
+      for (let i = 0; i < targetCount; i++) {
+        let uniqueItem = null;
+        let retries = 0;
+
+        while (retries < MAX_RETRIES_PER_ITEM) {
+          const candidate = generateQuestionItem(appState.selectedCategory, usedSignatures);
+          const sig = candidate.signature || candidate.promptHtml;
+
+          if (!usedSignatures.has(sig)) {
+            usedSignatures.add(sig);
+            uniqueItem = candidate;
+            break;
+          }
+          retries++;
+        }
+
+        // Fallback if domain permutation space is saturated
+        if (!uniqueItem) {
+          uniqueItem = generateQuestionItem(appState.selectedCategory, usedSignatures);
+        }
+
+        appState.quiz.questions.push(uniqueItem);
+      }
+
+      document.getElementById('quiz-header-title').textContent = cat.title;
+      document.getElementById('quiz-header-subtitle').textContent = `${appState.config.questionCount} Questions • Randomized Unique Set`;
+      document.getElementById('quiz-q-total').textContent = appState.config.questionCount;
+
+      renderActiveQuestion();
+      switchTab('quiz');
+    }
+
+    function renderActiveQuestion() {
+      const q = appState.quiz.questions[appState.quiz.currentIndex];
+      appState.quiz.attemptsLeft = 3;
+      appState.quiz.questionResolved = false;
+
+      document.getElementById('quiz-q-index').textContent = appState.quiz.currentIndex + 1;
+      document.getElementById('quiz-score-val').textContent = appState.quiz.score;
+      document.getElementById('quiz-progress-bar').style.width = `${((appState.quiz.currentIndex) / appState.quiz.questions.length) * 100}%`;
+
+      document.getElementById('quiz-math-display').innerHTML = q.promptHtml;
+      document.getElementById('quiz-format-tip').textContent = q.tip;
+
+      clearAnswerInput();
+      updateChancesDisplay();
+
+      document.getElementById('quiz-feedback-box').classList.add('hidden');
+      document.getElementById('quiz-submit-btn').classList.remove('hidden');
+      document.getElementById('quiz-next-btn').classList.add('hidden');
+    }
+
+    function updateChancesDisplay() {
+      const hearts = document.getElementById('quiz-attempts-hearts');
+      hearts.innerHTML = '';
+      for (let i = 0; i < 3; i++) {
+        hearts.innerHTML += `<i class="fa-solid fa-star ${i < appState.quiz.attemptsLeft ? 'text-amber-400' : 'text-slate-600'}"></i>`;
+      }
+    }
+
+    function handleAnswerSubmission() {
+      if (appState.quiz.questionResolved) return;
+
+      const editor = document.getElementById('math-editor');
+      const userRaw = editor.innerHTML.trim();
+      const userPlain = editor.textContent.trim();
+
+      if (!userPlain && !userRaw) return;
+
+      const q = appState.quiz.questions[appState.quiz.currentIndex];
+      const cleanUser = userPlain.replace(/\s+/g, '').toLowerCase();
+      const isCorrect = q.acceptedAnswers.some(ans => {
+        const cleanAns = ans.replace(/<[^>]*>/g, '').replace(/\s+/g, '').toLowerCase();
+        return cleanUser === cleanAns || userRaw.includes(ans);
+      });
+
+      const feedbackBox = document.getElementById('quiz-feedback-box');
+      const feedbackTitle = document.getElementById('quiz-feedback-title');
+      const feedbackMsg = document.getElementById('quiz-feedback-msg');
+      const feedbackIcon = document.getElementById('quiz-feedback-icon');
+      const hintContent = document.getElementById('quiz-hint-content');
+
+      feedbackBox.classList.remove('hidden');
+
+      if (isCorrect) {
+        appState.quiz.score++;
+        appState.quiz.questionResolved = true;
+        appState.quiz.history.push({ promptHtml: q.promptHtml, userAnswer: userPlain, correctAnswer: q.correctAnswer, isCorrect: true });
+
+        feedbackBox.className = "rounded-2xl p-5 border border-emerald-400/60 bg-emerald-950/60 space-y-3";
+        feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i>`;
+        feedbackTitle.textContent = "Correct! Outstanding!";
+        feedbackTitle.className = "font-serif font-bold text-base sm:text-lg text-emerald-300";
+        feedbackMsg.innerHTML = `Your answer is correct!`;
+        hintContent.innerHTML = q.solutionHtml;
+
+        document.getElementById('quiz-submit-btn').classList.add('hidden');
+        document.getElementById('quiz-next-btn').classList.remove('hidden');
+      } else {
+        appState.quiz.attemptsLeft--;
+        updateChancesDisplay();
+
+        if (appState.quiz.attemptsLeft > 0) {
+          feedbackBox.className = "rounded-2xl p-5 border border-amber-400/60 bg-amber-950/60 space-y-3";
+          feedbackIcon.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i>`;
+          feedbackTitle.textContent = `Not quite right (${appState.quiz.attemptsLeft} chance(s) remaining)`;
+          feedbackTitle.className = "font-serif font-bold text-base sm:text-lg text-amber-300";
+          feedbackMsg.textContent = `Check your arithmetic or signs and try again.`;
+          hintContent.innerHTML = `<div class="text-amber-200"><strong>Hint:</strong> ${q.tip}</div>`;
+        } else {
+          appState.quiz.questionResolved = true;
+          appState.quiz.history.push({ promptHtml: q.promptHtml, userAnswer: userPlain, correctAnswer: q.correctAnswer, isCorrect: false });
+
+          feedbackBox.className = "rounded-2xl p-5 border border-rose-500/60 bg-rose-950/60 space-y-3";
+          feedbackIcon.innerHTML = `<i class="fa-solid fa-circle-xmark text-rose-400"></i>`;
+          feedbackTitle.textContent = "Out of attempts";
+          feedbackTitle.className = "font-serif font-bold text-base sm:text-lg text-rose-300";
+          feedbackMsg.innerHTML = `The correct answer was: <strong class="text-gold-300">${q.correctAnswer}</strong>`;
+          hintContent.innerHTML = q.solutionHtml;
+
+          document.getElementById('quiz-submit-btn').classList.add('hidden');
+          document.getElementById('quiz-next-btn').classList.remove('hidden');
+        }
+      }
+    }
+
+    function advanceToNextQuestion() {
+      if (appState.quiz.currentIndex + 1 < appState.quiz.questions.length) {
+        appState.quiz.currentIndex++;
+        renderActiveQuestion();
+      } else {
+        switchTab('results');
+      }
+    }
+
+    function retakeCurrentQuiz() {
+      startQuizSession();
+    }
+
+    function confirmExitQuiz() {
+      if (confirm("Are you sure you want to exit to the Home dashboard? Your progress will be lost.")) {
+        switchTab('home');
+      }
+    }
+
+    // --- MATH EDITOR TOOLBAR ---
+    let isSupMode = false;
+
+    function insertMathSymbol(sym) {
+      const editor = document.getElementById('math-editor');
+      editor.focus();
+      document.execCommand('insertText', false, sym);
+      handleMathEditorInput();
+    }
+
+    function insertRadicalTemplate(index) {
+      const editor = document.getElementById('math-editor');
+      editor.focus();
+      const tag = index === 2 ? '√( )' : (index === 3 ? '³√( )' : '⁴√( )');
+      document.execCommand('insertText', false, tag);
+      handleMathEditorInput();
+    }
+
+    function toggleSuperscriptMode() {
+      isSupMode = !isSupMode;
+      document.execCommand('superscript', false, null);
+      syncSupModeIndicator();
+    }
+
+    function syncSupModeIndicator() {
+      const ind = document.getElementById('sup-mode-indicator');
+      const isSupActive = document.queryCommandState('superscript');
+      if (ind) {
+        ind.textContent = isSupActive ? 'Mode: Active Raised Exponent' : 'Mode: Normal Baseline';
+        ind.className = isSupActive ? 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-gold-500/20 border border-gold-400 text-gold-300' : 'text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-navy-900 border border-gold-500/30 text-slate-300';
+      }
+    }
+
+    function handleMathEditorInput() {
+      const editor = document.getElementById('math-editor');
+      const preview = document.getElementById('quiz-live-preview');
+      preview.innerHTML = editor.innerHTML || '—';
+    }
+
+    function handleMathEditorKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (appState.quiz.questionResolved) advanceToNextQuestion();
+        else handleAnswerSubmission();
+      } else if (e.key === '^') {
+        e.preventDefault();
+        toggleSuperscriptMode();
+      }
+    }
+
+    function clearAnswerInput() {
+      const editor = document.getElementById('math-editor');
+      editor.innerHTML = '';
+      handleMathEditorInput();
+    }
+
+    function triggerExponentHelper() {
+      const base = prompt("Enter Base (e.g. x, y, 2):", "x");
+      if (base === null) return;
+      const exp = prompt("Enter Exponent (e.g. 2 to 1000):", "2");
+      if (exp === null) return;
+      insertMathSymbol(`${base}<sup>${exp}</sup>`);
+    }
+
+    function openMixedFractionHelper() {
+      document.getElementById('modal-mixed-frac-helper').classList.remove('hidden');
+    }
+    function closeMixedFractionHelper() {
+      document.getElementById('modal-mixed-frac-helper').classList.add('hidden');
+    }
+    function applyMixedFractionHelper() {
+      const w = document.getElementById('mixed-helper-whole').value.trim();
+      const n = document.getElementById('mixed-helper-num').value.trim();
+      const d = document.getElementById('mixed-helper-den').value.trim();
+      if (!n || !d) return;
+      insertMathSymbol(`${w ? w + ' ' : ''}${n}/${d}`);
+      closeMixedFractionHelper();
+    }
+
+    // --- FLOATING MATH BACKGROUND CANVAS ---
+    function initFloatingMathCanvas() {
+      const canvas = document.getElementById('math-bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let width = (canvas.width = window.innerWidth);
+      let height = (canvas.height = window.innerHeight);
+
+      window.addEventListener('resize', () => {
+        width = canvas.width = window.innerWidth;
+        height = canvas.height = window.innerHeight;
+      });
+
+      const symbols = ['+', '−', '×', '÷', '=', '√', 'π', '∑', '∫', 'x²', 'aⁿ', '≠', '≤', '≥', '³√', '∞'];
+      const particles = [];
+      const particleCount = Math.min(32, Math.floor(width / 35));
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * width,
+          y: Math.random() * height,
+          text: symbols[Math.floor(Math.random() * symbols.length)],
+          size: Math.floor(Math.random() * 14) + 14,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: -Math.random() * 0.45 - 0.15,
+          alpha: Math.random() * 0.28 + 0.08
+        });
+      }
+
+      function animate() {
+        ctx.clearRect(0, 0, width, height);
+        particles.forEach(p => {
+          ctx.save();
+          ctx.font = `${p.size}px 'Cambria Math', serif`;
+          ctx.fillStyle = `rgba(251, 191, 36, ${p.alpha})`;
+          ctx.fillText(p.text, p.x, p.y);
+          ctx.restore();
+
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.y < -30) {
+            p.y = height + 20;
+            p.x = Math.random() * width;
+          }
+          if (p.x < -30) p.x = width + 20;
+          if (p.x > width + 30) p.x = -20;
+        });
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    // --- TAB SWITCHER & NAVIGATION ---
+    function switchTab(viewId) {
+      appState.currentView = viewId;
+
+      // Toggle no-scroll single screen fit during active quiz
+      if (viewId === 'quiz') {
+        document.body.classList.add('quiz-active');
+      } else {
+        document.body.classList.remove('quiz-active');
+      }
+
+      const views = ['home', 'config', 'quiz', 'results', 'scores', 'guides', 'howto'];
+      views.forEach(v => {
+        const el = document.getElementById(`view-${v}`);
+        if (el) {
+          if (v === viewId) el.classList.remove('hidden');
+          else el.classList.add('hidden');
+        }
+      });
+
+      const navBtns = ['home', 'scores', 'guides', 'howto'];
+      navBtns.forEach(b => {
+        const btn = document.getElementById(`nav-${b}`);
+        if (btn) {
+          if (b === viewId) btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 gold-btn';
+          else btn.className = 'px-3.5 py-2 rounded-lg text-xs sm:text-sm font-semibold flex items-center gap-2 navy-btn';
+        }
+      });
+
+      if (viewId === 'scores') renderScoresRegistry();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // --- CATEGORY CARDS RENDERER ---
+    function renderCategoryCards() {
+      const container = document.getElementById('category-cards-container');
+      if (!container) return;
+      container.innerHTML = CATEGORIES.map((cat, idx) => `
+        <div onclick="openCategoryConfig('${cat.id}')" class="royal-card royal-card-hover rounded-2xl p-6 cursor-pointer flex flex-col justify-between group">
+          <div class="space-y-4">
+            <div class="flex items-center justify-between">
+              <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-gold-400/25 to-gold-600/20 border border-gold-400/60 flex items-center justify-center text-gold-300 text-xl group-hover:scale-110 transition">
+                <i class="fa-solid ${cat.icon}"></i>
+              </div>
+              <span class="text-[11px] font-mono text-gold-300 bg-navy-950/90 border border-gold-500/30 px-2.5 py-1 rounded-full">
+                Module 0${idx + 1}
+              </span>
+            </div>
+            <div>
+              <h4 class="font-serif font-bold text-lg sm:text-xl text-white group-hover:text-gold-300 transition">
+                ${cat.title}
+              </h4>
+              <p class="text-xs font-semibold text-gold-400 mt-0.5">${cat.subtitle}</p>
+            </div>
+            <p class="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              ${cat.description}
+            </p>
+          </div>
+          <div class="pt-5 mt-4 border-t border-gold-500/20 flex items-center justify-between">
+            <span class="text-[11px] font-mono text-slate-400">${cat.badge}</span>
+            <span class="gold-btn px-3.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5">
+              <span>Select</span> <i class="fa-solid fa-arrow-right"></i>
+            </span>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    // --- SCORE REGISTRY & LOCAL STORAGE ---
+    function initScoreRegistry() {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY_SCORES);
+        if (stored) {
+          appState.scoreRegistry = JSON.parse(stored);
+        } else {
+          appState.scoreRegistry = [...SAMPLE_DEMO_SCORES];
+          localStorage.setItem(STORAGE_KEY_SCORES, JSON.stringify(appState.scoreRegistry));
+        }
+      } catch (err) {
+        appState.scoreRegistry = [...SAMPLE_DEMO_SCORES];
+      }
+      renderScoresRegistry();
+    }
+
+    function addRecordToLast50Registry(record) {
+      appState.scoreRegistry.unshift(record);
+      if (appState.scoreRegistry.length > 50) {
+        appState.scoreRegistry = appState.scoreRegistry.slice(0, 50);
+      }
+      try {
+        localStorage.setItem(STORAGE_KEY_SCORES, JSON.stringify(appState.scoreRegistry));
+      } catch (e) {}
+      renderScoresRegistry();
+    }
+
+    function restoreSampleScores() {
+      appState.scoreRegistry = [...SAMPLE_DEMO_SCORES];
+      localStorage.setItem(STORAGE_KEY_SCORES, JSON.stringify(appState.scoreRegistry));
+      renderScoresRegistry();
+    }
+
+    function clearAllLocalScores() {
+      if (confirm("Are you sure you want to clear all score records on this device?")) {
+        appState.scoreRegistry = [];
+        localStorage.removeItem(STORAGE_KEY_SCORES);
+        renderScoresRegistry();
+      }
+    }
+
+    window.onload = function () {
+      initFloatingMathCanvas();
+      renderCategoryCards();
+      renderStudyGuidePills('whole');
+      initScoreRegistry();
+      parseUrlTeacherParams();
+      switchTab('home');
+    };
+  </script>
+</body>
+</html>
