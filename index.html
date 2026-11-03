@@ -1,0 +1,462 @@
+  <!-- Action Navigation Buttons -->
+  <div class="flex items-center gap-2">
+    <button onclick="switchTab('home')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+      <i class="fa-solid fa-house"></i>
+      <span class="hidden md:inline">Home</span>
+    </button>
+
+    <button onclick="openClassCodeModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
+      <i class="fa-solid fa-key text-gold-400"></i>
+      <span>Teacher Code</span>
+    </button>
+
+    <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:bg-blue-800/50 transition" title="Google Sheet Cloud Sync">
+      <i class="fa-solid fa-cloud text-sky-400"></i>
+      <span class="hidden sm:inline">Google Sync</span>
+    </button>
+
+    <button onclick="switchTab('scores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+      <i class="fa-solid fa-chart-simple text-gold-400"></i>
+      <span class="hidden md:inline">Registry</span>
+    </button>
+
+    <button onclick="switchTab('guides')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+      <i class="fa-solid fa-book-open"></i>
+      <span class="hidden md:inline">Guides</span>
+    </button>
+  </div>
+</div>
+
+<!-- Active Class Code Banner (Visible when a teacher code is set) -->
+<div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/80 via-emerald-900/50 to-navy-900/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs text-emerald-300 flex items-center justify-between">
+  <div class="flex items-center gap-2">
+    <i class="fa-solid fa-school text-gold-400"></i>
+    <span>Active Teacher Code: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
+  </div>
+  <div class="flex items-center gap-2">
+    <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores beam to teacher across devices</span>
+    <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
+  </div>
+</div>
+
+
+<!-- 1. HOME VIEW (MATH DOMAINS) -->
+<section id="view-home" class="space-y-6">
+  <div class="text-center space-y-2 py-4">
+    <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
+      Interactive Diagnostic & Practice Suite
+    </span>
+    <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
+    <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
+      Multi-digit problem generators, customizable number fields (tables 1–12), true mathematical exponents, and instant step-by-step worked solutions.
+    </p>
+  </div>
+
+  <!-- Categories Grid -->
+  <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+    <!-- Rendered via JavaScript -->
+  </div>
+</section>
+
+<!-- 2. PRACTICE SETUP VIEW -->
+<section id="view-config" class="hidden max-w-2xl mx-auto space-y-6">
+  <div class="glass-panel p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
+    <div class="flex items-center justify-between border-b border-gold-500/20 pb-4">
+      <div>
+        <span id="config-domain-badge" class="text-xs font-bold text-gold-400 uppercase tracking-wider">Category</span>
+        <h3 id="config-domain-title" class="text-xl md:text-2xl font-bold text-white">Configure Practice</h3>
+      </div>
+      <button onclick="switchTab('home')" class="text-slate-400 hover:text-gold-400 text-sm font-semibold">
+        <i class="fa-solid fa-arrow-left mr-1"></i> Back
+      </button>
+    </div>
+
+    <!-- Dynamic Configuration Fields -->
+    <div class="space-y-5">
+      <!-- Item Count -->
+      <div>
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Number of Questions (5 to 100)</label>
+        <div class="flex items-center gap-3">
+          <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
+          <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+        </div>
+      </div>
+
+      <!-- Whole Numbers: Number Field / Times Table Focus (Tables 1 to 12) -->
+      <div id="config-numberfield-box" class="hidden">
+        <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
+          <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
+        </label>
+        <p class="text-[11px] text-slate-400 mb-2">Focus on a specific number family or times table for addition, subtraction, multiplication, or division.</p>
+        <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+          <option value="none">Free Number Field (Use Digits Count Only)</option>
+          <option value="1">Field of 1 (Table of 1 Focus)</option>
+          <option value="2">Field of 2 (Table of 2 Focus)</option>
+          <option value="3">Field of 3 (Table of 3 Focus)</option>
+          <option value="4">Field of 4 (Table of 4 Focus)</option>
+          <option value="5">Field of 5 (Table of 5 Focus)</option>
+          <option value="6">Field of 6 (Table of 6 Focus)</option>
+          <option value="7">Field of 7 (Table of 7 Focus)</option>
+          <option value="8">Field of 8 (Table of 8 Focus)</option>
+          <option value="9">Field of 9 (Table of 9 Focus)</option>
+          <option value="10">Field of 10 (Table of 10 Focus)</option>
+          <option value="11">Field of 11 (Table of 11 Focus)</option>
+          <option value="12">Field of 12 (Table of 12 Focus)</option>
+          <option value="random">Random Mixed Fields (1 to 12 Drill)</option>
+        </select>
+      </div>
+
+      <!-- Multi-Digit Count (1 to 10 Digits) -->
+      <div id="config-digits-box">
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+          Number of Digits per Number (1 to 10 Digits)
+        </label>
+        <p class="text-[11px] text-slate-400 mb-2">Controls operand size for multi-digit arithmetic up to 10-digit numbers.</p>
+        <div class="flex items-center gap-3">
+          <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
+          <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+        </div>
+      </div>
+
+      <!-- Regrouping Option (Whole Numbers) -->
+      <div id="config-regrouping-box">
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Regrouping (Carrying / Borrowing)</label>
+        <div class="grid grid-cols-2 gap-3">
+          <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">
+            <i class="fa-solid fa-check-circle mr-1"></i> With Regrouping
+          </button>
+          <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">
+            <i class="fa-solid fa-circle mr-1"></i> Without Regrouping
+          </button>
+        </div>
+      </div>
+
+      <!-- Integers Submode Selection -->
+      <div id="config-integers-box" class="hidden">
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sign Distribution Mode</label>
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2.5 rounded-lg text-xs font-bold border gold-btn">
+            Mixed (+ & -)
+          </button>
+          <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
+            Both Negative (- & -)
+          </button>
+          <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
+            Both Positive (+ & +)
+          </button>
+        </div>
+      </div>
+
+      <!-- Operations Selection -->
+      <div id="config-operations-box">
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Operations Included</label>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
+            <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-gold-400 w-4 h-4">
+            <span class="text-xs font-bold">Addition (+)</span>
+          </label>
+          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
+            <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-gold-400 w-4 h-4">
+            <span class="text-xs font-bold">Subtraction (−)</span>
+          </label>
+          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
+            <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-gold-400 w-4 h-4">
+            <span class="text-xs font-bold">Multiplication (×)</span>
+          </label>
+          <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
+            <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-gold-400 w-4 h-4">
+            <span class="text-xs font-bold">Division (÷)</span>
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start Button -->
+    <div class="pt-4 flex gap-3">
+      <button onclick="switchTab('home')" class="w-1/3 py-3 rounded-xl font-bold navy-btn text-xs md:text-sm">
+        Cancel
+      </button>
+      <button onclick="startQuizSession()" class="w-2/3 py-3 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20">
+        <span>Start Practice Quiz Now</span>
+        <i class="fa-solid fa-play"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
+<section id="view-quiz" class="hidden h-full flex flex-col justify-between max-w-3xl mx-auto space-y-2">
+  <!-- Quiz Progress & Chances Bar -->
+  <div class="glass-panel px-4 py-2 rounded-xl flex items-center justify-between text-xs">
+    <div class="flex items-center gap-2">
+      <span class="font-bold text-gold-400" id="quiz-progress-text">Q 1 of 10</span>
+      <span class="text-slate-400">|</span>
+      <span class="text-slate-300 font-semibold" id="quiz-cat-name">Whole Numbers</span>
+    </div>
+    <div class="flex items-center gap-3">
+      <div class="flex items-center gap-1" id="quiz-chances-container">
+        <!-- 3 Attempt Hearts -->
+        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
+        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
+        <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
+      </div>
+      <span class="text-[11px] text-slate-400 font-mono" id="quiz-score-preview">Score: 0</span>
+    </div>
+  </div>
+
+  <!-- Problem Presentation Card -->
+  <div class="glass-panel p-4 md:p-6 rounded-2xl text-center relative flex flex-col items-center justify-center min-h-[140px] md:min-h-[170px] shadow-2xl border-gold-500/30">
+    <div class="text-[11px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">
+      Solve The Equation
+    </div>
+    <div id="quiz-problem-display" class="font-mono text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider my-2 break-all select-all">
+      12 + 15 = ?
+    </div>
+    <div id="quiz-problem-tip" class="text-xs text-slate-400 italic">
+      Type your exact numeric answer below.
+    </div>
+  </div>
+
+  <!-- Inline Feedback & Worked Hint Panel -->
+  <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300">
+    <!-- Rendered via JS -->
+  </div>
+
+  <!-- Compact Input & Math Toolbar Controls -->
+  <div class="glass-panel p-3 md:p-4 rounded-2xl space-y-2">
+    <div class="flex gap-2">
+      <input type="text" id="quiz-answer-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer here..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border-2 border-gold-500/40 focus:border-gold-400 rounded-xl px-4 py-2.5 text-lg md:text-xl font-bold font-mono text-gold-300 outline-none transition">
+      <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center gap-1.5 whitespace-nowrap">
+        <span>Check</span>
+        <i class="fa-solid fa-circle-check"></i>
+      </button>
+    </div>
+
+    <!-- Virtual Math Symbol Toolbar -->
+    <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-1">
+      <button type="button" onclick="insertToolbarSymbol('⁻')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Negative Sign">(-)</button>
+      <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fraction Bar">a/b</button>
+      <button type="button" onclick="insertToolbarSymbol('√')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Square Root">√(x)</button>
+      <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Cube Root">³√(x)</button>
+      <button type="button" onclick="insertToolbarSymbol('∜')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fourth Root">⁴√(x)</button>
+      <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1.5 rounded-lg bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold" title="Type raised exponent">xⁿ Exp</button>
+      <button type="button" onclick="insertToolbarSymbol('(')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">(</button>
+      <button type="button" onclick="insertToolbarSymbol(')')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">)</button>
+    </div>
+  </div>
+
+  <!-- Quit Practice Early Option -->
+  <div class="text-center pt-1">
+    <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">
+      Exit Practice Session
+    </button>
+  </div>
+</section>
+
+<!-- 4. END QUIZ NAME ENCODING & CERTIFICATE VIEW -->
+<section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
+  <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
+    <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
+      <i class="fa-solid fa-award"></i>
+    </div>
+
+    <div>
+      <h3 class="text-2xl md:text-3xl font-extrabold text-white">Session Completed!</h3>
+      <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement.</p>
+    </div>
+
+    <!-- Score Overview -->
+    <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
+      <div>
+        <div class="text-3xl font-black text-gold-400 font-mono" id="results-score-display">0 / 0</div>
+        <div class="text-[11px] text-slate-400 uppercase font-semibold">Final Score</div>
+      </div>
+      <div class="h-8 w-px bg-slate-700"></div>
+      <div>
+        <div class="text-3xl font-black text-emerald-400 font-mono" id="results-percentage-display">0%</div>
+        <div class="text-[11px] text-slate-400 uppercase font-semibold">Accuracy</div>
+      </div>
+      <div class="h-8 w-px bg-slate-700"></div>
+      <div>
+        <div class="text-xs font-bold text-gold-300" id="results-mastery-display">Proficient</div>
+        <div class="text-[11px] text-slate-400 uppercase font-semibold">Rating</div>
+      </div>
+    </div>
+
+    <!-- Student Encoding Form -->
+    <div class="space-y-4 text-left">
+      <div>
+        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+          Student Full Name <span class="text-red-400">*</span>
+        </label>
+        <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+      </div>
+
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
+          <input type="text" id="student-section-input" placeholder="e.g., Grade 9 - Einstein" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+        </div>
+        <div>
+          <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
+          <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+        </div>
+      </div>
+    </div>
+
+    <!-- Cloud Sync Status Indicator -->
+    <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
+      <i class="fa-solid fa-cloud text-sky-400"></i>
+      <span>Ready to record to cloud & registry</span>
+    </div>
+
+    <!-- Submission Actions -->
+    <div class="flex flex-col sm:flex-row gap-3 pt-2">
+      <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">
+        Return Home
+      </button>
+      <button onclick="finalizeStudentSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
+        <span>Save & View Certificate</span>
+        <i class="fa-solid fa-check-double"></i>
+      </button>
+    </div>
+  </div>
+</section>
+
+<!-- 5. LAST 50 SCORES REGISTRY VIEW -->
+<section id="view-scores" class="hidden space-y-6">
+  <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
+    <div>
+      <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
+      <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
+      <p class="text-xs text-slate-400">Student submissions saved locally and pulled directly from Google Sheets across devices.</p>
+    </div>
+
+    <div class="flex flex-wrap items-center gap-2">
+      <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
+        <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
+        <span>Pull From Cloud</span>
+      </button>
+      <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
+        <i class="fa-solid fa-file-excel"></i>
+        <span>Export CSV</span>
+      </button>
+      <button onclick="clearRegistryPromp()" class="px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/30">
+        Clear Local
+      </button>
+    </div>
+  </div>
+
+  <!-- Filter by Class Code Bar -->
+  <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
+    <div class="relative flex-grow w-full">
+      <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
+      <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., REYES-9A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+    </div>
+    <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">
+      Apply My Code
+    </button>
+  </div>
+
+  <!-- Scores Table -->
+  <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-xs">
+        <thead class="bg-navy-900 text-gold-400 uppercase font-bold text-[10px] tracking-wider border-b border-gold-500/20">
+          <tr>
+            <th class="py-3 px-4">Date & Time</th>
+            <th class="py-3 px-4">Student</th>
+            <th class="py-3 px-4">Grade & Section</th>
+            <th class="py-3 px-4 text-center">Class Code</th>
+            <th class="py-3 px-4">Category & Submode</th>
+            <th class="py-3 px-4 text-center">Score</th>
+            <th class="py-3 px-4 text-center">Accuracy</th>
+            <th class="py-3 px-4 text-center">Rating</th>
+          </tr>
+        </thead>
+        <tbody id="scores-table-body" class="divide-y divide-slate-800">
+          <!-- Rendered via JS -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- 6. MATHEMATICS RULES & GUIDES VIEW -->
+<section id="view-guides" class="hidden max-w-4xl mx-auto space-y-6">
+  <div class="border-b border-gold-500/20 pb-4 flex items-center justify-between">
+    <div>
+      <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Formula Reference</span>
+      <h2 class="text-2xl font-black text-white">Mathematics Study Guides & Rules</h2>
+    </div>
+    <button onclick="switchTab('home')" class="text-xs font-bold navy-btn px-3 py-1.5 rounded-lg">
+      <i class="fa-solid fa-arrow-left mr-1"></i> Home
+    </button>
+  </div>
+  <div id="guides-container" class="space-y-4">
+    <!-- Rendered via JS -->
+  </div>
+</section>
+
+
+  <p class="text-xs text-slate-300">
+    Generate a unique code for your students. You do not need to write any scripts—scores tagged with this code can be pulled and downloaded on any browser or device!
+  </p>
+
+  <div class="space-y-3">
+    <div>
+      <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
+      <input type="text" id="teacher-lastname-input" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+    </div>
+    <div>
+      <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Grade & Section</label>
+      <input type="text" id="teacher-section-input" placeholder="e.g., 9A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+    </div>
+
+    <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">
+      Generate My Class Code
+    </button>
+  </div>
+
+  <div id="generated-code-box" class="hidden bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/40 space-y-2">
+    <div class="text-[11px] text-slate-400">Your Shareable Class Code:</div>
+    <div class="flex items-center justify-between">
+      <span id="display-generated-code" class="text-xl font-mono font-black text-gold-400 tracking-wider"></span>
+      <button onclick="copyGeneratedCode()" class="px-2.5 py-1 rounded-lg text-xs font-bold navy-btn">
+        <i class="fa-solid fa-copy mr-1"></i> Copy Code
+      </button>
+    </div>
+    <div class="text-[11px] text-slate-400 pt-1">Direct Student Link:</div>
+    <div class="flex items-center gap-1.5">
+      <input type="text" id="display-generated-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-1.5 text-[10px] font-mono text-slate-300">
+      <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">
+        Copy Link
+      </button>
+    </div>
+  </div>
+</div>
+
+
+  <div class="space-y-3 text-xs text-slate-300">
+    <p>
+      Connect your Google Sheet Web App URL so that when students submit their quizzes on phones, tablets, or other computers, their scores beam straight into Google Sheets and sync across all devices.
+    </p>
+    
+    <div>
+      <label class="block text-[11px] font-bold text-sky-300 uppercase mb-1">Google Apps Script Web App URL</label>
+      <input type="url" id="cloud-webhook-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full bg-navy-900 border border-sky-500/40 rounded-xl p-2.5 text-xs font-mono text-sky-200 outline-none focus:border-sky-400">
+      <p class="text-[10px] text-slate-400 mt-1">Found in your Google Sheet: Extensions > Apps Script > Deploy > Web App.</p>
+    </div>
+
+    <div class="flex items-center gap-2 pt-2">
+      <button onclick="saveCloudWebhookUrl()" class="w-2/3 py-2.5 rounded-xl font-bold bg-sky-600 hover:bg-sky-500 text-white text-xs transition">
+        Save Cloud Endpoint
+      </button>
+      <button onclick="testCloudConnection()" class="w-1/3 py-2.5 rounded-xl font-bold navy-btn text-xs">
+        Test Link
+      </button>
+    </div>
+
+    <div id="cloud-test-result" class="hidden text-center text-xs font-semibold py-1"></div>
+  </div>
+</div>
