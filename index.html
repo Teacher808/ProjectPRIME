@@ -38,6 +38,10 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+  <!-- Firebase SDK (Compat Version for Web) -->
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
+
   <style>
     body {
       background: radial-gradient(circle at top, #1e293b 0%, #0f172a 45%, #020617 100%);
@@ -98,7 +102,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base md:text-lg font-black tracking-tight text-white">PROJECT <span class="text-gold-400">PRIME</span></h1>
-            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 border border-gold-500/30">Math Engine</span>
+            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 border border-gold-500/30">Firestore Live</span>
           </div>
           <p class="text-[11px] text-slate-400 hidden sm:block">Program for Remediation & Improvement in Mathematics Education</p>
         </div>
@@ -116,9 +120,9 @@
           <span>Teacher Code</span>
         </button>
 
-        <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:bg-blue-800/50 transition" title="Google Sheet Cloud Sync">
-          <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span class="hidden sm:inline">Google Sync</span>
+        <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-orange-900/40 border border-orange-500/40 text-orange-300 hover:bg-orange-800/50 transition" title="Firebase Status">
+          <i class="fa-solid fa-fire text-amber-400"></i>
+          <span class="hidden sm:inline">Cloud DB</span>
         </button>
 
         <button onclick="switchTab('scores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
@@ -133,14 +137,14 @@
       </div>
     </div>
 
-    <!-- Active Class Code Banner (Visible when a teacher code is set) -->
+    <!-- Active Class Code Banner -->
     <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/80 via-emerald-900/50 to-navy-900/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs text-emerald-300 flex items-center justify-between">
       <div class="flex items-center gap-2">
         <i class="fa-solid fa-school text-gold-400"></i>
         <span>Active Teacher Code: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores beam to teacher across devices</span>
+        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores sync in real-time to Firestore</span>
         <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
       </div>
     </div>
@@ -149,7 +153,7 @@
   <!-- MAIN CONTENT CONTAINER -->
   <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
 
-    <!-- 1. HOME VIEW (MATH DOMAINS) -->
+    <!-- 1. HOME VIEW -->
     <section id="view-home" class="space-y-6">
       <div class="text-center space-y-2 py-4">
         <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
@@ -160,11 +164,7 @@
           Multi-digit problem generators, customizable number fields (tables 1–12), true mathematical exponents, and instant step-by-step worked solutions.
         </p>
       </div>
-
-      <!-- Categories Grid -->
-      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
-        <!-- Rendered via JavaScript -->
-      </div>
+      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
     </section>
 
     <!-- 2. PRACTICE SETUP VIEW -->
@@ -180,9 +180,7 @@
           </button>
         </div>
 
-        <!-- Dynamic Configuration Fields -->
         <div class="space-y-5">
-          <!-- Item Count -->
           <div>
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Number of Questions (5 to 100)</label>
             <div class="flex items-center gap-3">
@@ -191,12 +189,10 @@
             </div>
           </div>
 
-          <!-- Whole Numbers: Number Field / Times Table Focus (Tables 1 to 12) -->
           <div id="config-numberfield-box" class="hidden">
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
               <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
             </label>
-            <p class="text-[11px] text-slate-400 mb-2">Focus on a specific number family or times table for addition, subtraction, multiplication, or division.</p>
             <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
               <option value="none">Free Number Field (Use Digits Count Only)</option>
               <option value="1">Field of 1 (Table of 1 Focus)</option>
@@ -215,48 +211,31 @@
             </select>
           </div>
 
-          <!-- Multi-Digit Count (1 to 10 Digits) -->
           <div id="config-digits-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Number of Digits per Number (1 to 10 Digits)
-            </label>
-            <p class="text-[11px] text-slate-400 mb-2">Controls operand size for multi-digit arithmetic up to 10-digit numbers.</p>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Number of Digits per Number (1 to 10 Digits)</label>
             <div class="flex items-center gap-3">
               <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
               <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
             </div>
           </div>
 
-          <!-- Regrouping Option (Whole Numbers) -->
           <div id="config-regrouping-box">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Regrouping (Carrying / Borrowing)</label>
             <div class="grid grid-cols-2 gap-3">
-              <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">
-                <i class="fa-solid fa-check-circle mr-1"></i> With Regrouping
-              </button>
-              <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">
-                <i class="fa-solid fa-circle mr-1"></i> Without Regrouping
-              </button>
+              <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">With Regrouping</button>
+              <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">Without Regrouping</button>
             </div>
           </div>
 
-          <!-- Integers Submode Selection -->
           <div id="config-integers-box" class="hidden">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sign Distribution Mode</label>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2.5 rounded-lg text-xs font-bold border gold-btn">
-                Mixed (+ & -)
-              </button>
-              <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
-                Both Negative (- & -)
-              </button>
-              <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">
-                Both Positive (+ & +)
-              </button>
+              <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2.5 rounded-lg text-xs font-bold border gold-btn">Mixed (+ & -)</button>
+              <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">Both Negative</button>
+              <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">Both Positive</button>
             </div>
           </div>
 
-          <!-- Operations Selection -->
           <div id="config-operations-box">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Operations Included</label>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -280,11 +259,8 @@
           </div>
         </div>
 
-        <!-- Start Button -->
         <div class="pt-4 flex gap-3">
-          <button onclick="switchTab('home')" class="w-1/3 py-3 rounded-xl font-bold navy-btn text-xs md:text-sm">
-            Cancel
-          </button>
+          <button onclick="switchTab('home')" class="w-1/3 py-3 rounded-xl font-bold navy-btn text-xs md:text-sm">Cancel</button>
           <button onclick="startQuizSession()" class="w-2/3 py-3 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20">
             <span>Start Practice Quiz Now</span>
             <i class="fa-solid fa-play"></i>
@@ -293,9 +269,8 @@
       </div>
     </section>
 
-    <!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
+    <!-- 3. QUIZ VIEW -->
     <section id="view-quiz" class="hidden h-full flex flex-col justify-between max-w-3xl mx-auto space-y-3">
-      <!-- Quiz Progress & Chances Bar -->
       <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
         <div class="flex items-center gap-2">
           <span class="font-bold text-gold-400" id="quiz-progress-text">Q 1 of 10</span>
@@ -312,25 +287,14 @@
         </div>
       </div>
 
-      <!-- Problem Presentation Card -->
       <div class="glass-panel p-6 md:p-8 rounded-2xl text-center relative flex flex-col items-center justify-center min-h-[160px] md:min-h-[190px] shadow-2xl border-gold-500/30">
-        <div class="text-[11px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">
-          Solve The Equation
-        </div>
-        <div id="quiz-problem-display" class="font-mono text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider my-3 break-all select-all">
-          12 + 15 = ?
-        </div>
-        <div id="quiz-problem-tip" class="text-xs text-slate-400 italic">
-          Type your exact numeric answer below.
-        </div>
+        <div class="text-[11px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">Solve The Equation</div>
+        <div id="quiz-problem-display" class="font-mono text-3xl sm:text-4xl md:text-5xl font-black text-white tracking-wider my-3 break-all select-all">12 + 15 = ?</div>
+        <div id="quiz-problem-tip" class="text-xs text-slate-400 italic">Type your exact numeric answer below.</div>
       </div>
 
-      <!-- Inline Feedback & Worked Hint Panel -->
-      <div id="quiz-feedback-box" class="hidden p-3.5 rounded-xl text-xs font-medium border transition-all duration-300">
-        <!-- Rendered via JS -->
-      </div>
+      <div id="quiz-feedback-box" class="hidden p-3.5 rounded-xl text-xs font-medium border transition-all duration-300"></div>
 
-      <!-- Compact Input & Math Toolbar Controls -->
       <div class="glass-panel p-3.5 md:p-4 rounded-2xl space-y-2.5">
         <div class="flex gap-2">
           <input type="text" id="quiz-answer-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer here..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border-2 border-gold-500/40 focus:border-gold-400 rounded-xl px-4 py-2.5 text-lg md:text-xl font-bold font-mono text-gold-300 outline-none transition">
@@ -340,7 +304,6 @@
           </button>
         </div>
 
-        <!-- Virtual Math Symbol Toolbar -->
         <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-1">
           <button type="button" onclick="insertToolbarSymbol('-')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Negative Sign">(-)</button>
           <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fraction Bar">a/b</button>
@@ -353,27 +316,22 @@
         </div>
       </div>
 
-      <!-- Quit Practice Early Option -->
       <div class="text-center pt-1">
-        <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">
-          Exit Practice Session
-        </button>
+        <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">Exit Practice Session</button>
       </div>
     </section>
 
-    <!-- 4. END QUIZ NAME ENCODING & CERTIFICATE VIEW -->
+    <!-- 4. RESULTS & CERTIFICATE VIEW -->
     <section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
       <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
         <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
           <i class="fa-solid fa-award"></i>
         </div>
-
         <div>
           <h3 class="text-2xl md:text-3xl font-extrabold text-white">Session Completed!</h3>
-          <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement.</p>
+          <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement in Firestore.</p>
         </div>
 
-        <!-- Score Overview -->
         <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
           <div>
             <div class="text-3xl font-black text-gold-400 font-mono" id="results-score-display">0 / 0</div>
@@ -391,15 +349,11 @@
           </div>
         </div>
 
-        <!-- Student Encoding Form -->
         <div class="space-y-4 text-left">
           <div>
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
-              Student Full Name <span class="text-red-400">*</span>
-            </label>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Student Full Name <span class="text-red-400">*</span></label>
             <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
           </div>
-
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
@@ -407,22 +361,18 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
-              <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+              <input type="text" id="student-code-input" placeholder="e.g., NEGRILLO-8A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
             </div>
           </div>
         </div>
 
-        <!-- Cloud Sync Status Indicator -->
         <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
-          <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span>Ready to record to centralized Google Sheet & registry</span>
+          <i class="fa-solid fa-fire text-amber-400"></i>
+          <span>Ready to record to Firestore Cloud Database</span>
         </div>
 
-        <!-- Submission Actions -->
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
-          <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">
-            Return Home
-          </button>
+          <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">Return Home</button>
           <button onclick="finalizeStudentSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
             <span>Save & View Certificate</span>
             <i class="fa-solid fa-check-double"></i>
@@ -431,42 +381,34 @@
       </div>
     </section>
 
-    <!-- 5. LAST 50 SCORES REGISTRY VIEW -->
+    <!-- 5. SCORES REGISTRY VIEW -->
     <section id="view-scores" class="hidden space-y-6">
       <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
         <div>
           <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
           <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-          <p class="text-xs text-slate-400">Student submissions saved locally and pulled directly from the single Google Sheet storage across devices.</p>
+          <p class="text-xs text-slate-400">Real-time student submissions fetched directly from Firestore cloud database.</p>
         </div>
-
         <div class="flex flex-wrap items-center gap-2">
-          <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
-            <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
-            <span>Pull From Cloud</span>
+          <button onclick="pullScoresFromFirestore()" class="px-3 py-2 rounded-xl text-xs font-bold bg-amber-900/40 border border-amber-500/40 text-amber-300 hover:bg-amber-800/60 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-rotate text-amber-400" id="sync-spinner"></i>
+            <span>Refresh Firestore Data</span>
           </button>
           <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
             <i class="fa-solid fa-file-excel"></i>
             <span>Export CSV</span>
           </button>
-          <button onclick="clearRegistryPromp()" class="px-3 py-2 rounded-xl text-xs font-bold text-red-400 hover:text-red-300 bg-red-950/40 border border-red-500/30">
-            Clear Local
-          </button>
         </div>
       </div>
 
-      <!-- Filter by Class Code Bar -->
       <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
         <div class="relative flex-grow w-full">
           <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
-          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., REYES-9A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., NEGRILLO-8A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
         </div>
-        <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">
-          Apply My Code
-        </button>
+        <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">Apply My Code</button>
       </div>
 
-      <!-- Scores Table -->
       <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
         <div class="overflow-x-auto">
           <table class="w-full text-left text-xs">
@@ -482,15 +424,13 @@
                 <th class="py-3 px-4 text-center">Rating</th>
               </tr>
             </thead>
-            <tbody id="scores-table-body" class="divide-y divide-slate-800">
-              <!-- Rendered via JS -->
-            </tbody>
+            <tbody id="scores-table-body" class="divide-y divide-slate-800"></tbody>
           </table>
         </div>
       </div>
     </section>
 
-    <!-- 6. MATHEMATICS RULES & GUIDES VIEW -->
+    <!-- 6. GUIDES VIEW -->
     <section id="view-guides" class="hidden max-w-4xl mx-auto space-y-6">
       <div class="border-b border-gold-500/20 pb-4 flex items-center justify-between">
         <div>
@@ -501,14 +441,12 @@
           <i class="fa-solid fa-arrow-left mr-1"></i> Home
         </button>
       </div>
-      <div id="guides-container" class="space-y-4">
-        <!-- Rendered via JS -->
-      </div>
+      <div id="guides-container" class="space-y-4"></div>
     </section>
 
   </main>
 
-  <!-- MODAL 1: TEACHER CLASS CODE GENERATOR -->
+  <!-- MODAL 1: TEACHER CLASS CODE -->
   <div id="modal-class-code" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-purple-500/40">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
@@ -516,97 +454,64 @@
           <i class="fa-solid fa-key text-gold-400"></i>
           <h3 class="text-base font-bold text-white">Teacher Class Code Setup</h3>
         </div>
-        <button onclick="closeClassCodeModal()" class="text-slate-400 hover:text-white">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <button onclick="closeClassCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
-      <p class="text-xs text-slate-300">
-        Generate a unique code for your students. You do not need to create your own Google Sheet—all scores tagged with your code are stored in the central database and can be filtered and downloaded on any device!
-      </p>
-
+      <p class="text-xs text-slate-300">Generate a unique code for your students. Scores sync instantly to Firestore across all devices!</p>
       <div class="space-y-3">
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
-          <input type="text" id="teacher-lastname-input" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <input type="text" id="teacher-lastname-input" placeholder="e.g., NEGRILLO" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
         </div>
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Grade & Section</label>
-          <input type="text" id="teacher-section-input" placeholder="e.g., 9A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <input type="text" id="teacher-section-input" placeholder="e.g., 8A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
         </div>
-
-        <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">
-          Generate My Class Code
-        </button>
+        <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Generate & Activate Class Code</button>
       </div>
-
       <div id="generated-code-box" class="hidden bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/40 space-y-2">
         <div class="text-[11px] text-slate-400">Your Shareable Class Code:</div>
         <div class="flex items-center justify-between">
           <span id="display-generated-code" class="text-xl font-mono font-black text-gold-400 tracking-wider"></span>
-          <button onclick="copyGeneratedCode()" class="px-2.5 py-1 rounded-lg text-xs font-bold navy-btn">
-            <i class="fa-solid fa-copy mr-1"></i> Copy Code
-          </button>
+          <button onclick="copyGeneratedCode()" class="px-2.5 py-1 rounded-lg text-xs font-bold navy-btn"><i class="fa-solid fa-copy mr-1"></i> Copy</button>
         </div>
         <div class="text-[11px] text-slate-400 pt-1">Direct Student Link:</div>
         <div class="flex items-center gap-1.5">
           <input type="text" id="display-generated-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-1.5 text-[10px] font-mono text-slate-300">
-          <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">
-            Copy Link
-          </button>
+          <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">Copy Link</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 2: GOOGLE SHEETS CLOUD SYNC -->
+  <!-- MODAL 2: CLOUD DB STATUS -->
   <div id="modal-cloud-sync" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-sky-500/40">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-amber-500/40">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-cloud text-sky-400"></i>
-          <h3 class="text-base font-bold text-white">Central Google Sheet Storage</h3>
+          <i class="fa-solid fa-fire text-amber-400"></i>
+          <h3 class="text-base font-bold text-white">Firestore Cloud Status</h3>
         </div>
-        <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-white">
-          <i class="fa-solid fa-xmark"></i>
-        </button>
+        <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-
       <div class="space-y-3 text-xs text-slate-300">
-        <p>
-          All devices connect to a single Google Sheet Apps Script Web App URL for centralized storage.
-        </p>
-
-        <div>
-          <label class="block text-[11px] font-bold text-sky-300 uppercase mb-1">Google Apps Script Web App URL</label>
-          <input type="url" id="cloud-webhook-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full bg-navy-900 border border-sky-500/40 rounded-xl p-2.5 text-xs font-mono text-sky-200 outline-none focus:border-sky-400">
-          <p class="text-[10px] text-slate-400 mt-1">Single master storage endpoint from your Google Sheet (Extensions &gt; Apps Script &gt; Deploy &gt; Web App).</p>
+        <p>Your application is directly connected to Firebase Firestore project <code class="text-amber-300 font-mono">projectprime-700f9</code>.</p>
+        <div class="bg-navy-900 p-3 rounded-xl border border-amber-500/30 space-y-1">
+          <div class="text-slate-400">Project ID: <span class="text-white font-mono">projectprime-700f9</span></div>
+          <div class="text-slate-400">Database: <span class="text-emerald-400 font-mono">Cloud Firestore (Active)</span></div>
         </div>
-
-        <div class="flex items-center gap-2 pt-2">
-          <button onclick="saveCloudWebhookUrl()" class="w-2/3 py-2.5 rounded-xl font-bold bg-sky-600 hover:bg-sky-500 text-white text-xs transition">
-            Save Cloud Endpoint
-          </button>
-          <button onclick="testCloudConnection()" class="w-1/3 py-2.5 rounded-xl font-bold navy-btn text-xs">
-            Test Link
-          </button>
-        </div>
-
-        <div id="cloud-test-result" class="hidden text-center text-xs font-semibold py-1"></div>
+        <button onclick="closeCloudSyncModal()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Close</button>
       </div>
     </div>
   </div>
 
-  <!-- MODAL 3: ACHIEVEMENT CERTIFICATE MODAL -->
+  <!-- MODAL 3: CERTIFICATE -->
   <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
     <div class="max-w-2xl w-full space-y-4">
       <div id="certificate-print-area" class="glass-panel p-8 md:p-10 rounded-3xl border-2 border-gold-400 text-center space-y-5 shadow-2xl relative overflow-hidden">
         <div class="text-xs font-bold uppercase tracking-widest text-gold-400">PROJECT PRIME • Official Mastery Record</div>
         <h2 class="text-2xl md:text-4xl font-black text-white uppercase tracking-wide">Certificate of Achievement</h2>
         <p class="text-xs text-slate-300">This certifies that</p>
-        <div id="cert-student-name" class="text-2xl md:text-3xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-2 inline-block px-8">
-          Juan Dela Cruz
-        </div>
+        <div id="cert-student-name" class="text-2xl md:text-3xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-2 inline-block px-8">Juan Dela Cruz</div>
         <div id="cert-student-section" class="text-xs font-semibold text-slate-400">Grade 8 - Section</div>
         <p class="text-xs text-slate-300 max-w-md mx-auto">
           has successfully completed the interactive diagnostic & practice session in
@@ -631,33 +536,31 @@
           <span id="cert-date">Date</span>
         </div>
       </div>
-
       <div class="flex justify-center gap-3">
-        <button onclick="window.print()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center gap-2">
-          <i class="fa-solid fa-print"></i> Print / Save PDF
-        </button>
-        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl font-bold navy-btn text-xs">
-          View Score Registry
-        </button>
+        <button onclick="window.print()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center gap-2"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
+        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl font-bold navy-btn text-xs">View Score Registry</button>
       </div>
     </div>
   </div>
 
-  <!-- APPLICATION JAVASCRIPT ENGINE -->
+  <!-- APPLICATION JAVASCRIPT & FIREBASE ENGINE -->
   <script>
-    /**
-     * ============================================================================
-     * SINGLE GOOGLE SHEET APPS SCRIPT WEB APP URL CONFIGURATION
-     * Paste your single deployed Google Sheet Web App URL below so all students
-     * and teachers automatically use that single Google Sheet for storage.
-     * ============================================================================
-     */
-    const DEFAULT_CLOUD_WEBHOOK_URL = ''; // <-- PASTE YOUR SINGLE /exec URL HERE
+    // --- FIREBASE CONFIGURATION & INITIALIZATION ---
+    const firebaseConfig = {
+      apiKey: "AIzaSyB1qxxxsRGXGU7uHERqDqAktjP4yRHyvCc",
+      authDomain: "projectprime-700f9.firebaseapp.com",
+      projectId: "projectprime-700f9",
+      storageBucket: "projectprime-700f9.firebasestorage.app",
+      messagingSenderId: "892975493362",
+      appId: "1:892975493362:web:779f040f182db9ea2fe06b"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
 
     const STORAGE_KEYS = {
-      SCORES: 'PRIME_SCORES_V1',
-      CLASS_CODE: 'PRIME_ACTIVE_CLASS_CODE',
-      WEBHOOK: 'PRIME_CLOUD_WEBHOOK_URL'
+      SCORES: 'PRIME_SCORES_V2',
+      CLASS_CODE: 'PRIME_ACTIVE_CLASS_CODE'
     };
 
     const SUPERSCRIPT_MAP = {
@@ -699,10 +602,7 @@
         badge: 'Domain 1 • Core Arithmetic',
         icon: 'fa-hashtag',
         desc: 'Multi-digit addition, subtraction, multiplication, and division with customizable number fields (1–12) and regrouping.',
-        hasNumberField: true,
-        hasDigits: true,
-        hasRegrouping: true,
-        hasOperations: true
+        hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true
       },
       {
         id: 'integers',
@@ -710,9 +610,7 @@
         badge: 'Domain 2 • Directed Numbers',
         icon: 'fa-plus-minus',
         desc: 'Operations on positive and negative integers across mixed, all-negative, or all-positive sign distributions.',
-        hasDigits: true,
-        hasIntegersMode: true,
-        hasOperations: true
+        hasDigits: true, hasIntegersMode: true, hasOperations: true
       },
       {
         id: 'fractions',
@@ -728,8 +626,7 @@
         badge: 'Domain 4 • Place Value',
         icon: 'fa-bullseye',
         desc: 'Precision arithmetic with tenths and hundredths across all four fundamental operations.',
-        hasDigits: true,
-        hasOperations: true
+        hasDigits: true, hasOperations: true
       },
       {
         id: 'exponents',
@@ -779,8 +676,8 @@
         title: '3. Fractions & Simplification',
         rules: [
           'Adding/Subtracting: Convert to a Common Denominator (LCD), combine numerators, and simplify using the Greatest Common Divisor (GCD).',
-          'Multiplying: Multiply numerator by numerator and denominator by denominator: (a/b) × (c/d) = (ac)/(bd).',
-          'Dividing: Multiply by the reciprocal of the second fraction: (a/b) ÷ (c/d) = (a/b) × (d/c).'
+          'Multiplying: Multiply numerator by numerator and denominator by denominator.',
+          'Dividing: Multiply by the reciprocal of the second fraction.'
         ]
       },
       {
@@ -813,8 +710,7 @@
         answeredCurrent: false
       },
       scores: [],
-      activeClassCode: '',
-      webhookUrl: DEFAULT_CLOUD_WEBHOOK_URL
+      activeClassCode: ''
     };
 
     // INITIALIZATION
@@ -822,7 +718,7 @@
       loadSavedState();
       renderCategoriesGrid();
       renderGuides();
-      renderScoresTable();
+      pullScoresFromFirestore();
       checkUrlParameters();
     });
 
@@ -833,14 +729,6 @@
 
         const savedCode = localStorage.getItem(STORAGE_KEYS.CLASS_CODE);
         if (savedCode) setActiveTeacherCode(savedCode);
-
-        const savedWebhook = localStorage.getItem(STORAGE_KEYS.WEBHOOK);
-        if (DEFAULT_CLOUD_WEBHOOK_URL) {
-          appState.webhookUrl = DEFAULT_CLOUD_WEBHOOK_URL;
-        } else if (savedWebhook) {
-          appState.webhookUrl = savedWebhook;
-        }
-        document.getElementById('cloud-webhook-input').value = appState.webhookUrl || '';
       } catch (e) {
         console.warn('LocalStorage unavailable:', e);
       }
@@ -862,7 +750,7 @@
         const el = document.getElementById('view-' + v);
         if (el) el.classList.toggle('hidden', v !== tabName);
       });
-      if (tabName === 'scores') renderScoresTable();
+      if (tabName === 'scores') pullScoresFromFirestore();
     }
 
     function renderCategoriesGrid() {
@@ -903,7 +791,6 @@
       switchTab('config');
     }
 
-    // CONFIGURATION CONTROLS
     function syncConfigCount(val) {
       const n = Math.max(5, Math.min(100, parseInt(val) || 10));
       appState.config.count = n;
@@ -920,16 +807,13 @@
 
     function setConfigRegrouping(mode) {
       appState.config.regrouping = mode;
-      const btnWith = document.getElementById('btn-regroup-with');
-      const btnWithout = document.getElementById('btn-regroup-without');
-      btnWith.className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'with' ? 'gold-btn' : 'navy-btn'}`;
-      btnWithout.className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'without' ? 'gold-btn' : 'navy-btn'}`;
+      document.getElementById('btn-regroup-with').className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'with' ? 'gold-btn' : 'navy-btn'}`;
+      document.getElementById('btn-regroup-without').className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'without' ? 'gold-btn' : 'navy-btn'}`;
     }
 
     function setConfigIntegerMode(mode) {
       appState.config.integerMode = mode;
-      const modes = ['mixed', 'both-neg', 'both-pos'];
-      modes.forEach(m => {
+      ['mixed', 'both-neg', 'both-pos'].forEach(m => {
         const btn = document.getElementById('btn-int-' + m);
         if (btn) btn.className = `p-2.5 rounded-lg text-xs font-bold border ${m === mode ? 'gold-btn' : 'navy-btn'}`;
       });
@@ -948,23 +832,13 @@
       appState.config.operations = checkedOps;
     }
 
-    // MATH PROBLEM GENERATOR ENGINE
-    function randInt(min, max) {
-      return Math.floor(Math.random() * (max - min + 1)) + min;
-    }
-
-    function gcd(a, b) {
-      a = Math.abs(a); b = Math.abs(b);
-      while (b) { [a, b] = [b, a % b]; }
-      return a || 1;
-    }
-
+    // MATH GENERATOR
+    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
+    function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
     function generateOperandByDigits(digits) {
       const d = Math.max(1, Math.min(10, digits));
       if (d === 1) return randInt(1, 9);
-      const min = Math.pow(10, d - 1);
-      const max = Math.pow(10, d) - 1;
-      return randInt(min, max);
+      return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
     }
 
     function generateQuestionForDomain(domainId, cfg) {
@@ -979,76 +853,31 @@
         if (tableVal) {
           b = tableVal;
           const factor = randInt(1, 12);
-          if (op === '+') { a = randInt(1, 20); answer = a + b; display = `${a} + ${b}`; submode = `Table of ${b} Addition`; hint = `Add ${b} to ${a}: ${a} + ${b} = ${answer}.`; }
-          else if (op === '-') { a = b + randInt(1, 20); answer = a - b; display = `${a} − ${b}`; submode = `Table of ${b} Subtraction`; hint = `Subtract ${b} from ${a}: ${a} − ${b} = ${answer}.`; }
-          else if (op === '*') { a = factor; answer = a * b; display = `${a} × ${b}`; submode = `Table of ${b} Multiplication`; hint = `${a} groups of ${b} equals ${answer}.`; }
-          else { answer = factor; a = answer * b; display = `${a} ÷ ${b}`; submode = `Table of ${b} Division`; hint = `Since ${answer} × ${b} = ${a}, ${a} ÷ ${b} = ${answer}.`; }
+          if (op === '+') { a = randInt(1, 20); answer = a + b; display = `${a} + ${b}`; submode = `Table of ${b} Addition`; hint = `${a} + ${b} = ${answer}.`; }
+          else if (op === '-') { a = b + randInt(1, 20); answer = a - b; display = `${a} − ${b}`; submode = `Table of ${b} Subtraction`; hint = `${a} − ${b} = ${answer}.`; }
+          else if (op === '*') { a = factor; answer = a * b; display = `${a} × ${b}`; submode = `Table of ${b} Multiplication`; hint = `${a} × ${b} = ${answer}.`; }
+          else { answer = factor; a = answer * b; display = `${a} ÷ ${b}`; submode = `Table of ${b} Division`; hint = `${a} ÷ ${b} = ${answer}.`; }
           return { display: `${display} = ?`, answer: String(answer), hint, submode, tip: 'Type the exact whole number.' };
         }
 
         a = generateOperandByDigits(cfg.digits);
         b = generateOperandByDigits(cfg.digits);
-
-        if (cfg.regrouping === 'without' && cfg.digits >= 1 && (op === '+' || op === '-')) {
-          let sA = '', sB = '';
-          for (let i = 0; i < cfg.digits; i++) {
-            if (op === '+') {
-              const d1 = randInt(i === 0 ? 1 : 0, 5);
-              const d2 = randInt(i === 0 ? 1 : 0, 9 - d1);
-              sA += d1; sB += d2;
-            } else {
-              const d1 = randInt(i === 0 ? 2 : 1, 9);
-              const d2 = randInt(i === 0 ? 1 : 0, d1);
-              sA += d1; sB += d2;
-            }
-          }
-          a = parseInt(sA); b = parseInt(sB);
-        }
-
-        if (op === '+') {
-          answer = a + b;
-          return { display: `${a} + ${b} = ?`, answer: String(answer), hint: `Align place values and add: ${a} + ${b} = ${answer}.`, submode: 'Whole Number Addition', tip: 'Type the exact sum.' };
-        } else if (op === '-') {
-          if (a < b) [a, b] = [b, a];
-          answer = a - b;
-          return { display: `${a} − ${b} = ?`, answer: String(answer), hint: `Subtract bottom from top: ${a} − ${b} = ${answer}.`, submode: 'Whole Number Subtraction', tip: 'Type the exact difference.' };
-        } else if (op === '*') {
-          answer = a * b;
-          return { display: `${a} × ${b} = ?`, answer: String(answer), hint: `Multiply operands: ${a} × ${b} = ${answer}.`, submode: 'Whole Number Multiplication', tip: 'Type the exact product.' };
-        } else {
-          const divisor = Math.max(2, generateOperandByDigits(Math.max(1, Math.min(3, cfg.digits))));
-          const quotient = randInt(2, 25);
-          const dividend = divisor * quotient;
-          return { display: `${dividend} ÷ ${divisor} = ?`, answer: String(quotient), hint: `Since ${divisor} × ${quotient} = ${dividend}, the quotient is ${quotient}.`, submode: 'Exact Whole Number Division', tip: 'Type the exact quotient.' };
-        }
+        if (op === '+') { answer = a + b; return { display: `${a} + ${b} = ?`, answer: String(answer), hint: `${a} + ${b} = ${answer}.`, submode: 'Whole Number Addition', tip: 'Type the exact sum.' }; }
+        else if (op === '-') { if (a < b) [a, b] = [b, a]; answer = a - b; return { display: `${a} − ${b} = ?`, answer: String(answer), hint: `${a} − ${b} = ${answer}.`, submode: 'Whole Number Subtraction', tip: 'Type the exact difference.' }; }
+        else if (op === '*') { answer = a * b; return { display: `${a} × ${b} = ?`, answer: String(answer), hint: `${a} × ${b} = ${answer}.`, submode: 'Whole Number Multiplication', tip: 'Type the exact product.' }; }
+        else { const divisor = Math.max(2, generateOperandByDigits(Math.max(1, Math.min(3, cfg.digits)))); const quotient = randInt(2, 25); const dividend = divisor * quotient; return { display: `${dividend} ÷ ${divisor} = ?`, answer: String(quotient), hint: `${dividend} ÷ ${divisor} = ${quotient}.`, submode: 'Exact Whole Number Division', tip: 'Type the exact quotient.' }; }
       }
 
       if (domainId === 'integers') {
         let a = generateOperandByDigits(Math.min(3, cfg.digits));
         let b = generateOperandByDigits(Math.min(3, cfg.digits));
-
         if (cfg.integerMode === 'both-neg') { a = -a; b = -b; }
-        else if (cfg.integerMode === 'mixed') {
-          if (Math.random() < 0.5) a = -a; else b = -b;
-        }
-
+        else if (cfg.integerMode === 'mixed') { if (Math.random() < 0.5) a = -a; else b = -b; }
         const fmt = n => (n < 0 ? `(${n})` : `${n}`);
-        if (op === '+') {
-          const ans = a + b;
-          return { display: `${fmt(a)} + ${fmt(b)} = ?`, answer: String(ans), hint: `Apply integer addition rules: ${fmt(a)} + ${fmt(b)} = ${ans}.`, submode: 'Signed Integer Addition', tip: 'Include a negative sign (-) if the answer is negative.' };
-        } else if (op === '-') {
-          const ans = a - b;
-          return { display: `${fmt(a)} − ${fmt(b)} = ?`, answer: String(ans), hint: `Keep-Change-Change: ${fmt(a)} + (${-b}) = ${ans}.`, submode: 'Signed Integer Subtraction', tip: 'Include a negative sign (-) if the answer is negative.' };
-        } else if (op === '*') {
-          const ans = a * b;
-          return { display: `${fmt(a)} × ${fmt(b)} = ?`, answer: String(ans), hint: `Multiply magnitudes and apply sign rules: ${ans}.`, submode: 'Signed Integer Multiplication', tip: 'Same signs = positive; different signs = negative.' };
-        } else {
-          let divisor = randInt(2, 12) * (cfg.integerMode === 'both-pos' ? 1 : (Math.random() < 0.5 ? -1 : 1));
-          let quotient = randInt(2, 12) * (cfg.integerMode === 'both-neg' ? 1 : (Math.random() < 0.5 ? -1 : 1));
-          if (cfg.integerMode === 'both-neg') { divisor = -Math.abs(divisor); quotient = Math.abs(quotient); }
-          const dividend = divisor * quotient;
-          return { display: `${fmt(dividend)} ÷ ${fmt(divisor)} = ?`, answer: String(quotient), hint: `${fmt(dividend)} ÷ ${fmt(divisor)} = ${quotient}.`, submode: 'Signed Integer Division', tip: 'Same signs = positive; different signs = negative.' };
-        }
+        if (op === '+') { const ans = a + b; return { display: `${fmt(a)} + ${fmt(b)} = ?`, answer: String(ans), hint: `${fmt(a)} + ${fmt(b)} = ${ans}.`, submode: 'Signed Integer Addition', tip: 'Include negative sign if needed.' }; }
+        else if (op === '-') { const ans = a - b; return { display: `${fmt(a)} − ${fmt(b)} = ?`, answer: String(ans), hint: `${fmt(a)} − ${fmt(b)} = ${ans}.`, submode: 'Signed Integer Subtraction', tip: 'Include negative sign if needed.' }; }
+        else if (op === '*') { const ans = a * b; return { display: `${fmt(a)} × ${fmt(b)} = ?`, answer: String(ans), hint: `${fmt(a)} × ${fmt(b)} = ${ans}.`, submode: 'Signed Integer Multiplication', tip: 'Same signs = positive.' }; }
+        else { let divisor = randInt(2, 12) * (Math.random() < 0.5 ? -1 : 1); let quotient = randInt(2, 12); const dividend = divisor * quotient; return { display: `${fmt(dividend)} ÷ ${fmt(divisor)} = ?`, answer: String(quotient), hint: `Quotient is ${quotient}.`, submode: 'Signed Integer Division', tip: 'Type exact quotient.' }; }
       }
 
       if (domainId === 'fractions') {
@@ -1059,98 +888,39 @@
         else if (op === '-') { num = n1 * d2 - n2 * d1; den = d1 * d2; sym = '−'; }
         else if (op === '*') { num = n1 * n2; den = d1 * d2; sym = '×'; }
         else { num = n1 * d2; den = d1 * n2; sym = '÷'; }
-
-        const g = gcd(num, den);
-        num /= g; den /= g;
+        const g = gcd(num, den); num /= g; den /= g;
         if (den < 0) { num = -num; den = -den; }
         const ans = den === 1 ? `${num}` : `${num}/${den}`;
-        return {
-          display: `${n1}/${d1} ${sym} ${n2}/${d2} = ?`,
-          answer: ans,
-          hint: `Convert and simplify by GCD (${g}) to get ${ans}.`,
-          submode: 'Rational Fraction Arithmetic',
-          tip: 'Enter in simplest form a/b (or a whole number if denominator is 1).'
-        };
+        return { display: `${n1}/${d1} ${sym} ${n2}/${d2} = ?`, answer: ans, hint: `Simplifies to ${ans}.`, submode: 'Rational Fraction Arithmetic', tip: 'Enter in simplest form a/b.' };
       }
 
       if (domainId === 'decimals') {
         const a = (randInt(10, 250) / 10).toFixed(1);
         const b = (randInt(10, 150) / 10).toFixed(1);
         const nA = parseFloat(a), nB = parseFloat(b);
-        if (op === '+') {
-          const ans = Number((nA + nB).toFixed(2));
-          return { display: `${a} + ${b} = ?`, answer: String(ans), hint: `Line up decimal points: ${a} + ${b} = ${ans}.`, submode: 'Decimal Addition', tip: 'Type the exact decimal answer.' };
-        } else if (op === '-') {
-          const [hi, lo] = nA >= nB ? [nA, nB] : [nB, nA];
-          const ans = Number((hi - lo).toFixed(2));
-          return { display: `${hi.toFixed(1)} − ${lo.toFixed(1)} = ?`, answer: String(ans), hint: `Line up decimal points: ${hi.toFixed(1)} − ${lo.toFixed(1)} = ${ans}.`, submode: 'Decimal Subtraction', tip: 'Type the exact decimal answer.' };
-        } else if (op === '*') {
-          const ans = Number((nA * nB).toFixed(2));
-          return { display: `${a} × ${b} = ?`, answer: String(ans), hint: `Multiply and place decimal point: ${ans}.`, submode: 'Decimal Multiplication', tip: 'Type the exact decimal product.' };
-        } else {
-          const divisor = randInt(2, 8);
-          const quotient = Number((randInt(12, 95) / 10).toFixed(1));
-          const dividend = Number((divisor * quotient).toFixed(2));
-          return { display: `${dividend} ÷ ${divisor} = ?`, answer: String(quotient), hint: `${dividend} ÷ ${divisor} = ${quotient}.`, submode: 'Decimal Division', tip: 'Type the exact decimal quotient.' };
-        }
+        if (op === '+') { const ans = Number((nA + nB).toFixed(2)); return { display: `${a} + ${b} = ?`, answer: String(ans), hint: `Sum is ${ans}.`, submode: 'Decimal Addition', tip: 'Type exact decimal.' }; }
+        else if (op === '-') { const [hi, lo] = nA >= nB ? [nA, nB] : [nB, nA]; const ans = Number((hi - lo).toFixed(2)); return { display: `${hi} − ${lo} = ?`, answer: String(ans), hint: `Difference is ${ans}.`, submode: 'Decimal Subtraction', tip: 'Type exact decimal.' }; }
+        else if (op === '*') { const ans = Number((nA * nB).toFixed(2)); return { display: `${a} × ${b} = ?`, answer: String(ans), hint: `Product is ${ans}.`, submode: 'Decimal Multiplication', tip: 'Type exact decimal.' }; }
+        else { const divisor = randInt(2, 8); const quotient = Number((randInt(12, 95) / 10).toFixed(1)); const dividend = Number((divisor * quotient).toFixed(2)); return { display: `${dividend} ÷ ${divisor} = ?`, answer: String(quotient), hint: `Quotient is ${quotient}.`, submode: 'Decimal Division', tip: 'Type exact decimal.' }; }
       }
 
       if (domainId === 'exponents') {
-        const mode = randInt(1, 2);
-        if (mode === 1) {
-          const base = randInt(2, 9);
-          const exp = randInt(2, 4);
-          const ans = Math.pow(base, exp);
-          return {
-            display: `${base}${toSuperscript(exp)} = ?`,
-            answer: String(ans),
-            hint: `Multiply ${base} by itself ${exp} times: ${ans}.`,
-            submode: 'Evaluating Powers',
-            tip: 'Type the evaluated numeric value.'
-          };
-        } else {
-          const base = randInt(2, 9);
-          const e1 = randInt(2, 5), e2 = randInt(2, 5);
-          const sumExp = e1 + e2;
-          return {
-            display: `Simplify: ${base}${toSuperscript(e1)} · ${base}${toSuperscript(e2)}`,
-            answer: `${base}^${sumExp}`,
-            altAnswer: String(Math.pow(base, sumExp)),
-            hint: `Product Rule: Keep base ${base} and add exponents (${e1} + ${e2} = ${sumExp}) → ${base}${toSuperscript(sumExp)}.`,
-            submode: 'Law of Exponents (Product Rule)',
-            tip: `Use the xⁿ Exp button to enter ${base}${toSuperscript(sumExp)} (or type ${base}^${sumExp}).`
-          };
-        }
+        const base = randInt(2, 9);
+        const exp = randInt(2, 4);
+        const ans = Math.pow(base, exp);
+        return { display: `${base}${toSuperscript(exp)} = ?`, answer: String(ans), hint: `${base} to power ${exp} is ${ans}.`, submode: 'Evaluating Powers', tip: 'Type evaluated numeric value.' };
       }
 
       if (domainId === 'radicals') {
-        const rootType = randInt(1, 3);
-        if (rootType === 1) {
-          const r = randInt(2, 15);
-          return { display: `√(${r * r}) = ?`, answer: String(r), hint: `Since ${r}² = ${r * r}, √(${r * r}) = ${r}.`, submode: 'Principal Square Root', tip: 'Type the positive root.' };
-        } else if (rootType === 2) {
-          const r = randInt(2, 6);
-          return { display: `∛(${r * r * r}) = ?`, answer: String(r), hint: `Since ${r}³ = ${r * r * r}, ∛(${r * r * r}) = ${r}.`, submode: 'Cube Root', tip: 'Type the exact cube root.' };
-        } else {
-          const r = randInt(2, 4);
-          const val = Math.pow(r, 4);
-          return { display: `∜(${val}) = ?`, answer: String(r), hint: `Since ${r}⁴ = ${val}, ∜(${val}) = ${r}.`, submode: 'Fourth Root', tip: 'Type the exact fourth root.' };
-        }
+        const r = randInt(2, 12);
+        return { display: `√(${r * r}) = ?`, answer: String(r), hint: `Square root is ${r}.`, submode: 'Principal Square Root', tip: 'Type positive root.' };
       }
 
-      // Algebra Linear Equations
       const x = randInt(-10, 12) || 3;
       const m = randInt(2, 9);
       const b = randInt(-15, 15);
       const rhs = m * x + b;
-      const bStr = b >= 0 ? `+ ${b}` : `− ${Math.abs(b)}`;
-      return {
-        display: `${m}x ${bStr} = ${rhs}`,
-        answer: String(x),
-        hint: `Isolate ${m}x = ${rhs - b}, then divide by ${m} to get x = ${x}.`,
-        submode: 'Two-Step Linear Equation (Solve for x)',
-        tip: 'Type the numeric value of x.'
-      };
+      return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
     }
 
     // QUIZ LIFECYCLE
@@ -1159,13 +929,7 @@
       for (let i = 0; i < appState.config.count; i++) {
         questions.push(generateQuestionForDomain(appState.selectedDomain.id, appState.config));
       }
-      appState.quiz = {
-        questions,
-        currentIndex: 0,
-        score: 0,
-        chances: 3,
-        answeredCurrent: false
-      };
+      appState.quiz = { questions, currentIndex: 0, score: 0, chances: 3, answeredCurrent: false };
       switchTab('quiz');
       renderCurrentQuestion();
     }
@@ -1181,13 +945,10 @@
       document.getElementById('quiz-problem-submode').textContent = q.submode;
       document.getElementById('quiz-problem-display').textContent = q.display;
       document.getElementById('quiz-problem-tip').textContent = q.tip;
-
       renderChancesHearts();
 
       const fb = document.getElementById('quiz-feedback-box');
       fb.classList.add('hidden');
-      fb.innerHTML = '';
-
       const input = document.getElementById('quiz-answer-input');
       input.value = '';
       input.disabled = false;
@@ -1200,12 +961,7 @@
 
     function renderChancesHearts() {
       const container = document.getElementById('quiz-chances-container');
-      let html = '';
-      for (let i = 0; i < 3; i++) {
-        const active = i < appState.quiz.chances;
-        html += `<i class="fa-solid fa-heart ${active ? 'text-gold-400' : 'text-slate-700'} text-sm"></i>`;
-      }
-      container.innerHTML = html;
+      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-gold-400' : 'text-slate-700'} text-sm"></i>`).join('');
     }
 
     function handleQuizInputKeydown(e) {
@@ -1217,21 +973,13 @@
     }
 
     function checkCurrentAnswer() {
-      if (appState.quiz.answeredCurrent) {
-        nextQuestion();
-        return;
-      }
-
+      if (appState.quiz.answeredCurrent) { nextQuestion(); return; }
       const inputEl = document.getElementById('quiz-answer-input');
       const rawUser = inputEl.value.trim();
       if (!rawUser) return;
 
       const q = appState.quiz.questions[appState.quiz.currentIndex];
-      const normUser = normalizeMathInput(rawUser);
-      const normAns = normalizeMathInput(q.answer);
-      const normAlt = q.altAnswer ? normalizeMathInput(q.altAnswer) : null;
-
-      const isCorrect = (normUser === normAns) || (normAlt && normUser === normAlt);
+      const isCorrect = normalizeMathInput(rawUser) === normalizeMathInput(q.answer);
       const fb = document.getElementById('quiz-feedback-box');
       fb.classList.remove('hidden');
 
@@ -1245,15 +993,14 @@
       } else {
         appState.quiz.chances--;
         renderChancesHearts();
-
         if (appState.quiz.chances > 0) {
           fb.className = 'p-3.5 rounded-xl text-xs font-medium border bg-amber-950/80 border-amber-500/50 text-amber-200';
-          fb.innerHTML = `<div class="font-bold text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Not quite right. You have ${appState.quiz.chances} attempt(s) remaining.</div>`;
+          fb.innerHTML = `<div class="font-bold text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Incorrect. ${appState.quiz.chances} attempt(s) left.</div>`;
           inputEl.select();
         } else {
           appState.quiz.answeredCurrent = true;
           fb.className = 'p-3.5 rounded-xl text-xs font-medium border bg-red-950/80 border-red-500/50 text-red-200';
-          fb.innerHTML = `<div class="font-bold text-red-400 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Out of attempts! Correct Answer: <span class="font-mono text-gold-300">${q.answer}</span></div><div>${q.hint}</div>`;
+          fb.innerHTML = `<div class="font-bold text-red-400 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Answer: <span class="font-mono text-gold-300">${q.answer}</span></div><div>${q.hint}</div>`;
           lockQuestionAndShowNext();
         }
       }
@@ -1262,9 +1009,7 @@
     function lockQuestionAndShowNext() {
       const btn = document.getElementById('btn-check-answer');
       const isLast = appState.quiz.currentIndex >= appState.quiz.questions.length - 1;
-      btn.innerHTML = isLast
-        ? `<span>Finish</span><i class="fa-solid fa-flag-checkered"></i>`
-        : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
+      btn.innerHTML = isLast ? `<span>Finish</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
       btn.onclick = nextQuestion;
     }
 
@@ -1280,25 +1025,19 @@
     function insertToolbarSymbol(sym) {
       const input = document.getElementById('quiz-answer-input');
       const start = input.selectionStart || input.value.length;
-      const end = input.selectionEnd || input.value.length;
-      input.value = input.value.slice(0, start) + sym + input.value.slice(end);
+      input.value = input.value.slice(0, start) + sym + input.value.slice(input.selectionEnd || input.value.length);
       input.focus();
     }
 
     function openExponentSuperscriptPrompt() {
-      const exp = prompt('Enter exponent value (e.g., 2, 3, -1):');
-      if (exp !== null && exp.trim() !== '') {
-        insertToolbarSymbol(toSuperscript(exp.trim()));
-      }
+      const exp = prompt('Enter exponent value:');
+      if (exp) insertToolbarSymbol(toSuperscript(exp.trim()));
     }
 
     function confirmExitQuiz() {
-      if (confirm('Exit current practice session? Progress will not be saved.')) {
-        switchTab('home');
-      }
+      if (confirm('Exit current practice session? Progress will not be saved.')) switchTab('home');
     }
 
-    // RESULTS & CENTRALIZED GOOGLE SHEET SUBMISSION
     function getMasteryRating(pct) {
       if (pct >= 90) return 'Advanced Mastery';
       if (pct >= 75) return 'Proficient';
@@ -1310,90 +1049,163 @@
       const score = appState.quiz.score;
       const total = appState.quiz.questions.length;
       const pct = Math.round((score / total) * 100);
-      const rating = getMasteryRating(pct);
-
       document.getElementById('results-score-display').textContent = `${score} / ${total}`;
       document.getElementById('results-percentage-display').textContent = `${pct}%`;
-      document.getElementById('results-mastery-display').textContent = rating;
-
-      if (appState.activeClassCode) {
-        document.getElementById('student-code-input').value = appState.activeClassCode;
-      }
-
+      document.getElementById('results-mastery-display').textContent = getMasteryRating(pct);
+      if (appState.activeClassCode) document.getElementById('student-code-input').value = appState.activeClassCode;
       switchTab('results');
     }
 
+    // --- FIRESTORE DATABASE SYNC FUNCTIONS ---
     async function finalizeStudentSubmission() {
       const nameInput = document.getElementById('student-name-input');
       const studentName = nameInput.value.trim();
-      if (!studentName) {
-        alert('Please enter your Full Name to record your score.');
-        nameInput.focus();
-        return;
-      }
+      if (!studentName) { alert('Please enter your Full Name.'); nameInput.focus(); return; }
 
       const studentSection = document.getElementById('student-section-input').value.trim() || 'General';
       const classCode = (document.getElementById('student-code-input').value.trim() || appState.activeClassCode || 'GENERAL').toUpperCase();
-
       const score = appState.quiz.score;
       const total = appState.quiz.questions.length;
       const percentage = Math.round((score / total) * 100);
-      const mastery = getMasteryRating(percentage);
-      const configDetails = `${appState.config.digits}D | Ops: ${appState.config.operations.join('')}`;
 
       const record = {
-        id: 'local_' + Date.now(),
         timestamp: new Date().toISOString(),
         studentName,
         studentSection,
         classCode,
         categoryTitle: appState.selectedDomain.title,
         submode: appState.quiz.questions[0]?.submode || 'Standard',
-        configDetails,
+        configDetails: `${appState.config.digits}D | Ops: ${appState.config.operations.join('')}`,
         score,
         total,
         percentage,
-        mastery
+        mastery: getMasteryRating(percentage)
       };
 
-      appState.scores.unshift(record);
-      appState.scores = appState.scores.slice(0, 100);
-      try {
-        localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores));
-      } catch (e) {}
-
       const statusEl = document.getElementById('results-sync-status');
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i><span>Saving to Firebase Firestore...</span>`;
 
-      // 1. Direct Apps Script Bridge (if hosted inside the same Google Apps Script project)
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Recording to Google Sheet...</span>`;
-        google.script.run
-          .withSuccessHandler(() => {
-            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Central Google Sheet!</span>`;
-            openCertificateModal(record);
-          })
-          .withFailureHandler(() => {
-            openCertificateModal(record);
-          })
-          .recordScoreToSheet(record);
-        return;
-      }
-
-      // 2. Central Webhook URL (for standalone/external hosting across any device)
-      if (appState.webhookUrl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Syncing score to Google Sheet...</span>`;
-        try {
-          const url = new URL(appState.webhookUrl);
-          url.searchParams.set('action', 'log');
-          Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
-          await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
-          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Central Google Sheet!</span>`;
-        } catch (err) {
-          statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally (Cloud offline)</span>`;
-        }
+      try {
+        await db.collection('student_scores').add({
+          ...record,
+          serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
+        });
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Firestore Cloud!</span>`;
+      } catch (err) {
+        console.error("Firestore error:", err);
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally (Firestore offline)</span>`;
+        appState.scores.unshift({ id: 'local_' + Date.now(), ...record });
+        localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores));
       }
 
       openCertificateModal(record);
+    }
+
+    async function pullScoresFromFirestore() {
+      const spinner = document.getElementById('sync-spinner');
+      if (spinner) spinner.classList.add('fa-spin');
+      const filterCode = (document.getElementById('filter-classcode')?.value || appState.activeClassCode || 'ALL').trim().toUpperCase();
+
+      try {
+        let query = db.collection('student_scores').orderBy('timestamp', 'desc');
+        if (filterCode && filterCode !== 'ALL') {
+          query = query.where('classCode', '==', filterCode);
+        }
+        const snapshot = await query.limit(100).get();
+        const records = [];
+        snapshot.forEach(doc => records.push({ id: doc.id, ...doc.data() }));
+        appState.scores = records;
+        renderScoresTable();
+      } catch (err) {
+        console.warn("Firestore fetch fallback to local:", err);
+        const local = localStorage.getItem(STORAGE_KEYS.SCORES);
+        if (local) appState.scores = JSON.parse(local);
+        renderScoresTable();
+      } finally {
+        if (spinner) spinner.classList.remove('fa-spin');
+      }
+    }
+
+    function renderScoresTable() {
+      const tbody = document.getElementById('scores-table-body');
+      const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
+      const filtered = appState.scores.filter(s => !filterVal || filterVal === 'ALL' || (s.classCode || '').toUpperCase().includes(filterVal));
+
+      if (filtered.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found in Firestore. Complete a practice session!</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.slice(0, 50).map(s => `
+        <tr class="hover:bg-navy-900/60 transition">
+          <td class="py-3 px-4 text-slate-400 whitespace-nowrap">${new Date(s.timestamp).toLocaleString()}</td>
+          <td class="py-3 px-4 font-bold text-white">${escapeHtml(s.studentName)}</td>
+          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.studentSection)}</td>
+          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 font-mono font-bold">${escapeHtml(s.classCode)}</span></td>
+          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.categoryTitle)} <span class="text-slate-500 text-[10px]">(${escapeHtml(s.submode)})</span></td>
+          <td class="py-3 px-4 text-center font-mono font-bold text-gold-400">${s.score}/${s.total}</td>
+          <td class="py-3 px-4 text-center font-mono font-bold text-emerald-400">${s.percentage}%</td>
+          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-gold-300">${escapeHtml(s.mastery)}</span></td>
+        </tr>
+      `).join('');
+    }
+
+    function exportScoresToCSV() {
+      if (!appState.scores.length) { alert('No scores available.'); return; }
+      const headers = ['Timestamp', 'Student Name', 'Grade & Section', 'Class Code', 'Category', 'Submode', 'Score', 'Total', 'Accuracy %', 'Mastery'];
+      const rows = appState.scores.map(s => [new Date(s.timestamp).toLocaleString(), s.studentName, s.studentSection, s.classCode, s.categoryTitle, s.submode, s.score, s.total, s.percentage + '%', s.mastery]);
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `PROJECT_PRIME_Firestore_Scores_${new Date().toISOString().slice(0, 10)}.csv`;
+      link.click();
+    }
+
+    function applyActiveTeacherFilter() {
+      if (appState.activeClassCode) {
+        document.getElementById('filter-classcode').value = appState.activeClassCode;
+        pullScoresFromFirestore();
+      } else {
+        openClassCodeModal();
+      }
+    }
+
+    function openClassCodeModal() { document.getElementById('modal-class-code').classList.remove('hidden'); }
+    function closeClassCodeModal() { document.getElementById('modal-class-code').classList.add('hidden'); }
+    function openCloudSyncModal() { document.getElementById('modal-cloud-sync').classList.remove('hidden'); }
+    function closeCloudSyncModal() { document.getElementById('modal-cloud-sync').classList.add('hidden'); }
+
+    function generateTeacherClassCode() {
+      const last = document.getElementById('teacher-lastname-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+      const sec = document.getElementById('teacher-section-input').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
+      if (!last) { alert('Please enter your Teacher Last Name.'); return; }
+      const code = sec ? `${last}-${sec}` : last;
+      setActiveTeacherCode(code);
+      document.getElementById('display-generated-code').textContent = code;
+      document.getElementById('display-generated-link').value = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(code)}`;
+      document.getElementById('generated-code-box').classList.remove('hidden');
+    }
+
+    function setActiveTeacherCode(code) {
+      appState.activeClassCode = code;
+      try { localStorage.setItem(STORAGE_KEYS.CLASS_CODE, code); } catch (e) {}
+      document.getElementById('banner-code-display').textContent = code;
+      document.getElementById('classroom-banner').classList.remove('hidden');
+    }
+
+    function clearActiveTeacherCode() {
+      appState.activeClassCode = '';
+      try { localStorage.removeItem(STORAGE_KEYS.CLASS_CODE); } catch (e) {}
+      document.getElementById('classroom-banner').classList.add('hidden');
+    }
+
+    function copyGeneratedCode() { navigator.clipboard.writeText(appState.activeClassCode); }
+    function copyGeneratedLink() {
+      navigator.clipboard.writeText(document.getElementById('display-generated-link').value);
+      const btn = document.getElementById('btn-copy-link');
+      btn.textContent = 'Copied!';
+      setTimeout(() => btn.textContent = 'Copy Link', 1500);
     }
 
     function openCertificateModal(rec) {
@@ -1414,230 +1226,8 @@
       switchTab('scores');
     }
 
-    // SCORE REGISTRY & CLOUD PULL FROM THE SINGLE GOOGLE SHEET
-    function renderScoresTable() {
-      const tbody = document.getElementById('scores-table-body');
-      const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
-
-      const filtered = appState.scores.filter(s => {
-        if (!filterVal || filterVal === 'ALL') return true;
-        return (s.classCode || '').toUpperCase().includes(filterVal);
-      });
-
-      if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found. Complete a practice session or click "Pull From Cloud".</td></tr>`;
-        return;
-      }
-
-      tbody.innerHTML = filtered.slice(0, 50).map(s => `
-        <tr class="hover:bg-navy-900/60 transition">
-          <td class="py-3 px-4 text-slate-400 whitespace-nowrap">${new Date(s.timestamp).toLocaleString()}</td>
-          <td class="py-3 px-4 font-bold text-white">${escapeHtml(s.studentName)}</td>
-          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.studentSection)}</td>
-          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 font-mono font-bold">${escapeHtml(s.classCode)}</span></td>
-          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.categoryTitle)} <span class="text-slate-500 text-[10px]">(${escapeHtml(s.submode)})</span></td>
-          <td class="py-3 px-4 text-center font-mono font-bold text-gold-400">${s.score}/${s.total}</td>
-          <td class="py-3 px-4 text-center font-mono font-bold text-emerald-400">${s.percentage}%</td>
-          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-gold-300">${escapeHtml(s.mastery)}</span></td>
-        </tr>
-      `).join('');
-    }
-
-    async function pullScoresFromCloud() {
-      const filterCode = (document.getElementById('filter-classcode').value || appState.activeClassCode || 'ALL').trim().toUpperCase();
-      const spinner = document.getElementById('sync-spinner');
-      spinner.classList.add('fa-spin');
-
-      // 1. Direct Apps Script Bridge (if hosted inside the Google Sheet's Apps Script)
-      if (typeof google !== 'undefined' && google.script && google.script.run) {
-        google.script.run
-          .withSuccessHandler(records => {
-            spinner.classList.remove('fa-spin');
-            if (Array.isArray(records)) {
-              appState.scores = records;
-              try { localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores)); } catch (e) {}
-              renderScoresTable();
-            }
-          })
-          .withFailureHandler(() => {
-            spinner.classList.remove('fa-spin');
-            alert('Failed to query Google Sheet.');
-          })
-          .queryScoresFromSheet(filterCode);
-        return;
-      }
-
-      // 2. Central Webhook URL (if hosted externally)
-      if (!appState.webhookUrl) {
-        spinner.classList.remove('fa-spin');
-        openCloudSyncModal();
-        return;
-      }
-
-      try {
-        const url = new URL(appState.webhookUrl);
-        url.searchParams.set('action', 'fetch');
-        url.searchParams.set('code', filterCode);
-
-        const res = await fetch(url.toString());
-        const data = await res.json();
-        if (data && Array.isArray(data.records)) {
-          appState.scores = data.records;
-          try { localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores)); } catch (e) {}
-          renderScoresTable();
-        }
-      } catch (err) {
-        alert('Could not pull scores from Cloud. Verify your Google Apps Script Web App URL and ensure access is set to "Anyone".');
-      } finally {
-        spinner.classList.remove('fa-spin');
-      }
-    }
-
-    function exportScoresToCSV() {
-      if (!appState.scores.length) {
-        alert('No scores available to export.');
-        return;
-      }
-      const headers = ['Timestamp', 'Student Name', 'Grade & Section', 'Class Code', 'Category', 'Submode', 'Score', 'Total', 'Accuracy %', 'Mastery'];
-      const rows = appState.scores.map(s => [
-        new Date(s.timestamp).toLocaleString(),
-        s.studentName,
-        s.studentSection,
-        s.classCode,
-        s.categoryTitle,
-        s.submode,
-        s.score,
-        s.total,
-        s.percentage + '%',
-        s.mastery
-      ]);
-      const csvContent = [headers, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
-      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = `PROJECT_PRIME_Scores_${new Date().toISOString().slice(0, 10)}.csv`;
-      link.click();
-    }
-
-    function clearRegistryPromp() {
-      if (confirm('Clear all locally cached score records on this browser?')) {
-        appState.scores = [];
-        localStorage.removeItem(STORAGE_KEYS.SCORES);
-        renderScoresTable();
-      }
-    }
-
-    function applyActiveTeacherFilter() {
-      if (appState.activeClassCode) {
-        document.getElementById('filter-classcode').value = appState.activeClassCode;
-        renderScoresTable();
-      } else {
-        openClassCodeModal();
-      }
-    }
-
-    // TEACHER CLASS CODE MODAL LOGIC
-    function openClassCodeModal() {
-      document.getElementById('modal-class-code').classList.remove('hidden');
-    }
-
-    function closeClassCodeModal() {
-      document.getElementById('modal-class-code').classList.add('hidden');
-    }
-
-    function generateTeacherClassCode() {
-      const last = document.getElementById('teacher-lastname-input').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
-      const sec = document.getElementById('teacher-section-input').value.trim().toUpperCase().replace(/[^A-Z0-9-]/g, '');
-      if (!last) {
-        alert('Please enter your Teacher Last Name or ID.');
-        return;
-      }
-      const code = sec ? `${last}-${sec}` : last;
-      setActiveTeacherCode(code);
-
-      document.getElementById('display-generated-code').textContent = code;
-      const shareUrl = `${window.location.origin}${window.location.pathname}?code=${encodeURIComponent(code)}`;
-      document.getElementById('display-generated-link').value = shareUrl;
-      document.getElementById('generated-code-box').classList.remove('hidden');
-    }
-
-    function setActiveTeacherCode(code) {
-      appState.activeClassCode = code;
-      try { localStorage.setItem(STORAGE_KEYS.CLASS_CODE, code); } catch (e) {}
-      document.getElementById('banner-code-display').textContent = code;
-      document.getElementById('classroom-banner').classList.remove('hidden');
-    }
-
-    function clearActiveTeacherCode() {
-      appState.activeClassCode = '';
-      try { localStorage.removeItem(STORAGE_KEYS.CLASS_CODE); } catch (e) {}
-      document.getElementById('classroom-banner').classList.add('hidden');
-    }
-
-    function copyGeneratedCode() {
-      navigator.clipboard.writeText(appState.activeClassCode);
-    }
-
-    function copyGeneratedLink() {
-      const linkInput = document.getElementById('display-generated-link');
-      navigator.clipboard.writeText(linkInput.value);
-      const btn = document.getElementById('btn-copy-link');
-      btn.textContent = 'Copied!';
-      setTimeout(() => { btn.textContent = 'Copy Link'; }, 1500);
-    }
-
-    // CLOUD SYNC MODAL LOGIC
-    function openCloudSyncModal() {
-      document.getElementById('modal-cloud-sync').classList.remove('hidden');
-    }
-
-    function closeCloudSyncModal() {
-      document.getElementById('modal-cloud-sync').classList.add('hidden');
-    }
-
-    function saveCloudWebhookUrl() {
-      const url = document.getElementById('cloud-webhook-input').value.trim();
-      appState.webhookUrl = url;
-      try { localStorage.setItem(STORAGE_KEYS.WEBHOOK, url); } catch (e) {}
-      const resEl = document.getElementById('cloud-test-result');
-      resEl.classList.remove('hidden');
-      resEl.className = 'text-center text-xs font-semibold py-1 text-emerald-400';
-      resEl.textContent = 'Cloud endpoint saved!';
-    }
-
-    async function testCloudConnection() {
-      const urlStr = document.getElementById('cloud-webhook-input').value.trim();
-      const resEl = document.getElementById('cloud-test-result');
-      resEl.classList.remove('hidden');
-      if (!urlStr) {
-        resEl.className = 'text-center text-xs font-semibold py-1 text-red-400';
-        resEl.textContent = 'Please paste your Google Apps Script Web App URL first.';
-        return;
-      }
-      resEl.className = 'text-center text-xs font-semibold py-1 text-sky-400';
-      resEl.textContent = 'Testing connection...';
-      try {
-        const u = new URL(urlStr);
-        u.searchParams.set('action', 'ping');
-        const response = await fetch(u.toString());
-        const data = await response.json();
-        if (data.status === 'active') {
-          resEl.className = 'text-center text-xs font-semibold py-1 text-emerald-400';
-          resEl.textContent = 'Connected! ' + data.message;
-        } else {
-          resEl.className = 'text-center text-xs font-semibold py-1 text-amber-400';
-          resEl.textContent = 'Endpoint responded with status: ' + data.status;
-        }
-      } catch (e) {
-        resEl.className = 'text-center text-xs font-semibold py-1 text-red-400';
-        resEl.textContent = 'Connection failed. Ensure Web App is deployed with "Who has access: Anyone".';
-      }
-    }
-
-    // GUIDES RENDERER
     function renderGuides() {
-      const container = document.getElementById('guides-container');
-      container.innerHTML = STUDY_GUIDES.map(g => `
+      document.getElementById('guides-container').innerHTML = STUDY_GUIDES.map(g => `
         <div class="glass-panel p-5 rounded-2xl space-y-2">
           <h3 class="text-base font-bold text-gold-400">${g.title}</h3>
           <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5 leading-relaxed">
@@ -1648,11 +1238,7 @@
     }
 
     function escapeHtml(str) {
-      return String(str || '')
-        .replace(/&/g, '&amp;')
-        .replace(/</g, '&lt;')
-        .replace(/>/g, '&gt;')
-        .replace(/"/g, '&quot;');
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     }
   </script>
 </body>
