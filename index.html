@@ -29,10 +29,6 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-  <!-- Firebase SDK (Compat Version for Web) -->
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-app-compat.js"></script>
-  <script src="https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore-compat.js"></script>
-
   <style>
     body {
       background: radial-gradient(circle at top, #1e293b 0%, #0f172a 45%, #020617 100%);
@@ -93,9 +89,7 @@
         <div>
           <div class="flex items-center gap-2">
             <h1 class="text-base md:text-lg font-black tracking-tight text-white">PROJECT <span class="text-gold-400">PRIME</span></h1>
-            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Live Sync
-            </span>
+            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 border border-gold-500/30">Google Sheet Storage</span>
           </div>
           <p class="text-[11px] text-slate-400 hidden sm:block">Program for Remediation & Improvement in Mathematics Education</p>
         </div>
@@ -113,8 +107,8 @@
           <span>Teacher Code</span>
         </button>
 
-        <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-orange-900/40 border border-orange-500/40 text-orange-300 hover:bg-orange-800/50 transition" title="Firestore Status">
-          <i class="fa-solid fa-fire text-amber-400"></i>
+        <button onclick="openCloudSyncModal()" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-blue-900/40 border border-blue-500/40 text-blue-300 hover:bg-blue-800/50 transition" title="Google Sheet Status">
+          <i class="fa-solid fa-cloud text-sky-400"></i>
           <span class="hidden sm:inline">Cloud DB</span>
         </button>
 
@@ -137,7 +131,7 @@
         <span>Active Teacher Code: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
       </div>
       <div class="flex items-center gap-2">
-        <span class="text-[11px] text-emerald-400 hidden sm:inline">Auto-syncing pooled results across all devices</span>
+        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores beam straight to central Google Sheet</span>
         <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
       </div>
     </div>
@@ -322,7 +316,7 @@
         </div>
         <div>
           <h3 class="text-2xl md:text-3xl font-extrabold text-white">Session Completed!</h3>
-          <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement in Firestore.</p>
+          <p class="text-xs text-slate-400 mt-1">Encode your student information to record your achievement in the Google Sheet.</p>
         </div>
 
         <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
@@ -360,8 +354,8 @@
         </div>
 
         <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
-          <i class="fa-solid fa-fire text-amber-400"></i>
-          <span>Ready to record to Firestore Cloud Database</span>
+          <i class="fa-solid fa-cloud text-sky-400"></i>
+          <span>Ready to record to central Google Sheet</span>
         </div>
 
         <div class="flex flex-col sm:flex-row gap-3 pt-2">
@@ -380,9 +374,13 @@
         <div>
           <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
           <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-          <p class="text-xs text-slate-400">Real-time pooled student submissions automatically synchronized by class code.</p>
+          <p class="text-xs text-slate-400">Student submissions pooled directly from the central Google Sheet across devices.</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
+            <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
+            <span>Pull From Google Sheet</span>
+          </button>
           <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
             <i class="fa-solid fa-file-excel"></i>
             <span>Export CSV</span>
@@ -445,7 +443,7 @@
         </div>
         <button onclick="closeClassCodeModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
-      <p class="text-xs text-slate-300">Generate your unique class code. Students using this code will automatically populate your live registry across all devices!</p>
+      <p class="text-xs text-slate-300">Generate your unique class code. Students using this code will automatically record their scores into the central Google Sheet!</p>
       <div class="space-y-3">
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
@@ -472,22 +470,18 @@
     </div>
   </div>
 
-  <!-- MODAL 2: CLOUD DB STATUS -->
+  <!-- MODAL 2: GOOGLE SHEET STATUS -->
   <div id="modal-cloud-sync" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-amber-500/40">
+    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-sky-500/40">
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-fire text-amber-400"></i>
-          <h3 class="text-base font-bold text-white">Firestore Cloud Status</h3>
+          <i class="fa-solid fa-cloud text-sky-400"></i>
+          <h3 class="text-base font-bold text-white">Central Google Sheet Storage</h3>
         </div>
         <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
       <div class="space-y-3 text-xs text-slate-300">
-        <p>Connected to pooled Firestore project <code class="text-amber-300 font-mono">projectprime-700f9</code> with real-time listeners enabled.</p>
-        <div class="bg-navy-900 p-3 rounded-xl border border-amber-500/30 space-y-1">
-          <div class="text-slate-400">Project ID: <span class="text-white font-mono">projectprime-700f9</span></div>
-          <div class="text-slate-400">Sync Engine: <span class="text-emerald-400 font-mono">Real-Time WebSocket (Active)</span></div>
-        </div>
+        <p>This application is hosted directly on your Google Sheet Apps Script Web App. All student submissions automatically log to the <code class="text-sky-300 font-mono">Student_Scores</code> worksheet.</p>
         <button onclick="closeCloudSyncModal()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Close</button>
       </div>
     </div>
@@ -532,21 +526,8 @@
     </div>
   </div>
 
-  <!-- APPLICATION JAVASCRIPT & REAL-TIME FIRESTORE ENGINE -->
+  <!-- APPLICATION JAVASCRIPT & GOOGLE APPS SCRIPT ENGINE -->
   <script>
-    // --- FIRESTORE CONFIGURATION & INITIALIZATION ---
-    const firebaseConfig = {
-      apiKey: "AIzaSyB1qxxxsRGXGU7uHERqDqAktjP4yRHyvCc",
-      authDomain: "projectprime-700f9.firebaseapp.com",
-      projectId: "projectprime-700f9",
-      storageBucket: "projectprime-700f9.firebasestorage.app",
-      messagingSenderId: "892975493362",
-      appId: "1:892975493362:web:779f040f182db9ea2fe06b"
-    };
-
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.firestore();
-
     const STORAGE_KEYS = {
       CLASS_CODE: 'PRIME_ACTIVE_CLASS_CODE'
     };
@@ -695,11 +676,8 @@
         chances: 3,
         answeredCurrent: false
       },
-      scores: [],
-      activeClassCode: ''
+      scores: []
     };
-
-    let unsubscribeSnapshot = null;
 
     // INITIALIZATION
     window.addEventListener('DOMContentLoaded', () => {
@@ -707,14 +685,16 @@
       renderCategoriesGrid();
       renderGuides();
       checkUrlParameters();
-      initRealtimeFirestoreListener();
+      pullScoresFromCloud();
     });
 
     function loadSavedState() {
       try {
         const savedCode = localStorage.getItem(STORAGE_KEYS.CLASS_CODE);
         if (savedCode) {
-          setActiveTeacherCode(savedCode);
+          appState.activeClassCode = savedCode;
+          document.getElementById('banner-code-display').textContent = savedCode;
+          document.getElementById('classroom-banner').classList.remove('hidden');
           document.getElementById('filter-classcode').value = savedCode;
         }
       } catch (e) {
@@ -732,29 +712,6 @@
       }
     }
 
-    // REAL-TIME FIRESTORE LISTENER (Auto-syncs pooled storage across devices)
-    function initRealtimeFirestoreListener() {
-      if (unsubscribeSnapshot) unsubscribeSnapshot();
-
-      const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
-
-      let query = db.collection('student_scores').orderBy('timestamp', 'desc');
-      if (filterVal && filterVal !== 'ALL') {
-        query = query.where('classCode', '==', filterVal);
-      }
-
-      unsubscribeSnapshot = query.limit(100).onSnapshot(snapshot => {
-        const records = [];
-        snapshot.forEach(doc => {
-          records.push({ id: doc.id, ...doc.data() });
-        });
-        appState.scores = records;
-        renderScoresTable();
-      }, err => {
-        console.warn("Firestore real-time listener error:", err);
-      });
-    }
-
     // NAVIGATION
     function switchTab(tabName) {
       appState.activeTab = tabName;
@@ -763,7 +720,7 @@
         const el = document.getElementById('view-' + v);
         if (el) el.classList.toggle('hidden', v !== tabName);
       });
-      if (tabName === 'scores') renderScoresTable();
+      if (tabName === 'scores') pullScoresFromCloud();
     }
 
     function renderCategoriesGrid() {
@@ -1069,7 +1026,7 @@
       switchTab('results');
     }
 
-    // --- FIRESTORE SUBMISSION & AUTO-SYNC ---
+    // --- GOOGLE APPS SCRIPT SUBMISSION & CLOUD PULL ---
     async function finalizeStudentSubmission() {
       const nameInput = document.getElementById('student-name-input');
       const studentName = nameInput.value.trim();
@@ -1096,20 +1053,71 @@
       };
 
       const statusEl = document.getElementById('results-sync-status');
-      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-400"></i><span>Syncing to pooled Firestore storage...</span>`;
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Recording to central Google Sheet...</span>`;
 
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(() => {
+            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Google Sheet!</span>`;
+            openCertificateModal(record);
+          })
+          .withFailureHandler(() => {
+            openCertificateModal(record);
+          })
+          .recordScoreToSheet(record);
+        return;
+      }
+
+      // Standalone web app fetch fallback
       try {
-        await db.collection('student_scores').add({
-          ...record,
-          serverTimestamp: firebase.firestore.FieldValue.serverTimestamp()
-        });
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Successfully synced to pooled cloud storage!</span>`;
+        const url = new URL(window.location.href);
+        url.searchParams.set('action', 'log');
+        Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
+        await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Google Sheet!</span>`;
       } catch (err) {
-        console.error("Firestore sync error:", err);
-        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally (Firestore offline)</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally</span>`;
       }
 
       openCertificateModal(record);
+    }
+
+    async function pullScoresFromCloud() {
+      const spinner = document.getElementById('sync-spinner');
+      if (spinner) spinner.classList.add('fa-spin');
+      const filterCode = (document.getElementById('filter-classcode')?.value || appState.activeClassCode || 'ALL').trim().toUpperCase();
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(records => {
+            if (spinner) spinner.classList.remove('fa-spin');
+            if (Array.isArray(records)) {
+              appState.scores = records;
+              renderScoresTable();
+            }
+          })
+          .withFailureHandler(() => {
+            if (spinner) spinner.classList.remove('fa-spin');
+          })
+          .queryScoresFromSheet(filterCode);
+        return;
+      }
+
+      try {
+        const url = new URL(window.location.href);
+        url.searchParams.set('action', 'fetch');
+        url.searchParams.set('code', filterCode);
+        const res = await fetch(url.toString());
+        const data = await res.json();
+        if (data && Array.isArray(data.records)) {
+          appState.scores = data.records;
+          renderScoresTable();
+        }
+      } catch (err) {
+        console.warn('Pull error:', err);
+      } finally {
+        if (spinner) spinner.classList.remove('fa-spin');
+      }
     }
 
     function renderScoresTable() {
@@ -1122,7 +1130,7 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found for class code: <strong class="text-gold-400">${filterVal || 'ALL'}</strong></td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No score records found for code: <strong class="text-gold-400">${filterVal || 'ALL'}</strong>. Click "Pull From Google Sheet".</td></tr>`;
         return;
       }
 
@@ -1155,7 +1163,7 @@
     function applyActiveTeacherFilter() {
       if (appState.activeClassCode) {
         document.getElementById('filter-classcode').value = appState.activeClassCode;
-        initRealtimeFirestoreListener();
+        pullScoresFromCloud();
       } else {
         openClassCodeModal();
       }
@@ -1177,7 +1185,7 @@
       document.getElementById('display-generated-link').value = shareUrl;
       document.getElementById('generated-code-box').classList.remove('hidden');
       document.getElementById('filter-classcode').value = code;
-      initRealtimeFirestoreListener();
+      pullScoresFromCloud();
     }
 
     function setActiveTeacherCode(code) {
@@ -1192,7 +1200,7 @@
       try { localStorage.removeItem(STORAGE_KEYS.CLASS_CODE); } catch (e) {}
       document.getElementById('classroom-banner').classList.add('hidden');
       document.getElementById('filter-classcode').value = 'ALL';
-      initRealtimeFirestoreListener();
+      pullScoresFromCloud();
     }
 
     function copyGeneratedCode() { navigator.clipboard.writeText(appState.activeClassCode); }
