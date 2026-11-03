@@ -407,7 +407,7 @@
             </div>
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
-              <input type="text" id="student-code-input" placeholder="e.g., DELACRUZ-8A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+              <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
             </div>
           </div>
         </div>
@@ -415,7 +415,7 @@
         <!-- Cloud Sync Status Indicator -->
         <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
           <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span>Ready to record to cloud & registry</span>
+          <span>Ready to record to centralized Google Sheet & registry</span>
         </div>
 
         <!-- Submission Actions -->
@@ -437,7 +437,7 @@
         <div>
           <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Mastery Ledger</span>
           <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-          <p class="text-xs text-slate-400">Student submissions saved locally and pulled directly from Google Sheets across devices.</p>
+          <p class="text-xs text-slate-400">Student submissions saved locally and pulled directly from the single Google Sheet storage across devices.</p>
         </div>
 
         <div class="flex flex-wrap items-center gap-2">
@@ -459,7 +459,7 @@
       <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
         <div class="relative flex-grow w-full">
           <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
-          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., DELACRUZ-8A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+          <input type="text" id="filter-classcode" placeholder="Filter by Teacher Class Code (e.g., REYES-9A or type ALL)..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
         </div>
         <button onclick="applyActiveTeacherFilter()" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-bold navy-btn whitespace-nowrap">
           Apply My Code
@@ -522,21 +522,21 @@
       </div>
 
       <p class="text-xs text-slate-300">
-        Generate a unique code for your students. Scores tagged with this code can be pulled and downloaded on any browser or device!
+        Generate a unique code for your students. You do not need to create your own Google Sheet—all scores tagged with your code are stored in the central database and can be filtered and downloaded on any device!
       </p>
 
       <div class="space-y-3">
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Last Name / ID</label>
-          <input type="text" id="teacher-lastname-input" placeholder="e.g., DELACRUZ" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <input type="text" id="teacher-lastname-input" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
         </div>
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Grade & Section</label>
-          <input type="text" id="teacher-section-input" placeholder="e.g., 8A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <input type="text" id="teacher-section-input" placeholder="e.g., 9A or 10-NEWTON" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
         </div>
 
         <button onclick="generateTeacherClassCode()" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">
-          Generate & Activate Class Code
+          Generate My Class Code
         </button>
       </div>
 
@@ -565,7 +565,7 @@
       <div class="flex items-center justify-between border-b border-slate-800 pb-3">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-cloud text-sky-400"></i>
-          <h3 class="text-base font-bold text-white">Google Sheet Cloud Sync</h3>
+          <h3 class="text-base font-bold text-white">Central Google Sheet Storage</h3>
         </div>
         <button onclick="closeCloudSyncModal()" class="text-slate-400 hover:text-white">
           <i class="fa-solid fa-xmark"></i>
@@ -574,13 +574,13 @@
 
       <div class="space-y-3 text-xs text-slate-300">
         <p>
-          Connect your Google Sheet Web App URL so that when students submit their quizzes on phones, tablets, or computers, their scores beam straight into Google Sheets and sync across all devices.
+          All devices connect to a single Google Sheet Apps Script Web App URL for centralized storage.
         </p>
 
         <div>
           <label class="block text-[11px] font-bold text-sky-300 uppercase mb-1">Google Apps Script Web App URL</label>
-          <input type="url" id="cloud-webhook-input" placeholder="https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec" class="w-full bg-navy-900 border border-sky-500/40 rounded-xl p-2.5 text-xs font-mono text-sky-200 outline-none focus:border-sky-400">
-          <p class="text-[10px] text-slate-400 mt-1">Found in your Google Sheet: Extensions - Apps Script - Deploy - Web App.</p>
+          <input type="url" id="cloud-webhook-input" placeholder="https://script.google.com/macros/s/AKfycb.../exec" class="w-full bg-navy-900 border border-sky-500/40 rounded-xl p-2.5 text-xs font-mono text-sky-200 outline-none focus:border-sky-400">
+          <p class="text-[10px] text-slate-400 mt-1">Single master storage endpoint from your Google Sheet (Extensions &gt; Apps Script &gt; Deploy &gt; Web App).</p>
         </div>
 
         <div class="flex items-center gap-2 pt-2">
@@ -645,6 +645,15 @@
 
   <!-- APPLICATION JAVASCRIPT ENGINE -->
   <script>
+    /**
+     * ============================================================================
+     * SINGLE GOOGLE SHEET APPS SCRIPT WEB APP URL CONFIGURATION
+     * Paste your single deployed Google Sheet Web App URL below so all students
+     * and teachers automatically use that single Google Sheet for storage.
+     * ============================================================================
+     */
+    const DEFAULT_CLOUD_WEBHOOK_URL = ''; // <-- PASTE YOUR SINGLE /exec URL HERE
+
     const STORAGE_KEYS = {
       SCORES: 'PRIME_SCORES_V1',
       CLASS_CODE: 'PRIME_ACTIVE_CLASS_CODE',
@@ -669,7 +678,6 @@
     function normalizeMathInput(str) {
       let s = String(str || '').trim().replace(/\s+/g, '');
       s = s.replace(/−/g, '-');
-      // Convert any unicode superscripts into ^notation for uniform comparison
       let out = '';
       let inSup = false;
       for (const ch of s) {
@@ -736,7 +744,7 @@
         title: 'Roots & Radicals',
         badge: 'Domain 6 • Radical Expressions',
         icon: 'fa-square-root-variable',
-        desc: 'Principal square roots, cube roots,fourth roots, and simplifying radical expressions.',
+        desc: 'Principal square roots, cube roots, fourth roots, and simplifying radical expressions.',
         hasOperations: false
       },
       {
@@ -806,7 +814,7 @@
       },
       scores: [],
       activeClassCode: '',
-      webhookUrl: ''
+      webhookUrl: DEFAULT_CLOUD_WEBHOOK_URL
     };
 
     // INITIALIZATION
@@ -827,13 +835,12 @@
         if (savedCode) setActiveTeacherCode(savedCode);
 
         const savedWebhook = localStorage.getItem(STORAGE_KEYS.WEBHOOK);
-        if (savedWebhook) {
+        if (DEFAULT_CLOUD_WEBHOOK_URL) {
+          appState.webhookUrl = DEFAULT_CLOUD_WEBHOOK_URL;
+        } else if (savedWebhook) {
           appState.webhookUrl = savedWebhook;
-          document.getElementById('cloud-webhook-input').value = savedWebhook;
-        } else if (window.location.hostname.includes('script.googleusercontent.com') || window.location.hostname.includes('script.google.com')) {
-          appState.webhookUrl = window.location.href.split('?')[0];
-          document.getElementById('cloud-webhook-input').value = appState.webhookUrl;
         }
+        document.getElementById('cloud-webhook-input').value = appState.webhookUrl || '';
       } catch (e) {
         console.warn('LocalStorage unavailable:', e);
       }
@@ -1131,7 +1138,7 @@
         }
       }
 
-      // Default: Algebra Linear Equations
+      // Algebra Linear Equations
       const x = randInt(-10, 12) || 3;
       const m = randInt(2, 9);
       const b = randInt(-15, 15);
@@ -1291,7 +1298,7 @@
       }
     }
 
-    // RESULTS & SUBMISSION
+    // RESULTS & CENTRALIZED GOOGLE SHEET SUBMISSION
     function getMasteryRating(pct) {
       if (pct >= 90) return 'Advanced Mastery';
       if (pct >= 75) return 'Proficient';
@@ -1355,16 +1362,32 @@
         localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores));
       } catch (e) {}
 
-      // Sync to Google Sheets if webhook is configured
       const statusEl = document.getElementById('results-sync-status');
+
+      // 1. Direct Apps Script Bridge (if hosted inside the same Google Apps Script project)
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Recording to Google Sheet...</span>`;
+        google.script.run
+          .withSuccessHandler(() => {
+            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Central Google Sheet!</span>`;
+            openCertificateModal(record);
+          })
+          .withFailureHandler(() => {
+            openCertificateModal(record);
+          })
+          .recordScoreToSheet(record);
+        return;
+      }
+
+      // 2. Central Webhook URL (for standalone/external hosting across any device)
       if (appState.webhookUrl) {
-        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Syncing score to Google Sheets...</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-sky-400"></i><span>Syncing score to Google Sheet...</span>`;
         try {
           const url = new URL(appState.webhookUrl);
           url.searchParams.set('action', 'log');
           Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
           await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
-          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Cloud & Local Registry!</span>`;
+          statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Saved to Central Google Sheet!</span>`;
         } catch (err) {
           statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Saved locally (Cloud offline)</span>`;
         }
@@ -1391,7 +1414,7 @@
       switchTab('scores');
     }
 
-    // SCORE REGISTRY & CLOUD PULL
+    // SCORE REGISTRY & CLOUD PULL FROM THE SINGLE GOOGLE SHEET
     function renderScoresTable() {
       const tbody = document.getElementById('scores-table-body');
       const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
@@ -1421,15 +1444,37 @@
     }
 
     async function pullScoresFromCloud() {
-      if (!appState.webhookUrl) {
-        openCloudSyncModal();
-        return;
-      }
+      const filterCode = (document.getElementById('filter-classcode').value || appState.activeClassCode || 'ALL').trim().toUpperCase();
       const spinner = document.getElementById('sync-spinner');
       spinner.classList.add('fa-spin');
 
+      // 1. Direct Apps Script Bridge (if hosted inside the Google Sheet's Apps Script)
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(records => {
+            spinner.classList.remove('fa-spin');
+            if (Array.isArray(records)) {
+              appState.scores = records;
+              try { localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores)); } catch (e) {}
+              renderScoresTable();
+            }
+          })
+          .withFailureHandler(() => {
+            spinner.classList.remove('fa-spin');
+            alert('Failed to query Google Sheet.');
+          })
+          .queryScoresFromSheet(filterCode);
+        return;
+      }
+
+      // 2. Central Webhook URL (if hosted externally)
+      if (!appState.webhookUrl) {
+        spinner.classList.remove('fa-spin');
+        openCloudSyncModal();
+        return;
+      }
+
       try {
-        const filterCode = (document.getElementById('filter-classcode').value || appState.activeClassCode || 'ALL').trim().toUpperCase();
         const url = new URL(appState.webhookUrl);
         url.searchParams.set('action', 'fetch');
         url.searchParams.set('code', filterCode);
@@ -1438,7 +1483,7 @@
         const data = await res.json();
         if (data && Array.isArray(data.records)) {
           appState.scores = data.records;
-          localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores));
+          try { localStorage.setItem(STORAGE_KEYS.SCORES, JSON.stringify(appState.scores)); } catch (e) {}
           renderScoresTable();
         }
       } catch (err) {
@@ -1475,7 +1520,7 @@
     }
 
     function clearRegistryPromp() {
-      if (confirm('Clear all locally saved score records on this browser?')) {
+      if (confirm('Clear all locally cached score records on this browser?')) {
         appState.scores = [];
         localStorage.removeItem(STORAGE_KEYS.SCORES);
         renderScoresTable();
@@ -1566,7 +1611,7 @@
       resEl.classList.remove('hidden');
       if (!urlStr) {
         resEl.className = 'text-center text-xs font-semibold py-1 text-red-400';
-        resEl.textContent = 'Please paste a valid Google Apps Script Web App URL first.';
+        resEl.textContent = 'Please paste your Google Apps Script Web App URL first.';
         return;
       }
       resEl.className = 'text-center text-xs font-semibold py-1 text-sky-400';
