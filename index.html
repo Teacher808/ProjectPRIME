@@ -143,10 +143,10 @@
         </span>
         <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
         <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
-          Scores are saved automatically to your teacher's profile as soon as you finish your session. Multi-term calculations (2 to 5 terms) are available for arithmetic topics.
+          Scores are saved automatically to your teacher's profile as soon as you finish your session. Multi-term calculations (2 to 5 terms) are available for all fundamental and order-of-operation topics.
         </p>
       </div>
-      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5"></div>
+      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"></div>
     </section>
 
     <!-- 2. PRACTICE CONFIGURATION VIEW -->
@@ -172,12 +172,12 @@
             </div>
           </div>
 
-          <!-- NUMBER OF TERMS SELECTOR (Whole, Integers, Fractions, Decimals) -->
+          <!-- NUMBER OF TERMS SELECTOR (Whole, Integers, Fractions, Decimals, PEMDAS) -->
           <div id="config-terms-box" class="hidden">
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
               <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms to Solve (2 to 5 Operands)
             </label>
-            <p class="text-[11px] text-slate-400 mb-2">Controls how many numbers are in each equation (e.g., 2 terms: A + B; 3 terms: A + B - C).</p>
+            <p class="text-[11px] text-slate-400 mb-2">Controls how many numbers or operands are chained in each expression.</p>
             <div class="grid grid-cols-4 gap-2">
               <button type="button" id="btn-terms-2" onclick="setConfigTerms(2)" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">2 Terms</button>
               <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">3 Terms</button>
@@ -500,10 +500,10 @@
         <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
           <div class="flex items-center gap-3">
             <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">3</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Configuring Multi-Term Arithmetic</h3>
+            <h3 class="text-sm md:text-base font-bold text-white">Configuring Multi-Term Arithmetic & PEMDAS/GEMDAS</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            When practicing Whole Numbers, Integers, Rational Fractions, or Decimals, learners and teachers can select the <strong class="text-gold-300">Number of Terms (2 to 5 operands)</strong> to customize arithmetic complexity from basic drills to multi-step challenges[cite: 1].
+            When practicing Whole Numbers, Integers, Rational Fractions, Decimals, or the new <strong class="text-gold-300">Order of Operations (PEMDAS / GEMDAS)</strong> domain, select the <strong class="text-gold-300">Number of Terms (2 to 5 operands)</strong> to customize arithmetic complexity from basic operations to chained multi-step equations[cite: 1].
           </p>
         </div>
 
@@ -692,17 +692,19 @@
     const DOMAINS = [
       { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1 • Core Arithmetic', icon: 'fa-hashtag', desc: 'Multi-digit operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
       { id: 'integers', title: 'Signed Integers', badge: 'Domain 2 • Directed Numbers', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
-      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 3 • Proportions', icon: 'fa-divide', desc: 'Proper/improper fraction calculations with multi-term arithmetic.', hasOperations: true, hasTerms: true },
-      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 4 • Place Value', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
-      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 5 • Exponential Laws', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
-      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 6 • Radical Expressions', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
-      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 7 • Algebraic Reasoning', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false }
+      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3 • PEMDAS / GEMDAS', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic evaluating Parentheses/Grouping, Exponents, Multiplication, Division, Addition, Subtraction.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4 • Proportions', icon: 'fa-divide', desc: 'Proper/improper fraction calculations with multi-term arithmetic.', hasOperations: true, hasTerms: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5 • Place Value', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6 • Exponential Laws', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
+      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7 • Radical Expressions', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
+      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8 • Algebraic Reasoning', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false }
     ];
 
     const STUDY_GUIDES = [
       { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence (PEMDAS).'] },
       { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).', 'Multiple signs: Evaluate left-to-right combining consecutive integer operations.'] },
-      { title: '3. Rational Fractions', rules: ['Add/Subtract: Find LCD, combine numerators, simplify with GCD.', 'Multi-term Fractions: Convert all 2 to 5 denominators to their common LCD before adding or subtracting numerators.'] }
+      { title: '3. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first (innermost first).', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right in the order they appear.', 'A / S: Perform Addition and Subtraction from left to right in the order they appear.'] },
+      { title: '4. Rational Fractions', rules: ['Add/Subtract: Find LCD, combine numerators, simplify with GCD.', 'Multi-term Fractions: Convert all 2 to 5 denominators to their common LCD before adding or subtracting numerators.'] }
     ];
 
     const appState = {
@@ -842,7 +844,7 @@
       document.getElementById('config-integers-box').classList.toggle('hidden', !domain.hasIntegersMode);
       document.getElementById('config-operations-box').classList.toggle('hidden', !domain.hasOperations);
       
-      setConfigTerms(appState.config.terms || 2);
+      setConfigTerms(appState.config.terms || (domain.id === 'gemdas' ? 3 : 2));
       switchTab('config');
     }
 
@@ -907,10 +909,10 @@
       return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
     }
 
-    // MULTI-TERM PROBLEM GENERATOR (2 to 5 Terms)
+    // MULTI-TERM PROBLEM GENERATOR (Whole, Integers, GEMDAS, Fractions, Decimals)
     function generateQuestionForDomain(domainId, cfg) {
       const ops = cfg.operations.length ? cfg.operations : ['+'];
-      const numTerms = (['whole', 'integers', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
+      const numTerms = (['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
 
       // 1. WHOLE NUMBERS (2 to 5 Terms)
       if (domainId === 'whole') {
@@ -929,7 +931,6 @@
           return { display: `${display} = ?`, answer: String(answer), hint, submode, tip: 'Type the exact whole number.' };
         }
 
-        // Multi-term whole numbers (2 to 5 terms)
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
         let operands = [];
@@ -937,12 +938,9 @@
 
         for (let i = 0; i < numTerms; i++) {
           operands.push(generateOperandByDigits(Math.min(4, cfg.digits)));
-          if (i > 0) {
-            operators.push(activeOps[randInt(0, activeOps.length - 1)]);
-          }
+          if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
         }
 
-        // Ensure nonnegative intermediate results
         let running = operands[0];
         let displayParts = [operands[0]];
 
@@ -1002,7 +1000,119 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
       }
 
-      // 3. RATIONAL FRACTIONS (2 to 5 Terms)
+      // 3. ORDER OF OPERATIONS: PEMDAS / GEMDAS (2 to 5 Terms)
+      if (domainId === 'gemdas') {
+        const terms = Math.max(2, Math.min(5, numTerms));
+        let displayStr = '';
+        let evalAns = 0;
+        let hintSteps = [];
+
+        if (terms === 2) {
+          const type = randInt(1, 3);
+          if (type === 1) { // Grouping with exponent: (a + b)²
+            const a = randInt(1, 5), b = randInt(1, 5);
+            const sum = a + b;
+            evalAns = sum * sum;
+            displayStr = `(${a} + ${b})²`;
+            hintSteps = [`Grouping: (${a} + ${b}) = ${sum}`, `Exponent: ${sum}² = ${evalAns}`];
+          } else if (type === 2) { // Multiplication / Division priority
+            const b = randInt(2, 6);
+            const q = randInt(2, 6);
+            const a = b * q;
+            const c = randInt(1, 10);
+            displayStr = `${c} + ${a} ÷ ${b}`;
+            evalAns = c + q;
+            hintSteps = [`Divide first: ${a} ÷ ${b} = ${q}`, `Add: ${c} + ${q} = ${evalAns}`];
+          } else {
+            const a = randInt(2, 5), b = randInt(2, 5), c = randInt(1, 15);
+            displayStr = `${a} × ${b} − ${c}`;
+            const prod = a * b;
+            evalAns = prod - c;
+            hintSteps = [`Multiply first: ${a} × ${b} = ${prod}`, `Subtract: ${prod} − ${c} = ${evalAns}`];
+          }
+        } else if (terms === 3) {
+          const type = randInt(1, 3);
+          if (type === 1) { // G - MD - AS: c + a × (b + d)
+            const b = randInt(2, 6), d = randInt(1, 5);
+            const a = randInt(2, 4);
+            const c = randInt(1, 12);
+            const inside = b + d;
+            const mult = a * inside;
+            evalAns = c + mult;
+            displayStr = `${c} + ${a} × (${b} + ${d})`;
+            hintSteps = [
+              `Grouping (Parentheses): (${b} + ${d}) = ${inside}`,
+              `Multiply: ${a} × ${inside} = ${mult}`,
+              `Add: ${c} + ${mult} = ${evalAns}`
+            ];
+          } else if (type === 2) { // Exponents with MD: a² + b × c
+            const a = randInt(2, 5);
+            const b = randInt(2, 6), c = randInt(2, 5);
+            const expVal = a * a;
+            const prod = b * c;
+            evalAns = expVal + prod;
+            displayStr = `${a}² + ${b} × ${c}`;
+            hintSteps = [
+              `Evaluate Exponent: ${a}² = ${expVal}`,
+              `Multiply: ${b} × ${c} = ${prod}`,
+              `Add: ${expVal} + ${prod} = ${evalAns}`
+            ];
+          } else { // Division and multiplication left-to-right + AS
+            const d = randInt(2, 4);
+            const q = randInt(2, 5);
+            const num = d * q;
+            const m = randInt(2, 4);
+            const c = randInt(1, 10);
+            displayStr = `${num} ÷ ${d} × ${m} + ${c}`;
+            const prod = q * m;
+            evalAns = prod + c;
+            hintSteps = [
+              `Divide first (left to right): ${num} ÷ ${d} = ${q}`,
+              `Multiply: ${q} × ${m} = ${prod}`,
+              `Add: ${prod} + ${c} = ${evalAns}`
+            ];
+          }
+        } else if (terms === 4) {
+          const b = randInt(1, 6), c = randInt(1, 5);
+          const mult = randInt(2, 4);
+          const divisor = randInt(2, 4);
+          const q = randInt(2, 5);
+          const dividend = divisor * q;
+          const inside = b + c;
+          const leftProd = mult * inside;
+          evalAns = leftProd - q;
+          displayStr = `${mult} × (${b} + ${c}) − ${dividend} ÷ ${divisor}`;
+          hintSteps = [
+            `Grouping: (${b} + ${c}) = ${inside}`,
+            `Multiply left-to-right: ${mult} × ${inside} = ${leftProd}`,
+            `Divide: ${dividend} ÷ ${divisor} = ${q}`,
+            `Subtract: ${leftProd} − ${q} = ${evalAns}`
+          ];
+        } else { // 5 Terms
+          const a = randInt(2, 4);
+          const b = randInt(1, 5), c = randInt(1, 4);
+          const d = randInt(2, 4);
+          const q = randInt(2, 4);
+          const divVal = d * q;
+          const offset = randInt(1, 8);
+          const inside = b + c;
+          const mult = a * inside;
+          evalAns = mult - q + offset;
+          displayStr = `${a} × (${b} + ${c}) − ${divVal} ÷ ${d} + ${offset}`;
+          hintSteps = [
+            `Grouping: (${b} + ${c}) = ${inside}`,
+            `Multiplication & Division left-to-right: ${a} × ${inside} = ${mult}, and ${divVal} ÷ ${d} = ${q}`,
+            `Expression becomes: ${mult} − ${q} + ${offset}`,
+            `Addition and Subtraction left-to-right: ${mult - q} + ${offset} = ${evalAns}`
+          ];
+        }
+
+        const submode = `${terms}-Term GEMDAS / PEMDAS`;
+        const hint = hintSteps.join(' → ');
+        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Follow PEMDAS/GEMDAS rules to find the exact integer.' };
+      }
+
+      // 4. RATIONAL FRACTIONS (2 to 5 Terms)
       if (domainId === 'fractions') {
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1017,7 +1127,6 @@
           if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
         }
 
-        // Find common denominator for all terms
         let commonD = termsList[0].d;
         for (let i = 1; i < numTerms; i++) {
           commonD = lcm(commonD, termsList[i].d);
@@ -1053,7 +1162,7 @@
         return { display: `${display} = ?`, answer: ans, hint, submode, tip: 'Enter simplest form a/b (or whole number if denominator is 1).' };
       }
 
-      // 4. DECIMALS (2 to 5 Terms)
+      // 5. DECIMALS (2 to 5 Terms)
       if (domainId === 'decimals') {
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1091,20 +1200,20 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal answer.' };
       }
 
-      // 5. EXPONENTS (Standard 2-Term)
+      // 6. EXPONENTS (Standard 2-Term)
       if (domainId === 'exponents') {
         const base = randInt(2, 9); const exp = randInt(2, 4);
         const ans = Math.pow(base, exp);
         return { display: `${base}${toSuperscript(exp)} = ?`, answer: String(ans), hint: `${base} to power ${exp} is ${ans}.`, submode: 'Evaluating Powers', tip: 'Type evaluated numeric value.' };
       }
 
-      // 6. RADICALS
+      // 7. RADICALS
       if (domainId === 'radicals') {
         const r = randInt(2, 12);
         return { display: `√(${r * r}) = ?`, answer: String(r), hint: `Square root is ${r}.`, submode: 'Principal Square Root', tip: 'Type positive root.' };
       }
 
-      // 7. LINEAR EQUATIONS
+      // 8. LINEAR EQUATIONS
       const x = randInt(-10, 12) || 3; const m = randInt(2, 9); const b = randInt(-15, 15); const rhs = m * x + b;
       return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
     }
@@ -1353,7 +1462,7 @@
         localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
       } catch (e) {}
 
-      const termsInfo = ['whole', 'integers', 'fractions', 'decimals'].includes(appState.selectedDomain.id) ? `${appState.config.terms} Terms` : '';
+      const termsInfo = ['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(appState.selectedDomain.id) ? `${appState.config.terms} Terms` : '';
       const configDetails = `${appState.config.digits}D | ${termsInfo} | Ops: ${appState.config.operations.join('')}`;
 
       const record = {
