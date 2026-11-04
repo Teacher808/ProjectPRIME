@@ -625,6 +625,9 @@
 
   <!-- APPLICATION ENGINE -->
   <script>
+    /**
+     * Optional: Paste deployed Web App URL if hosting on a custom domain (e.g. projectprime.irayahighschool.com)
+     */
     const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
 
     const STORAGE_KEYS = {
@@ -913,7 +916,6 @@
             else { running = nextVal + running; displayParts[0] = running; }
           }
           if (op === '/') {
-            // Clean division
             nextVal = Math.max(1, randInt(1, 9));
             operands[i] = nextVal;
             running = running * nextVal;
@@ -987,12 +989,6 @@
         let evalAns = 0;
         let hintSteps = [];
 
-        // STRICT GEMDAS HIERARCHY:
-        // 1. Grouping (Parentheses)
-        // 2. Exponents
-        // 3. Multiplication & Division (Left-to-Right)
-        // 4. Addition & Subtraction (Left-to-Right)
-        
         // Scenario A: If multiplication or division is checked along with addition/subtraction
         if ((hasMul || hasDiv) && (hasAdd || hasSub)) {
           const a = randInt(2, 5);
@@ -1335,43 +1331,35 @@
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
-              .withSuccessHandler(res => {
-                if (typeof res === 'string') { try { res = JSON.parse(res); } catch(e){} }
-                resolve(res);
-              })
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
               .withFailureHandler(err => reject(new Error(err.message || err)))
               .registerTeacher(params);
             return;
           }
           if (params.action === 'teacher_login') {
             google.script.run
-              .withSuccessHandler(res => {
-                if (typeof res === 'string') { try { res = JSON.parse(res); } catch(e){} }
-                resolve(res);
-              })
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
               .withFailureHandler(err => reject(new Error(err.message || err)))
               .loginTeacher(params.username, params.password);
             return;
           }
           if (params.action === 'fetch') {
             google.script.run
-              .withSuccessHandler(records => {
-                resolve({ status: 'success', records: records || [] });
-              })
+              .withSuccessHandler(records => resolve({ status: 'success', records: records || [] }))
               .withFailureHandler(err => reject(new Error(err.message || err)))
               .queryScoresFromSheet(params.classCode);
             return;
           }
         }
 
-        // Custom Domain & External Fallback
-        const targetUrl = WEB_APP_EXEC_URL.trim();
+        // Custom Domain & External Fallback (Tablets, Phones, External Browsers)
+        const targetUrl = (typeof WEB_APP_EXEC_URL !== 'undefined' ? WEB_APP_EXEC_URL : '').trim();
         if (!targetUrl || !targetUrl.startsWith('https://script.google.com/macros/s/')) {
           reject(new Error('Missing Web App URL. Set WEB_APP_EXEC_URL in Index.html.'));
           return;
         }
 
-        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
+        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
         const script = document.createElement('script');
 
         let url;
@@ -1384,11 +1372,15 @@
 
         Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
         url.searchParams.set('callback', callbackName);
-        url.searchParams.set('_nocache', Date.now()); // Prevents cross-device cached responses
+        url.searchParams.set('_nocache', Date.now());
+
+        script.type = 'text/javascript';
+        script.async = true;
+        script.referrerPolicy = 'no-referrer-when-downgrade';
 
         const timeout = setTimeout(() => {
           cleanup();
-          reject(new Error('Connection timed out. Verify your Google Apps Script is deployed with "Who has access: Anyone".'));
+          reject(new Error('Connection timed out. Check tablet internet or deployment access settings.'));
         }, 15000);
 
         function cleanup() {
@@ -1404,11 +1396,11 @@
 
         script.onerror = function() {
           cleanup();
-          reject(new Error('Could not connect to Google Apps Script. Check deployment settings.'));
+          reject(new Error('Could not connect to Google Apps Script. Ensure the script is deployed with access set to "Anyone".'));
         };
 
         script.src = url.toString();
-        document.head.appendChild(script);
+        (document.body || document.head).appendChild(script);
       });
     }
 
