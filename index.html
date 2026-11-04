@@ -2,7 +2,7 @@
 <html lang="en" class="dark">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>PROJECT PRIME | Mathematics Diagnostic & Practice Suite</title>
 
   <!-- Tailwind CSS CDN -->
@@ -30,24 +30,40 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
   <style>
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
+    }
+    html, body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      touch-action: manipulation;
+    }
     body {
       background: radial-gradient(circle at top, #1e293b 0%, #0f172a 45%, #020617 100%);
       color: #f8fafc;
-      min-height: 100vh;
+      padding-top: var(--sat);
+      padding-bottom: var(--sab);
+      padding-left: var(--sal);
+      padding-right: var(--sar);
     }
     .glass-panel {
-      background: rgba(15, 23, 42, 0.78);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
       border: 1px solid rgba(251, 191, 36, 0.2);
     }
     .navy-btn {
-      background: rgba(30, 41, 59, 0.85);
+      background: rgba(30, 41, 59, 0.9);
       border: 1px solid rgba(148, 163, 184, 0.25);
       color: #e2e8f0;
       transition: all 0.2s ease;
     }
-    .navy-btn:hover {
-      background: rgba(51, 65, 85, 0.9);
+    .navy-btn:hover, .navy-btn:active {
+      background: rgba(51, 65, 85, 0.95);
       border-color: rgba(251, 191, 36, 0.5);
       color: #fbbf24;
     }
@@ -57,9 +73,8 @@
       border: 1px solid #fcd34d;
       transition: all 0.2s ease;
     }
-    .gold-btn:hover {
+    .gold-btn:hover, .gold-btn:active {
       filter: brightness(1.08);
-      transform: translateY(-1px);
     }
     @media print {
       body * { visibility: hidden; }
@@ -76,113 +91,110 @@
     }
   </style>
 </head>
-<body class="flex flex-col min-h-screen selection:bg-gold-500 selection:text-navy-950">
+<body class="flex flex-col min-h-[100dvh] selection:bg-gold-500 selection:text-navy-950">
 
   <!-- TOP NAVIGATION HEADER -->
-  <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20 px-4 py-3">
-    <div class="max-w-6xl mx-auto flex flex-wrap items-center justify-between gap-3">
-      <div onclick="switchTab('home')" class="flex items-center gap-3 cursor-pointer group">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-black text-xl shadow-lg shadow-gold-500/20 group-hover:scale-105 transition">
+  <header class="sticky top-0 z-30 glass-panel border-b border-gold-500/20 px-3 py-2.5 sm:px-4 sm:py-3 w-full">
+    <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+      <div onclick="switchTab('home')" class="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0">
+        <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 flex items-center justify-center text-navy-950 font-black text-base sm:text-xl shadow-lg shadow-gold-500/20 group-hover:scale-105 transition">
           <i class="fa-solid fa-square-root-variable"></i>
         </div>
         <div>
-          <div class="flex items-center gap-2">
-            <h1 class="text-base md:text-lg font-black tracking-tight text-white">PROJECT <span class="text-gold-400">PRIME</span></h1>
-            <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Multi-Device Sync
+          <div class="flex items-center gap-1 sm:gap-2">
+            <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-white leading-tight">PROJECT <span class="text-gold-400">PRIME</span></h1>
+            <span class="hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+              <span class="w-1 h-1 rounded-full bg-emerald-400 inline-block animate-pulse mr-1"></span>Sync
             </span>
           </div>
-          <p class="text-[11px] text-slate-400 hidden sm:block">Program for Remediation and Improvement in Mathematics Education</p>
+          <p class="text-[10px] text-slate-400 hidden sm:block">Automated Diagnostic Assessment & Teacher Gradebook</p>
         </div>
       </div>
 
-      <div class="flex items-center gap-2">
-        <button onclick="switchTab('home')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+      <!-- Action Navigation Buttons -->
+      <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+        <button onclick="switchTab('home')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 navy-btn whitespace-nowrap">
           <i class="fa-solid fa-house"></i>
-          <span class="hidden md:inline">Home</span>
+          <span class="hidden sm:inline">Home</span>
         </button>
 
-        <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-3 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1.5 bg-purple-900/40 border border-purple-500/40 text-purple-300 hover:bg-purple-800/50 transition">
+        <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 bg-purple-900/50 border border-purple-500/40 text-purple-200 hover:bg-purple-800/60 transition whitespace-nowrap">
           <i class="fa-solid fa-user-tie text-gold-400"></i>
-          <span id="nav-teacher-label">Teacher Portal</span>
+          <span id="nav-teacher-label">Portal</span>
         </button>
 
-        <button onclick="switchTab('scores')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+        <button onclick="switchTab('scores')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 navy-btn whitespace-nowrap">
           <i class="fa-solid fa-chart-simple text-gold-400"></i>
-          <span class="hidden md:inline">Registry</span>
+          <span class="hidden sm:inline">Registry</span>
         </button>
 
-        <button onclick="switchTab('guides')" class="px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 navy-btn">
+        <button onclick="switchTab('guides')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 navy-btn whitespace-nowrap">
           <i class="fa-solid fa-book-open"></i>
-          <span class="hidden md:inline">Guides</span>
+          <span class="hidden sm:inline">Guides</span>
         </button>
       </div>
     </div>
 
     <!-- Active Class Code Banner -->
-    <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/80 via-emerald-900/50 to-navy-900/80 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-xs text-emerald-300 flex items-center justify-between">
-      <div class="flex items-center gap-2">
-        <i class="fa-solid fa-school text-gold-400"></i>
-        <span>Active Teacher Profile: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold tracking-wider"></strong></span>
+    <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-gradient-to-r from-emerald-950/90 via-emerald-900/60 to-navy-900/90 border border-emerald-500/40 px-3 py-1.5 rounded-lg text-[11px] sm:text-xs text-emerald-300 flex items-center justify-between">
+      <div class="flex items-center gap-2 truncate">
+        <i class="fa-solid fa-school text-gold-400 shrink-0"></i>
+        <span class="truncate">Teacher: <strong id="banner-code-display" class="font-mono text-gold-300 font-bold"></strong></span>
       </div>
-      <div class="flex items-center gap-2">
-        <span class="text-[11px] text-emerald-400 hidden sm:inline">Scores save automatically to this teacher's account</span>
-        <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2">Clear</button>
-      </div>
+      <button onclick="clearActiveTeacherCode()" class="text-emerald-400 hover:text-red-400 text-xs underline font-semibold ml-2 shrink-0">Clear</button>
     </div>
   </header>
 
   <!-- MAIN CONTENT CONTAINER -->
-  <main class="flex-grow max-w-6xl w-full mx-auto px-4 py-6">
+  <main class="flex-grow max-w-6xl w-full mx-auto px-3 py-4 sm:px-4 sm:py-6">
 
     <!-- 1. HOME VIEW (DOMAINS) -->
-    <section id="view-home" class="space-y-6">
-      <div class="text-center space-y-2 py-4">
-        <span class="inline-block px-3 py-1 rounded-full text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
-          Interactive Diagnostic & Practice Suite
+    <section id="view-home" class="space-y-4 sm:space-y-6">
+      <div class="text-center space-y-1.5 py-2 sm:py-4">
+        <span class="inline-block px-2.5 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-gold-500/10 text-gold-400 border border-gold-500/30">
+          Diagnostic & Practice Suite
         </span>
-        <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
-        <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
-          Scores are saved automatically to your teacher's profile. Multi-term equations only use the exact operations you select.
+        <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">Choose a Mathematics Domain</h2>
+        <p class="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto px-2">
+          Select a category to begin interactive drills. Multi-term equations only use the exact operations checked.
         </p>
       </div>
-      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"></div>
+      <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
     </section>
 
     <!-- 2. PRACTICE CONFIGURATION VIEW -->
-    <section id="view-config" class="hidden max-w-2xl mx-auto space-y-6">
-      <div class="glass-panel p-6 md:p-8 rounded-2xl shadow-xl space-y-6">
-        <div class="flex items-center justify-between border-b border-gold-500/20 pb-4">
+    <section id="view-config" class="hidden max-w-xl mx-auto space-y-4">
+      <div class="glass-panel p-4 sm:p-6 rounded-2xl shadow-xl space-y-4">
+        <div class="flex items-center justify-between border-b border-gold-500/20 pb-3">
           <div>
-            <span id="config-domain-badge" class="text-xs font-bold text-gold-400 uppercase tracking-wider">Category</span>
-            <h3 id="config-domain-title" class="text-xl md:text-2xl font-bold text-white">Configure Practice</h3>
+            <span id="config-domain-badge" class="text-[10px] font-bold text-gold-400 uppercase tracking-wider">Category</span>
+            <h3 id="config-domain-title" class="text-lg sm:text-xl font-bold text-white">Configure Practice</h3>
           </div>
-          <button onclick="switchTab('home')" class="text-slate-400 hover:text-gold-400 text-sm font-semibold">
+          <button onclick="switchTab('home')" class="text-slate-400 hover:text-gold-400 text-xs font-semibold">
             <i class="fa-solid fa-arrow-left mr-1"></i> Back
           </button>
         </div>
 
-        <div class="space-y-5">
+        <div class="space-y-4">
           <!-- Item Count -->
           <div>
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Number of Questions (5 to 100)</label>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Number of Questions (5 to 100)</label>
             <div class="flex items-center gap-3">
               <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
-              <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+              <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-14 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-1.5 text-center font-bold text-gold-400 text-sm">
             </div>
           </div>
 
           <!-- NUMBER OF TERMS SELECTOR -->
           <div id="config-terms-box" class="hidden">
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
-              <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms to Solve (2 to 5 Operands)
+              <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms (Operands)
             </label>
-            <p class="text-[11px] text-slate-400 mb-2">Controls how many numbers are in each equation.</p>
             <div class="grid grid-cols-4 gap-2">
-              <button type="button" id="btn-terms-2" onclick="setConfigTerms(2)" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">2 Terms</button>
-              <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">3 Terms</button>
-              <button type="button" id="btn-terms-4" onclick="setConfigTerms(4)" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">4 Terms</button>
-              <button type="button" id="btn-terms-5" onclick="setConfigTerms(5)" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">5 Terms</button>
+              <button type="button" id="btn-terms-2" onclick="setConfigTerms(2)" class="py-2 rounded-lg text-xs font-bold border transition gold-btn">2</button>
+              <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">3</button>
+              <button type="button" id="btn-terms-4" onclick="setConfigTerms(4)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">4</button>
+              <button type="button" id="btn-terms-5" onclick="setConfigTerms(5)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">5</button>
             </div>
           </div>
 
@@ -191,257 +203,252 @@
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
               <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
             </label>
-            <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
-              <option value="none">Free Number Field (Use Digits Count Only)</option>
-              <option value="1">Field of 1 (Table of 1 Focus)</option>
-              <option value="2">Field of 2 (Table of 2 Focus)</option>
-              <option value="3">Field of 3 (Table of 3 Focus)</option>
-              <option value="4">Field of 4 (Table of 4 Focus)</option>
-              <option value="5">Field of 5 (Table of 5 Focus)</option>
-              <option value="6">Field of 6 (Table of 6 Focus)</option>
-              <option value="7">Field of 7 (Table of 7 Focus)</option>
-              <option value="8">Field of 8 (Table of 8 Focus)</option>
-              <option value="9">Field of 9 (Table of 9 Focus)</option>
-              <option value="10">Field of 10 (Table of 10 Focus)</option>
-              <option value="11">Field of 11 (Table of 11 Focus)</option>
-              <option value="12">Field of 12 (Table of 12 Focus)</option>
-              <option value="random">Random Mixed Fields (1 to 12 Drill)</option>
+            <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-semibold text-white outline-none">
+              <option value="none">Free Number Field (Use Digits Only)</option>
+              <option value="1">Table 1</option>
+              <option value="2">Table 2</option>
+              <option value="3">Table 3</option>
+              <option value="4">Table 4</option>
+              <option value="5">Table 5</option>
+              <option value="6">Table 6</option>
+              <option value="7">Table 7</option>
+              <option value="8">Table 8</option>
+              <option value="9">Table 9</option>
+              <option value="10">Table 10</option>
+              <option value="11">Table 11</option>
+              <option value="12">Table 12</option>
+              <option value="random">Random Mixed Drill</option>
             </select>
           </div>
 
           <!-- Digits -->
           <div id="config-digits-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Number of Digits (1 to 10 Digits)</label>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Number of Digits (1 to 10)</label>
             <div class="flex items-center gap-3">
               <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-gold-400 h-2 bg-navy-800 rounded-lg">
-              <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-16 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-2 text-center font-bold text-gold-400">
+              <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-14 bg-navy-900 border border-gold-500/30 rounded-lg py-1 px-1.5 text-center font-bold text-gold-400 text-sm">
             </div>
           </div>
 
           <!-- Regrouping -->
           <div id="config-regrouping-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Regrouping (Carrying / Borrowing)</label>
-            <div class="grid grid-cols-2 gap-3">
-              <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">With Regrouping</button>
-              <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">Without Regrouping</button>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Regrouping (Carrying / Borrowing)</label>
+            <div class="grid grid-cols-2 gap-2">
+              <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2 rounded-lg text-xs font-bold border transition gold-btn">With Regrouping</button>
+              <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2 rounded-lg text-xs font-bold border transition navy-btn">Without Regrouping</button>
             </div>
           </div>
 
           <!-- Integers -->
           <div id="config-integers-box" class="hidden">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Sign Distribution Mode</label>
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2">
-              <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2.5 rounded-lg text-xs font-bold border gold-btn">Mixed (+ & -)</button>
-              <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">Both Negative</button>
-              <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2.5 rounded-lg text-xs font-bold border navy-btn">Both Positive</button>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Sign Distribution Mode</label>
+            <div class="grid grid-cols-3 gap-1.5">
+              <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2 rounded-lg text-xs font-bold border gold-btn">Mixed (+ / -)</button>
+              <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2 rounded-lg text-xs font-bold border navy-btn">Both (-)</button>
+              <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2 rounded-lg text-xs font-bold border navy-btn">Both (+)</button>
             </div>
           </div>
 
-          <!-- Operations Selection (Strictly Enforced) -->
+          <!-- Operations Selection -->
           <div id="config-operations-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Operations Included (Strictly Filtered)</label>
-            <p class="text-[11px] text-slate-400 mb-2">Only the checked operation(s) will ever be used in generated problems.</p>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Operations Included</label>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-                <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-gold-400 w-4 h-4">
-                <span class="text-xs font-bold">Addition (+)</span>
+              <label class="flex items-center gap-1.5 p-2 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer">
+                <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-gold-400 w-3.5 h-3.5">
+                <span class="text-xs font-bold">Add (+)</span>
               </label>
-              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-                <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-gold-400 w-4 h-4">
-                <span class="text-xs font-bold">Subtraction (−)</span>
+              <label class="flex items-center gap-1.5 p-2 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer">
+                <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-gold-400 w-3.5 h-3.5">
+                <span class="text-xs font-bold">Sub (−)</span>
               </label>
-              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-                <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-gold-400 w-4 h-4">
-                <span class="text-xs font-bold">Multiplication (×)</span>
+              <label class="flex items-center gap-1.5 p-2 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer">
+                <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-gold-400 w-3.5 h-3.5">
+                <span class="text-xs font-bold">Mul (×)</span>
               </label>
-              <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
-                <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-gold-400 w-4 h-4">
-                <span class="text-xs font-bold">Division (÷)</span>
+              <label class="flex items-center gap-1.5 p-2 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer">
+                <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-gold-400 w-3.5 h-3.5">
+                <span class="text-xs font-bold">Div (÷)</span>
               </label>
             </div>
           </div>
         </div>
 
-        <div class="pt-4 flex gap-3">
-          <button onclick="switchTab('home')" class="w-1/3 py-3 rounded-xl font-bold navy-btn text-xs md:text-sm">Cancel</button>
-          <button onclick="startQuizSession()" class="w-2/3 py-3 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center justify-center gap-2 shadow-lg shadow-gold-500/20">
-            <span>Start Practice Quiz Now</span>
-            <i class="fa-solid fa-play"></i>
+        <div class="pt-2 flex gap-2">
+          <button onclick="switchTab('home')" class="w-1/3 py-2.5 rounded-xl font-bold navy-btn text-xs">Cancel</button>
+          <button onclick="startQuizSession()" class="w-2/3 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center justify-center gap-1.5">
+            <span>Start Practice</span>
+            <i class="fa-solid fa-play text-[10px]"></i>
           </button>
         </div>
       </div>
     </section>
 
     <!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
-    <section id="view-quiz" class="hidden h-full flex flex-col justify-between max-w-3xl mx-auto space-y-3">
-      <div class="glass-panel px-4 py-2.5 rounded-xl flex items-center justify-between text-xs">
-        <div class="flex items-center gap-2">
+    <section id="view-quiz" class="hidden flex flex-col justify-between max-w-xl mx-auto space-y-2.5">
+      <div class="glass-panel px-3 py-2 rounded-xl flex items-center justify-between text-xs">
+        <div class="flex items-center gap-1.5 truncate">
           <span class="font-bold text-gold-400" id="quiz-progress-text">Q 1 of 10</span>
           <span class="text-slate-400">|</span>
-          <span class="text-slate-300 font-semibold" id="quiz-cat-name">Whole Numbers</span>
+          <span class="text-slate-300 font-semibold truncate" id="quiz-cat-name">Whole Numbers</span>
         </div>
-        <div class="flex items-center gap-3">
-          <div class="flex items-center gap-1" id="quiz-chances-container">
-            <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-            <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-            <i class="fa-solid fa-heart text-gold-400 text-sm"></i>
-          </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <div class="flex items-center gap-1" id="quiz-chances-container"></div>
           <span class="text-[11px] text-slate-400 font-mono" id="quiz-score-preview">Score: 0</span>
         </div>
       </div>
 
-      <div class="glass-panel p-6 md:p-8 rounded-2xl text-center relative flex flex-col items-center justify-center min-h-[160px] md:min-h-[190px] shadow-2xl border-gold-500/30">
-        <div class="text-[11px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">Solve The Equation</div>
-        <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-wider my-3 break-all select-all">12 + 15 = ?</div>
-        <div id="quiz-problem-tip" class="text-xs text-slate-400 italic">Type your exact numeric answer below.</div>
+      <div class="glass-panel p-4 sm:p-6 rounded-2xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-2xl border-gold-500/30">
+        <div class="text-[10px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
+        <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-wider my-2 break-all select-all">12 + 15 = ?</div>
+        <div id="quiz-problem-tip" class="text-[11px] text-slate-400 italic">Type your exact numeric answer below.</div>
       </div>
 
-      <div id="quiz-feedback-box" class="hidden p-3.5 rounded-xl text-xs font-medium border transition-all duration-300"></div>
+      <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300"></div>
 
-      <div class="glass-panel p-3.5 md:p-4 rounded-2xl space-y-2.5">
-        <div class="flex gap-2">
-          <input type="text" id="quiz-answer-input" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Type your answer here..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border-2 border-gold-500/40 focus:border-gold-400 rounded-xl px-4 py-2.5 text-lg md:text-xl font-bold font-mono text-gold-300 outline-none transition">
-          <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs md:text-sm flex items-center gap-1.5 whitespace-nowrap">
+      <div class="glass-panel p-3 rounded-2xl space-y-2">
+        <div class="flex gap-1.5">
+          <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Your answer..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border border-gold-500/40 focus:border-gold-400 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-gold-300 outline-none">
+          <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs sm:text-sm flex items-center gap-1 shrink-0">
             <span>Check</span>
             <i class="fa-solid fa-circle-check"></i>
           </button>
         </div>
 
-        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5 pt-1">
-          <button type="button" onclick="insertToolbarSymbol('-')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Negative Sign">(-)</button>
-          <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fraction Bar">a/b</button>
-          <button type="button" onclick="insertToolbarSymbol('√')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Square Root">√(x)</button>
-          <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Cube Root">³√(x)</button>
-          <button type="button" onclick="insertToolbarSymbol('∜')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold" title="Fourth Root">⁴√(x)</button>
-          <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1.5 rounded-lg bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold" title="Type raised exponent">xⁿ Exp</button>
-          <button type="button" onclick="insertToolbarSymbol('(')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">(</button>
-          <button type="button" onclick="insertToolbarSymbol(')')" class="p-1.5 rounded-lg navy-btn text-xs font-mono font-bold">)</button>
+        <!-- Virtual Math Toolbar (Fits mobile screens) -->
+        <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 pt-1">
+          <button type="button" onclick="insertToolbarSymbol('-')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">(-)</button>
+          <button type="button" onclick="insertToolbarSymbol('/')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">a/b</button>
+          <button type="button" onclick="insertToolbarSymbol('√')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">√(x)</button>
+          <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">³√(x)</button>
+          <button type="button" onclick="insertToolbarSymbol('∜')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">⁴√(x)</button>
+          <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1 rounded-lg bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold">xⁿ</button>
+          <button type="button" onclick="insertToolbarSymbol('(')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">(</button>
+          <button type="button" onclick="insertToolbarSymbol(')')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">)</button>
         </div>
       </div>
 
       <div class="text-center pt-1">
-        <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">Exit Practice Session</button>
+        <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-500 hover:text-red-400 font-semibold underline">Exit Session</button>
       </div>
     </section>
 
     <!-- 4. RESULTS VIEW -->
-    <section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
-      <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
-        <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
+    <section id="view-results" class="hidden max-w-md mx-auto space-y-4">
+      <div class="glass-panel p-5 rounded-3xl shadow-2xl text-center space-y-4">
+        <div class="w-12 h-12 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-2xl mx-auto">
           <i class="fa-solid fa-award"></i>
         </div>
         <div>
-          <h3 class="text-2xl md:text-3xl font-extrabold text-white">Quiz Completed!</h3>
-          <p class="text-xs text-slate-400 mt-1">Please confirm your student name to automatically submit to your teacher.</p>
+          <h3 class="text-xl font-extrabold text-white">Quiz Completed!</h3>
+          <p class="text-[11px] text-slate-400 mt-0.5">Confirm your student name to submit to your teacher.</p>
         </div>
 
-        <div class="bg-navy-900/80 p-4 rounded-2xl border border-gold-500/30 flex items-center justify-around">
+        <div class="bg-navy-900/80 p-3 rounded-2xl border border-gold-500/30 flex items-center justify-around">
           <div>
-            <div class="text-3xl font-black text-gold-400 font-mono" id="results-score-display">0 / 0</div>
-            <div class="text-[11px] text-slate-400 uppercase font-semibold">Final Score</div>
+            <div class="text-2xl font-black text-gold-400 font-mono" id="results-score-display">0 / 0</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Score</div>
           </div>
-          <div class="h-8 w-px bg-slate-700"></div>
+          <div class="h-6 w-px bg-slate-700"></div>
           <div>
-            <div class="text-3xl font-black text-emerald-400 font-mono" id="results-percentage-display">0%</div>
-            <div class="text-[11px] text-slate-400 uppercase font-semibold">Accuracy</div>
+            <div class="text-2xl font-black text-emerald-400 font-mono" id="results-percentage-display">0%</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Accuracy</div>
           </div>
-          <div class="h-8 w-px bg-slate-700"></div>
+          <div class="h-6 w-px bg-slate-700"></div>
           <div>
-            <div class="text-xs font-bold text-gold-300" id="results-mastery-display">Proficient</div>
-            <div class="text-[11px] text-slate-400 uppercase font-semibold">Rating</div>
+            <div class="text-xs font-bold text-gold-300 mt-1" id="results-mastery-display">Proficient</div>
+            <div class="text-[10px] text-slate-400 uppercase font-semibold">Rating</div>
           </div>
         </div>
 
-        <div class="space-y-4 text-left">
+        <div class="space-y-3 text-left">
           <div>
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Student Full Name <span class="text-red-400">*</span></label>
-            <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+            <label class="block text-[11px] font-bold text-slate-300 uppercase tracking-wider mb-1">Student Full Name <span class="text-red-400">*</span></label>
+            <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-semibold text-white outline-none">
           </div>
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div class="grid grid-cols-2 gap-2">
             <div>
-              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
-              <input type="text" id="student-section-input" placeholder="e.g., Grade 9 - Einstein" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-semibold text-white outline-none focus:border-gold-400">
+              <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-1">Grade & Section</label>
+              <input type="text" id="student-section-input" placeholder="e.g., 9-Einstein" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
             </div>
             <div>
-              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Class Code</label>
-              <input type="text" id="student-code-input" placeholder="e.g., REYES-9A" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-3 text-sm font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+              <label class="block text-[10px] font-bold text-slate-300 uppercase tracking-wider mb-1">Teacher Code</label>
+              <input type="text" id="student-code-input" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none">
             </div>
           </div>
         </div>
 
-        <div id="results-sync-status" class="text-xs text-slate-400 flex items-center justify-center gap-1.5 py-1">
+        <div id="results-sync-status" class="text-[11px] text-slate-400 flex items-center justify-center gap-1.5 py-1">
           <i class="fa-solid fa-cloud text-sky-400"></i>
-          <span>Ready to automatically save to teacher's gradebook</span>
+          <span>Ready to record to gradebook</span>
         </div>
 
-        <div class="flex flex-col sm:flex-row gap-3 pt-2">
-          <button onclick="switchTab('home')" class="py-3 px-4 rounded-xl font-bold navy-btn text-xs sm:w-1/2">Return Home</button>
-          <button onclick="triggerAutoSaveSubmission()" class="py-3 px-4 rounded-xl font-bold gold-btn text-xs sm:w-1/2 flex items-center justify-center gap-2">
-            <span>Confirm & View Certificate</span>
-            <i class="fa-solid fa-check-double"></i>
+        <div class="flex gap-2 pt-1">
+          <button onclick="switchTab('home')" class="py-2.5 rounded-xl font-bold navy-btn text-xs w-1/2">Home</button>
+          <button onclick="triggerAutoSaveSubmission()" class="py-2.5 rounded-xl font-bold gold-btn text-xs w-1/2 flex items-center justify-center gap-1.5">
+            <span>Certificate</span>
+            <i class="fa-solid fa-check-double text-[10px]"></i>
           </button>
         </div>
       </div>
     </section>
 
     <!-- 5. TEACHER REGISTRY & GRADEBOOK VIEW -->
-    <section id="view-scores" class="hidden space-y-6">
-      <div id="scores-locked-state" class="glass-panel p-8 md:p-12 rounded-3xl text-center space-y-4 max-w-lg mx-auto border border-gold-500/30">
-        <div class="w-16 h-16 rounded-full bg-amber-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
+    <section id="view-scores" class="hidden space-y-4">
+      <div id="scores-locked-state" class="glass-panel p-6 sm:p-10 rounded-3xl text-center space-y-3 max-w-md mx-auto border border-gold-500/30">
+        <div class="w-12 h-12 rounded-full bg-amber-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-2xl mx-auto">
           <i class="fa-solid fa-lock"></i>
         </div>
-        <h3 class="text-xl font-black text-white">Teacher Authentication Required</h3>
-        <p class="text-xs text-slate-300 leading-relaxed">
-          Student performance records and gradebook ledgers are strictly confidential. Please log into your teacher profile to view your students' scores.
+        <h3 class="text-lg font-black text-white">Teacher Portal Login Required</h3>
+        <p class="text-xs text-slate-300">
+          Student performance records are strictly confidential. Please log in to view student submissions.
         </p>
-        <button onclick="openTeacherAuthModal()" class="px-6 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center gap-2 mx-auto">
-          <i class="fa-solid fa-arrow-right-to-bracket"></i>
+        <button onclick="openTeacherAuthModal()" class="px-5 py-2 rounded-xl font-bold gold-btn text-xs flex items-center gap-1.5 mx-auto">
+          <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i>
           <span>Log Into Teacher Portal</span>
         </button>
       </div>
 
-      <div id="scores-unlocked-state" class="hidden space-y-6">
-        <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold-500/20 pb-4">
+      <div id="scores-unlocked-state" class="hidden space-y-4">
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-gold-500/20 pb-3">
           <div>
-            <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Teacher Ledger</span>
-            <h2 class="text-2xl font-black text-white">Score Registry & Gradebook</h2>
-            <p class="text-xs text-slate-400">Displaying student submissions submitted under your class code.</p>
+            <span class="text-[10px] font-bold text-gold-400 uppercase tracking-wider">Teacher Ledger</span>
+            <h2 class="text-xl font-black text-white">Score Registry & Gradebook</h2>
           </div>
-          <div class="flex flex-wrap items-center gap-2">
-            <button onclick="pullScoresFromCloud()" class="px-3 py-2 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1.5 transition">
+          <div class="flex items-center gap-2">
+            <button onclick="pullScoresFromCloud()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-sky-900/40 border border-sky-500/40 text-sky-300 hover:bg-sky-800/60 flex items-center gap-1">
               <i class="fa-solid fa-rotate text-sky-400" id="sync-spinner"></i>
-              <span>Refresh Ledger</span>
+              <span>Refresh</span>
             </button>
-            <button onclick="exportScoresToCSV()" class="px-3 py-2 rounded-xl text-xs font-bold gold-btn flex items-center gap-1.5">
+            <button onclick="exportScoresToCSV()" class="px-3 py-1.5 rounded-xl text-xs font-bold gold-btn flex items-center gap-1">
               <i class="fa-solid fa-file-excel"></i>
-              <span>Export CSV</span>
+              <span>CSV</span>
             </button>
           </div>
         </div>
 
-        <div class="glass-panel p-4 rounded-2xl flex flex-col sm:flex-row items-center gap-3">
+        <div class="glass-panel p-3 rounded-2xl flex flex-col sm:flex-row items-center gap-2">
           <div class="relative flex-grow w-full">
-            <i class="fa-solid fa-filter absolute left-3 top-3 text-slate-500 text-xs"></i>
-            <input type="text" id="filter-classcode" placeholder="Filter by sub-section or student name..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-2 text-xs font-mono font-bold text-gold-300 outline-none focus:border-gold-400">
+            <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-500 text-xs"></i>
+            <input type="text" id="filter-classcode" placeholder="Filter student or section..." oninput="renderScoresTable()" class="w-full bg-navy-900 border border-gold-500/30 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-gold-300 outline-none">
           </div>
-          <div class="text-xs text-slate-400 font-mono whitespace-nowrap">
-            Active Code: <strong id="filter-code-tag" class="text-gold-400"></strong>
+          <div class="text-xs text-slate-400 font-mono whitespace-nowrap self-end sm:self-center">
+            Code: <strong id="filter-code-tag" class="text-gold-400"></strong>
           </div>
         </div>
 
         <div class="glass-panel rounded-2xl overflow-hidden shadow-2xl">
-          <div class="overflow-x-auto">
-            <table class="w-full text-left text-xs">
+          <div class="overflow-x-auto w-full">
+            <table class="w-full text-left text-xs whitespace-nowrap">
               <thead class="bg-navy-900 text-gold-400 uppercase font-bold text-[10px] tracking-wider border-b border-gold-500/20">
                 <tr>
-                  <th class="py-3 px-4">Date & Time</th>
-                  <th class="py-3 px-4">Student</th>
-                  <th class="py-3 px-4">Grade & Section</th>
-                  <th class="py-3 px-4 text-center">Class Code</th>
-                  <th class="py-3 px-4">Category & Submode</th>
-                  <th class="py-3 px-4 text-center">Score</th>
-                  <th class="py-3 px-4 text-center">Accuracy</th>
-                  <th class="py-3 px-4 text-center">Rating</th>
+                  <th class="py-2.5 px-3">Date</th>
+                  <th class="py-2.5 px-3">Student</th>
+                  <th class="py-2.5 px-3">Section</th>
+                  <th class="py-2.5 px-3 text-center">Code</th>
+                  <th class="py-2.5 px-3">Category</th>
+                  <th class="py-2.5 px-3 text-center">Score</th>
+                  <th class="py-2.5 px-3 text-center">%</th>
+                  <th class="py-2.5 px-3 text-center">Rating</th>
                 </tr>
               </thead>
               <tbody id="scores-table-body" class="divide-y divide-slate-800"></tbody>
@@ -452,173 +459,172 @@
     </section>
 
     <!-- 6. STUDY GUIDES & TEACHER'S IMPLEMENTATION GUIDE VIEW -->
-    <section id="view-guides" class="hidden max-w-4xl mx-auto space-y-6">
-      <div class="border-b border-gold-500/20 pb-4 flex items-center justify-between">
+    <section id="view-guides" class="hidden max-w-3xl mx-auto space-y-4">
+      <div class="border-b border-gold-500/20 pb-3 flex items-center justify-between">
         <div>
-          <span class="text-xs font-bold text-gold-400 uppercase tracking-wider">Reference Center</span>
-          <h2 class="text-2xl font-black text-white">Guidelines & Rulebooks</h2>
+          <span class="text-[10px] font-bold text-gold-400 uppercase tracking-wider">Reference Center</span>
+          <h2 class="text-xl font-black text-white">Guidelines & Rulebooks</h2>
         </div>
-        <button onclick="switchTab('home')" class="text-xs font-bold navy-btn px-3 py-1.5 rounded-lg">
+        <button onclick="switchTab('home')" class="text-xs font-bold navy-btn px-2.5 py-1 rounded-lg">
           <i class="fa-solid fa-arrow-left mr-1"></i> Home
         </button>
       </div>
 
       <div class="flex gap-2 border-b border-slate-800 pb-2">
-        <button onclick="setGuideTab('teachers')" id="tab-btn-teachers-guide" class="px-4 py-2 rounded-xl text-xs font-bold transition gold-btn flex items-center gap-1.5">
+        <button onclick="setGuideTab('teachers')" id="tab-btn-teachers-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold transition gold-btn flex items-center gap-1.5">
           <i class="fa-solid fa-chalkboard-user"></i>
-          <span>Teacher's Step-by-Step Guide</span>
+          <span>Teacher's Guide</span>
         </button>
-        <button onclick="setGuideTab('math')" id="tab-btn-math-guide" class="px-4 py-2 rounded-xl text-xs font-bold transition navy-btn flex items-center gap-1.5">
+        <button onclick="setGuideTab('math')" id="tab-btn-math-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold transition navy-btn flex items-center gap-1.5">
           <i class="fa-solid fa-square-root-variable"></i>
-          <span>Mathematics Rules & Formulas</span>
+          <span>Math Rules</span>
         </button>
       </div>
 
-      <div id="guides-teacher-view" class="space-y-4">
-        <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">1</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Multi-Device Login (Laptops, Tablets, Phones)</h3>
+      <div id="guides-teacher-view" class="space-y-3">
+        <div class="glass-panel p-4 rounded-2xl border border-gold-500/30 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">1</span>
+            <h3 class="text-sm font-bold text-white">Simultaneous Multi-Device Access</h3>
           </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            You can log into your teacher profile across your laptop, school desktop, and mobile tablet simultaneously[cite: 1]. The stateless authentication checks credentials against your Google Sheet on each device independently without session lockout[cite: 1, 2].
+          <p class="text-xs text-slate-300 leading-relaxed pl-8">
+            You can log into your teacher profile across your laptop, desktop, and mobile tablet simultaneously. The system authenticates directly against your central spreadsheet on every device independently.
           </p>
         </div>
 
-        <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">2</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Strict Operation Filtering & GEMDAS</h3>
+        <div class="glass-panel p-4 rounded-2xl border border-gold-500/30 space-y-1.5">
+          <div class="flex items-center gap-2">
+            <span class="w-6 h-6 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">2</span>
+            <h3 class="text-sm font-bold text-white">Strict Operation Filtering & GEMDAS</h3>
           </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            When configuring practice in Whole Numbers, Integers, or GEMDAS/PEMDAS, only the operations you explicitly check will appear in generated items[cite: 1]. All GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right)[cite: 1].
+          <p class="text-xs text-slate-300 leading-relaxed pl-8">
+            Only the operations you check will appear in generated items. GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right).
           </p>
         </div>
       </div>
 
-      <div id="guides-math-view" class="hidden space-y-4">
-        <div id="guides-container" class="space-y-4"></div>
+      <div id="guides-math-view" class="hidden space-y-3">
+        <div id="guides-container" class="space-y-3"></div>
       </div>
     </section>
 
   </main>
 
   <!-- MODAL: TEACHER ACCOUNT & LINK GENERATOR PORTAL -->
-  <div id="modal-teacher-portal" class="hidden fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="glass-panel max-w-md w-full p-6 rounded-2xl shadow-2xl space-y-4 border border-purple-500/40 max-h-[90vh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+  <div id="modal-teacher-portal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="glass-panel max-w-sm w-full p-5 rounded-2xl shadow-2xl space-y-3 border border-purple-500/40 max-h-[90dvh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-2.5">
         <div class="flex items-center gap-2">
           <i class="fa-solid fa-user-tie text-gold-400"></i>
-          <h3 class="text-base font-bold text-white" id="teacher-modal-title">Teacher Portal</h3>
+          <h3 class="text-sm sm:text-base font-bold text-white" id="teacher-modal-title">Teacher Portal</h3>
         </div>
         <button onclick="closeTeacherAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <div id="teacher-view-login" class="space-y-3">
-        <p class="text-xs text-slate-300">Log in to view student scores and generate shareable practice links.</p>
+      <div id="teacher-view-login" class="space-y-2.5">
+        <p class="text-[11px] text-slate-300">Log in to view student scores and generate shareable practice links.</p>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
-          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
+          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-bold text-white uppercase outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Password</label>
-          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
         </div>
         <button onclick="handleTeacherLogin()" id="btn-login" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Login to Account</button>
-        <div class="text-center pt-2">
-          <button onclick="toggleTeacherView('register')" class="text-xs text-gold-400 underline hover:text-gold-300">Don't have a teacher account? Register here</button>
+        <div class="text-center pt-1.5">
+          <button onclick="toggleTeacherView('register')" class="text-[11px] text-gold-400 underline">Don't have an account? Register here</button>
         </div>
       </div>
 
-      <div id="teacher-view-register" class="hidden space-y-3">
-        <p class="text-xs text-slate-300">Create your teacher profile to generate automated student links.</p>
+      <div id="teacher-view-register" class="hidden space-y-2.5">
+        <p class="text-[11px] text-slate-300">Create your teacher profile to generate automated student links.</p>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Full Name</label>
-          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Full Name</label>
+          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher ID / Username</label>
-          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Teacher ID / Username</label>
+          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-bold text-white uppercase outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Base Class Code (Optional)</label>
-          <input type="text" id="reg-classcode" placeholder="e.g., REYES (Defaults to Username)" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-mono font-bold text-gold-300 uppercase outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Base Class Code (Optional)</label>
+          <input type="text" id="reg-classcode" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-mono font-bold text-gold-300 uppercase outline-none">
         </div>
         <div>
-          <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Create Password</label>
-          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs text-white outline-none focus:border-gold-400">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
         </div>
-        <button onclick="handleTeacherRegister()" id="btn-register" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Create Teacher Account</button>
-        <div class="text-center pt-2">
-          <button onclick="toggleTeacherView('login')" class="text-xs text-gold-400 underline hover:text-gold-300">Already registered? Log in</button>
+        <button onclick="handleTeacherRegister()" id="btn-register" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Create Account</button>
+        <div class="text-center pt-1.5">
+          <button onclick="toggleTeacherView('login')" class="text-[11px] text-gold-400 underline">Already registered? Log in</button>
         </div>
       </div>
 
-      <div id="teacher-view-dashboard" class="hidden space-y-4">
-        <div class="bg-navy-900/90 p-3 rounded-xl border border-gold-500/30 space-y-1">
-          <div class="text-xs text-slate-400">Logged in as: <strong id="dash-teacher-name" class="text-white"></strong></div>
-          <div class="text-xs text-slate-400">Your Base Code: <strong id="dash-teacher-code" class="text-gold-300 font-mono"></strong></div>
+      <div id="teacher-view-dashboard" class="hidden space-y-3">
+        <div class="bg-navy-900/90 p-2.5 rounded-xl border border-gold-500/30 space-y-0.5">
+          <div class="text-[11px] text-slate-400">Teacher: <strong id="dash-teacher-name" class="text-white"></strong></div>
+          <div class="text-[11px] text-slate-400">Code: <strong id="dash-teacher-code" class="text-gold-300 font-mono"></strong></div>
         </div>
 
-        <div class="space-y-2">
-          <label class="block text-[11px] font-bold text-slate-400 uppercase">Generate Student App Link</label>
-          <div class="flex items-center gap-2">
-            <input type="text" id="gen-section-subcode" placeholder="Section (e.g., 9A or EINSTEIN)" class="w-1/2 bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white uppercase outline-none">
-            <button onclick="generateCustomStudentLink()" class="w-1/2 py-2 rounded-xl font-bold gold-btn text-xs">Update Link</button>
-          </div>
-          <p class="text-[10px] text-slate-400">Students using this link will automatically bind their submissions to your gradebook.</p>
-        </div>
-
-        <div class="space-y-1.5 pt-1">
-          <div class="text-[11px] text-slate-400 font-bold">Your Shareable Student Link:</div>
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-bold text-slate-400 uppercase">Generate Student App Link</label>
           <div class="flex items-center gap-1.5">
-            <input type="text" id="display-student-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-2 text-[10px] font-mono text-slate-300">
-            <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-3 py-2 rounded-lg text-xs font-bold gold-btn whitespace-nowrap">Copy Link</button>
+            <input type="text" id="gen-section-subcode" placeholder="Section (e.g. 9A)" class="w-1/2 bg-navy-900 border border-gold-500/40 rounded-xl p-1.5 text-xs text-white uppercase outline-none">
+            <button onclick="generateCustomStudentLink()" class="w-1/2 py-1.5 rounded-xl font-bold gold-btn text-xs">Update</button>
           </div>
         </div>
 
-        <div class="pt-2 flex gap-2">
-          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-sky-900/60 border border-sky-500/40 text-sky-200 text-xs">View My Gradebook</button>
-          <button onclick="handleTeacherLogout()" class="w-1/2 py-2 rounded-xl font-bold navy-btn text-xs text-red-400 hover:text-red-300">Log Out</button>
+        <div class="space-y-1">
+          <div class="text-[10px] text-slate-400 font-bold">Your Shareable Student Link:</div>
+          <div class="flex items-center gap-1">
+            <input type="text" id="display-student-link" readonly class="w-full bg-navy-950 border border-slate-700 rounded-lg p-1.5 text-[10px] font-mono text-slate-300">
+            <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn shrink-0">Copy</button>
+          </div>
+        </div>
+
+        <div class="pt-1 flex gap-2">
+          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-sky-900/60 border border-sky-500/40 text-sky-200 text-xs">Gradebook</button>
+          <button onclick="handleTeacherLogout()" class="w-1/2 py-2 rounded-xl font-bold navy-btn text-xs text-red-400">Log Out</button>
         </div>
       </div>
     </div>
   </div>
 
   <!-- MODAL: CERTIFICATE -->
-  <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-    <div class="max-w-2xl w-full space-y-4">
-      <div id="certificate-print-area" class="glass-panel p-8 md:p-10 rounded-3xl border-2 border-gold-400 text-center space-y-5 shadow-2xl relative overflow-hidden">
-        <div class="text-xs font-bold uppercase tracking-widest text-gold-400">PROJECT PRIME • Official Mastery Record</div>
-        <h2 class="text-2xl md:text-4xl font-black text-white uppercase tracking-wide">Certificate of Achievement</h2>
+  <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="max-w-lg w-full space-y-3">
+      <div id="certificate-print-area" class="glass-panel p-6 sm:p-8 rounded-3xl border-2 border-gold-400 text-center space-y-4 shadow-2xl relative overflow-hidden">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-gold-400">PROJECT PRIME • Mastery Record</div>
+        <h2 class="text-xl sm:text-2xl font-black text-white uppercase tracking-wide">Certificate of Achievement</h2>
         <p class="text-xs text-slate-300">This certifies that</p>
-        <div id="cert-student-name" class="text-2xl md:text-3xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-2 inline-block px-8">Juan Dela Cruz</div>
+        <div id="cert-student-name" class="text-xl sm:text-2xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-1.5 inline-block px-4">Juan Dela Cruz</div>
         <div id="cert-student-section" class="text-xs font-semibold text-slate-400">Grade 8 - Section</div>
-        <p class="text-xs text-slate-300 max-w-md mx-auto">
-          has completed the practice session in <strong id="cert-category" class="text-white">Whole Numbers</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
+        <p class="text-xs text-slate-300 max-w-sm mx-auto">
+          has completed practice in <strong id="cert-category" class="text-white">Whole Numbers</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
         </p>
-        <div class="grid grid-cols-3 gap-3 max-w-md mx-auto bg-navy-900/90 p-3.5 rounded-2xl border border-gold-500/30">
+        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto bg-navy-900/90 p-2.5 rounded-2xl border border-gold-500/30">
           <div>
-            <div id="cert-score" class="text-xl font-black text-gold-400 font-mono">10/10</div>
-            <div class="text-[10px] uppercase text-slate-400">Score</div>
+            <div id="cert-score" class="text-lg font-black text-gold-400 font-mono">10/10</div>
+            <div class="text-[9px] uppercase text-slate-400">Score</div>
           </div>
           <div>
-            <div id="cert-accuracy" class="text-xl font-black text-emerald-400 font-mono">100%</div>
-            <div class="text-[10px] uppercase text-slate-400">Accuracy</div>
+            <div id="cert-accuracy" class="text-lg font-black text-emerald-400 font-mono">100%</div>
+            <div class="text-[9px] uppercase text-slate-400">Accuracy</div>
           </div>
           <div>
-            <div id="cert-rating" class="text-xs font-bold text-gold-300 mt-1">Advanced Mastery</div>
-            <div class="text-[10px] uppercase text-slate-400">Rating</div>
+            <div id="cert-rating" class="text-[11px] font-bold text-gold-300 mt-1">Mastery</div>
+            <div class="text-[9px] uppercase text-slate-400">Rating</div>
           </div>
         </div>
-        <div class="flex items-center justify-between text-[11px] text-slate-400 pt-4 border-t border-slate-800">
-          <span>Teacher Code: <strong id="cert-code" class="text-gold-300 font-mono">GENERAL</strong></span>
+        <div class="flex items-center justify-between text-[10px] text-slate-400 pt-3 border-t border-slate-800">
+          <span>Code: <strong id="cert-code" class="text-gold-300 font-mono">GENERAL</strong></span>
           <span id="cert-date">Date</span>
         </div>
       </div>
-      <div class="flex justify-center gap-3">
-        <button onclick="window.print()" class="px-5 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center gap-2"><i class="fa-solid fa-print"></i> Print / Save PDF</button>
-        <button onclick="closeCertificateModal()" class="px-5 py-2.5 rounded-xl font-bold navy-btn text-xs">Close</button>
+      <div class="flex justify-center gap-2">
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print</button>
+        <button onclick="closeCertificateModal()" class="px-4 py-2 rounded-xl font-bold navy-btn text-xs">Close</button>
       </div>
     </div>
   </div>
@@ -626,9 +632,9 @@
   <!-- APPLICATION ENGINE -->
   <script>
     /**
-     * Optional: Paste deployed Web App URL if hosting on a custom domain (e.g. projectprime.irayahighschool.com)
+     * Set deployed Web App URL for custom domain hosting (e.g., projectprime.irayahighschool.com)
      */
-    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
+    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec'; // <-- REPLACE WITH YOUR ACTUAL /exec URL
 
     const STORAGE_KEYS = {
       ACTIVE_CODE: 'PRIME_ACTIVE_TEACHER_CODE',
@@ -655,14 +661,14 @@
     }
 
     const DOMAINS = [
-      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1 • Core Arithmetic', icon: 'fa-hashtag', desc: 'Multi-digit operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
-      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2 • Directed Numbers', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
-      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3 • PEMDAS / GEMDAS', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic evaluating Parentheses/Grouping, Exponents, Multiplication, Division, Addition, Subtraction.', hasDigits: true, hasOperations: true, hasTerms: true },
-      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4 • Proportions', icon: 'fa-divide', desc: 'Proper/improper fraction calculations with multi-term arithmetic.', hasOperations: true, hasTerms: true },
-      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5 • Place Value', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
-      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6 • Exponential Laws', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
-      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7 • Radical Expressions', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
-      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8 • Algebraic Reasoning', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false }
+      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
+      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
+      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Proper/improper fraction calculations with multi-term arithmetic.', hasOperations: true, hasTerms: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
+      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
+      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false }
     ];
 
     const STUDY_GUIDES = [
@@ -744,6 +750,7 @@
       if (tabName === 'scores') {
         updateScoresViewSecurity();
       }
+      window.scrollTo(0, 0);
     }
 
     function setGuideTab(view) {
@@ -754,8 +761,8 @@
       const btnTeachers = document.getElementById('tab-btn-teachers-guide');
       const btnMath = document.getElementById('tab-btn-math-guide');
 
-      btnTeachers.className = `px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isTeacher ? 'gold-btn' : 'navy-btn'}`;
-      btnMath.className = `px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${!isTeacher ? 'gold-btn' : 'navy-btn'}`;
+      btnTeachers.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isTeacher ? 'gold-btn' : 'navy-btn'}`;
+      btnMath.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${!isTeacher ? 'gold-btn' : 'navy-btn'}`;
     }
 
     function updateScoresViewSecurity() {
@@ -777,20 +784,20 @@
     function renderCategoriesGrid() {
       const grid = document.getElementById('categories-grid');
       grid.innerHTML = DOMAINS.map(d => `
-        <div onclick="openDomainConfig('${d.id}')" class="glass-panel p-5 rounded-2xl cursor-pointer hover:border-gold-400 transition group flex flex-col justify-between space-y-4">
-          <div class="space-y-2">
+        <div onclick="openDomainConfig('${d.id}')" class="glass-panel p-4 rounded-2xl cursor-pointer hover:border-gold-400 transition group flex flex-col justify-between space-y-2">
+          <div class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-[10px] font-bold uppercase tracking-wider text-gold-400">${d.badge}</span>
-              <div class="w-9 h-9 rounded-xl bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400 group-hover:bg-gold-400 group-hover:text-navy-950 transition">
-                <i class="fa-solid ${d.icon}"></i>
+              <span class="text-[9px] font-bold uppercase tracking-wider text-gold-400">${d.badge}</span>
+              <div class="w-7 h-7 rounded-lg bg-gold-500/15 border border-gold-500/30 flex items-center justify-center text-gold-400 group-hover:bg-gold-400 group-hover:text-navy-950 transition">
+                <i class="fa-solid ${d.icon} text-xs"></i>
               </div>
             </div>
-            <h3 class="text-lg font-extrabold text-white group-hover:text-gold-300 transition">${d.title}</h3>
-            <p class="text-xs text-slate-400 leading-relaxed">${d.desc}</p>
+            <h3 class="text-base font-extrabold text-white group-hover:text-gold-300 transition">${d.title}</h3>
+            <p class="text-[11px] text-slate-400 leading-snug line-clamp-2">${d.desc}</p>
           </div>
-          <div class="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs font-bold text-gold-400">
-            <span>Configure & Start</span>
-            <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+          <div class="pt-1.5 border-t border-slate-800/80 flex items-center justify-between text-[11px] font-bold text-gold-400">
+            <span>Start Drill</span>
+            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
           </div>
         </div>
       `).join('');
@@ -818,7 +825,7 @@
       [2, 3, 4, 5].forEach(t => {
         const btn = document.getElementById('btn-terms-' + t);
         if (btn) {
-          btn.className = `p-2.5 rounded-lg text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'navy-btn'}`;
+          btn.className = `py-2 rounded-lg text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'navy-btn'}`;
         }
       });
     }
@@ -839,15 +846,15 @@
 
     function setConfigRegrouping(mode) {
       appState.config.regrouping = mode;
-      document.getElementById('btn-regroup-with').className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'with' ? 'gold-btn' : 'navy-btn'}`;
-      document.getElementById('btn-regroup-without').className = `p-2.5 rounded-lg text-xs font-bold border transition ${mode === 'without' ? 'gold-btn' : 'navy-btn'}`;
+      document.getElementById('btn-regroup-with').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'with' ? 'gold-btn' : 'navy-btn'}`;
+      document.getElementById('btn-regroup-without').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'without' ? 'gold-btn' : 'navy-btn'}`;
     }
 
     function setConfigIntegerMode(mode) {
       appState.config.integerMode = mode;
       ['mixed', 'both-neg', 'both-pos'].forEach(m => {
         const btn = document.getElementById('btn-int-' + m);
-        if (btn) btn.className = `p-2.5 rounded-lg text-xs font-bold border ${m === mode ? 'gold-btn' : 'navy-btn'}`;
+        if (btn) btn.className = `p-2 rounded-lg text-xs font-bold border ${m === mode ? 'gold-btn' : 'navy-btn'}`;
       });
     }
 
@@ -889,10 +896,10 @@
           const factor = randInt(1, 12);
           const op = ops[randInt(0, ops.length - 1)];
           let a, answer, display, submode, hint;
-          if (op === '+') { a = randInt(1, 20); answer = a + b; display = `${a} + ${b}`; submode = `Table of ${b} Addition`; hint = `${a} + ${b} = ${answer}.`; }
-          else if (op === '-') { a = b + randInt(1, 20); answer = a - b; display = `${a} − ${b}`; submode = `Table of ${b} Subtraction`; hint = `${a} − ${b} = ${answer}.`; }
-          else if (op === '*') { a = factor; answer = a * b; display = `${a} × ${b}`; submode = `Table of ${b} Multiplication`; hint = `${a} × ${b} = ${answer}.`; }
-          else { answer = factor; a = answer * b; display = `${a} ÷ ${b}`; submode = `Table of ${b} Division`; hint = `${a} ÷ ${b} = ${answer}.`; }
+          if (op === '+') { a = randInt(1, 20); answer = a + b; display = `${a} + ${b}`; submode = `Table ${b} Addition`; hint = `${a} + ${b} = ${answer}.`; }
+          else if (op === '-') { a = b + randInt(1, 20); answer = a - b; display = `${a} − ${b}`; submode = `Table ${b} Subtraction`; hint = `${a} − ${b} = ${answer}.`; }
+          else if (op === '*') { a = factor; answer = a * b; display = `${a} × ${b}`; submode = `Table ${b} Multiplication`; hint = `${a} × ${b} = ${answer}.`; }
+          else { answer = factor; a = answer * b; display = `${a} ÷ ${b}`; submode = `Table ${b} Division`; hint = `${a} ÷ ${b} = ${answer}.`; }
           return { display: `${display} = ?`, answer: String(answer), hint, submode, tip: 'Type the exact whole number.' };
         }
 
@@ -900,7 +907,7 @@
         let operators = [];
 
         for (let i = 0; i < numTerms; i++) {
-          operands.push(generateOperandByDigits(Math.min(4, cfg.digits)));
+          operands.push(generateOperandByDigits(Math.min(3, cfg.digits)));
           if (i > 0) operators.push(ops[randInt(0, ops.length - 1)]);
         }
 
@@ -938,8 +945,8 @@
 
         const display = displayParts.join(' ');
         const submode = `${numTerms}-Term Whole Numbers`;
-        const hint = `Evaluate step-by-step from left to right: ${display} = ${running}.`;
-        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Calculate and type the whole number answer.' };
+        const hint = `Evaluate step-by-step: ${display} = ${running}.`;
+        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type the whole number answer.' };
       }
 
       // 2. SIGNED INTEGERS (Strict Operation Filter)
@@ -978,7 +985,7 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
       }
 
-      // 3. ORDER OF OPERATIONS: STRICT PEMDAS / GEMDAS (Strictly Respects Checked Operations)
+      // 3. ORDER OF OPERATIONS: STRICT PEMDAS / GEMDAS
       if (domainId === 'gemdas') {
         const hasAdd = ops.includes('+');
         const hasSub = ops.includes('-');
@@ -989,7 +996,6 @@
         let evalAns = 0;
         let hintSteps = [];
 
-        // Scenario A: If multiplication or division is checked along with addition/subtraction
         if ((hasMul || hasDiv) && (hasAdd || hasSub)) {
           const a = randInt(2, 5);
           const b = randInt(1, 6);
@@ -1002,9 +1008,9 @@
             const prod = a * grp;
             evalAns = d + prod;
             hintSteps = [
-              `Step 1 (Grouping): (${b} + ${c}) = ${grp}`,
-              `Step 2 (Multiplication): ${a} × ${grp} = ${prod}`,
-              `Step 3 (Addition): ${d} + ${prod} = ${evalAns}`
+              `Grouping: (${b} + ${c}) = ${grp}`,
+              `Multiply: ${a} × ${grp} = ${prod}`,
+              `Add: ${d} + ${prod} = ${evalAns}`
             ];
           } else if (hasDiv && hasSub) {
             const divB = randInt(2, 4);
@@ -1014,8 +1020,8 @@
             displayStr = `${top} − ${divA} ÷ ${divB}`;
             evalAns = top - q;
             hintSteps = [
-              `Step 1 (Division): ${divA} ÷ ${divB} = ${q}`,
-              `Step 2 (Subtraction): ${top} − ${q} = ${evalAns}`
+              `Division: ${divA} ÷ ${divB} = ${q}`,
+              `Subtract: ${top} − ${q} = ${evalAns}`
             ];
           } else {
             const divB = randInt(2, 4);
@@ -1026,31 +1032,26 @@
             const mult = a * grp;
             evalAns = mult + q;
             hintSteps = [
-              `Step 1 (Grouping / Parentheses): (${b} + ${c}) = ${grp}`,
-              `Step 2 (Multiplication & Division): ${a} × ${grp} = ${mult}, and ${divA} ÷ ${divB} = ${q}`,
-              `Step 3 (Addition): ${mult} + ${q} = ${evalAns}`
+              `Grouping: (${b} + ${c}) = ${grp}`,
+              `MD: ${a} × ${grp} = ${mult}, ${divA} ÷ ${divB} = ${q}`,
+              `Add: ${mult} + ${q} = ${evalAns}`
             ];
           }
-        } 
-        // Scenario B: Only Addition and Subtraction selected
-        else if (hasAdd || hasSub) {
+        } else if (hasAdd || hasSub) {
           const a = randInt(5, 20);
           const b = randInt(1, 10);
           const c = randInt(1, 10);
           const op1 = hasSub ? '−' : '+';
           const op2 = hasAdd ? '+' : '−';
           
-          displayStr = `${a} ${op1} (${b} ${op2} ${c})`;
           const grp = op2 === '+' ? (b + c) : Math.max(0, b - c);
           displayStr = `${a + grp} ${op1} (${b} ${op2} ${c})`;
           evalAns = (a + grp) - grp;
           hintSteps = [
-            `Step 1 (Grouping): (${b} ${op2} ${c}) = ${grp}`,
-            `Step 2 (Addition / Subtraction): ${a + grp} − ${grp} = ${evalAns}`
+            `Grouping: (${b} ${op2} ${c}) = ${grp}`,
+            `AS: ${a + grp} − ${grp} = ${evalAns}`
           ];
-        } 
-        // Scenario C: Only Multiplication and/or Division selected
-        else {
+        } else {
           const a = randInt(2, 5);
           const b = randInt(2, 4);
           const c = randInt(2, 3);
@@ -1058,23 +1059,23 @@
             const prod = b * c;
             displayStr = `(${prod} ÷ ${b}) × ${a}`;
             hintSteps = [
-              `Step 1 (Grouping / Parentheses): (${prod} ÷ ${b}) = ${c}`,
-              `Step 2 (Multiplication): ${c} × ${a} = ${c * a}`
+              `Grouping: (${prod} ÷ ${b}) = ${c}`,
+              `Multiply: ${c} × ${a} = ${c * a}`
             ];
             evalAns = c * a;
           } else {
             displayStr = `(${a} × ${b}) × ${c}`;
             evalAns = a * b * c;
             hintSteps = [
-              `Step 1 (Grouping): (${a} × ${b}) = ${a * b}`,
-              `Step 2 (Multiply): ${a * b} × ${c} = ${evalAns}`
+              `Grouping: (${a} × ${b}) = ${a * b}`,
+              `Multiply: ${a * b} × ${c} = ${evalAns}`
             ];
           }
         }
 
         const submode = `GEMDAS / PEMDAS (${numTerms} Terms)`;
         const hint = hintSteps.join(' → ');
-        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Solve in exact order: Grouping → Exponents → Multiplication/Division → Addition/Subtraction.' };
+        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Follow G → E → MD → AS order.' };
       }
 
       // 4. RATIONAL FRACTIONS (Strict Operation Filter)
@@ -1123,8 +1124,8 @@
 
         const display = displayParts.join(' ');
         const submode = `${numTerms}-Term Rational Fractions`;
-        const hint = `Convert all fractions to common LCD (${commonD}), combine numerators, and simplify: ${ans}.`;
-        return { display: `${display} = ?`, answer: ans, hint, submode, tip: 'Enter simplest form a/b (or whole number if denominator is 1).' };
+        const hint = `Convert to common LCD (${commonD}) and simplify: ${ans}.`;
+        return { display: `${display} = ?`, answer: ans, hint, submode, tip: 'Enter simplest form a/b.' };
       }
 
       // 5. DECIMALS (Strict Operation Filter)
@@ -1161,8 +1162,8 @@
         running = parseFloat(running.toFixed(2));
         const display = displayParts.join(' ');
         const submode = `${numTerms}-Term Decimal Arithmetic`;
-        const hint = `Line up decimal points and compute left-to-right: ${display} = ${running}.`;
-        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal answer.' };
+        const hint = `Compute step-by-step: ${display} = ${running}.`;
+        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal.' };
       }
 
       // 6. EXPONENTS
@@ -1220,7 +1221,7 @@
 
     function renderChancesHearts() {
       const container = document.getElementById('quiz-chances-container');
-      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-gold-400' : 'text-slate-700'} text-sm"></i>`).join('');
+      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-gold-400' : 'text-slate-700'} text-xs"></i>`).join('');
     }
 
     function handleQuizInputKeydown(e) {
@@ -1246,19 +1247,19 @@
         appState.quiz.score++;
         appState.quiz.answeredCurrent = true;
         document.getElementById('quiz-score-preview').textContent = `Score: ${appState.quiz.score}`;
-        fb.className = 'p-3.5 rounded-xl text-xs font-medium border bg-emerald-950/80 border-emerald-500/50 text-emerald-200';
+        fb.className = 'p-3 rounded-xl text-xs font-medium border bg-emerald-950/80 border-emerald-500/50 text-emerald-200';
         fb.innerHTML = `<div class="font-bold text-emerald-400 mb-0.5"><i class="fa-solid fa-circle-check mr-1"></i> Correct!</div><div>${q.hint}</div>`;
         lockQuestionAndShowNext();
       } else {
         appState.quiz.chances--;
         renderChancesHearts();
         if (appState.quiz.chances > 0) {
-          fb.className = 'p-3.5 rounded-xl text-xs font-medium border bg-amber-950/80 border-amber-500/50 text-amber-200';
+          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-amber-950/80 border-amber-500/50 text-amber-200';
           fb.innerHTML = `<div class="font-bold text-amber-400"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Incorrect. ${appState.quiz.chances} attempt(s) left.</div>`;
           inputEl.select();
         } else {
           appState.quiz.answeredCurrent = true;
-          fb.className = 'p-3.5 rounded-xl text-xs font-medium border bg-red-950/80 border-red-500/50 text-red-200';
+          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-red-950/80 border-red-500/50 text-red-200';
           fb.innerHTML = `<div class="font-bold text-red-400 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Answer: <span class="font-mono text-gold-300">${q.answer}</span></div><div>${q.hint}</div>`;
           lockQuestionAndShowNext();
         }
@@ -1268,7 +1269,7 @@
     function lockQuestionAndShowNext() {
       const btn = document.getElementById('btn-check-answer');
       const isLast = appState.quiz.currentIndex >= appState.quiz.questions.length - 1;
-      btn.innerHTML = isLast ? `<span>Finish & Auto-Save</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
+      btn.innerHTML = isLast ? `<span>Finish</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
       btn.onclick = nextQuestion;
     }
 
@@ -1327,7 +1328,7 @@
     // --- UNIVERSAL MULTI-DEVICE API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
-        // Direct Native Call (When hosted inside Google Apps Script iframe)
+        // Direct Native Call (When running inside Google Apps Script iframe)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
@@ -1448,7 +1449,7 @@
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
           .withSuccessHandler(() => {
-            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score automatically recorded to teacher gradebook!</span>`;
+            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score recorded to teacher gradebook!</span>`;
             openCertificateModal(record);
           })
           .withFailureHandler(() => {
@@ -1459,12 +1460,12 @@
       }
 
       try {
-        let endpoint = WEB_APP_EXEC_URL.trim() || window.location.href;
+        let endpoint = (typeof WEB_APP_EXEC_URL !== 'undefined' ? WEB_APP_EXEC_URL : '').trim() || window.location.href;
         const url = new URL(endpoint);
         url.searchParams.set('action', 'log');
         Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
         await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
-        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score automatically recorded to teacher gradebook!</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-400"></i><span class="text-emerald-300">Score recorded to teacher gradebook!</span>`;
       } catch (err) {
         statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-400"></i><span class="text-amber-300">Recorded offline</span>`;
       }
@@ -1505,7 +1506,7 @@
         document.getElementById('dash-teacher-code').textContent = appState.currentTeacher.classCode;
         generateCustomStudentLink();
       } else {
-        btnLabel.textContent = 'Teacher Portal';
+        btnLabel.textContent = 'Portal';
       }
     }
 
@@ -1534,7 +1535,7 @@
         });
 
         btn.disabled = false;
-        btn.textContent = 'Create Teacher Account';
+        btn.textContent = 'Create Account';
 
         if (res && res.status === 'success') {
           appState.currentTeacher = res.teacher;
@@ -1549,7 +1550,7 @@
         }
       } catch (err) {
         btn.disabled = false;
-        btn.textContent = 'Create Teacher Account';
+        btn.textContent = 'Create Account';
         alert('Registration error: ' + (err.message || err));
       }
     }
@@ -1652,7 +1653,7 @@
       navigator.clipboard.writeText(document.getElementById('display-student-link').value);
       const btn = document.getElementById('btn-copy-link');
       btn.textContent = 'Copied!';
-      setTimeout(() => btn.textContent = 'Copy Link', 1500);
+      setTimeout(() => btn.textContent = 'Copy', 1500);
     }
 
     function viewTeacherScores() {
@@ -1720,20 +1721,20 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="8" class="py-8 text-center text-slate-500">No student records found under class code: <strong class="text-gold-400">${appState.currentTeacher?.classCode || 'None'}</strong>.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="8" class="py-6 text-center text-slate-500 text-xs">No student records found under class code: <strong class="text-gold-400">${appState.currentTeacher?.classCode || 'None'}</strong>.</td></tr>`;
         return;
       }
 
       tbody.innerHTML = filtered.slice(0, 100).map(s => `
         <tr class="hover:bg-navy-900/60 transition">
-          <td class="py-3 px-4 text-slate-400 whitespace-nowrap">${new Date(s.timestamp).toLocaleString()}</td>
-          <td class="py-3 px-4 font-bold text-white">${escapeHtml(s.studentName)}</td>
-          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.studentSection)}</td>
-          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded bg-gold-500/15 text-gold-300 font-mono font-bold">${escapeHtml(s.classCode)}</span></td>
-          <td class="py-3 px-4 text-slate-300">${escapeHtml(s.categoryTitle)} <span class="text-slate-500 text-[10px]">(${escapeHtml(s.submode)})</span></td>
-          <td class="py-3 px-4 text-center font-mono font-bold text-gold-400">${s.score}/${s.total}</td>
-          <td class="py-3 px-4 text-center font-mono font-bold text-emerald-400">${s.percentage}%</td>
-          <td class="py-3 px-4 text-center"><span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-800 text-gold-300">${escapeHtml(s.mastery)}</span></td>
+          <td class="py-2.5 px-3 text-slate-400 whitespace-nowrap">${new Date(s.timestamp).toLocaleDateString()}</td>
+          <td class="py-2.5 px-3 font-bold text-white">${escapeHtml(s.studentName)}</td>
+          <td class="py-2.5 px-3 text-slate-300">${escapeHtml(s.studentSection)}</td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-gold-500/15 text-gold-300 font-mono font-bold text-[10px]">${escapeHtml(s.classCode)}</span></td>
+          <td class="py-2.5 px-3 text-slate-300">${escapeHtml(s.categoryTitle)} <span class="text-slate-500 text-[9px]">(${escapeHtml(s.submode)})</span></td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-gold-400">${s.score}/${s.total}</td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-400">${s.percentage}%</td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-slate-800 text-gold-300">${escapeHtml(s.mastery)}</span></td>
         </tr>
       `).join('');
     }
@@ -1773,7 +1774,7 @@
       document.getElementById('cert-accuracy').textContent = `${rec.percentage}%`;
       document.getElementById('cert-rating').textContent = rec.mastery;
       document.getElementById('cert-code').textContent = rec.classCode;
-      document.getElementById('cert-date').textContent = new Date(rec.timestamp).toLocaleString();
+      document.getElementById('cert-date').textContent = new Date(rec.timestamp).toLocaleDateString();
       document.getElementById('modal-certificate').classList.remove('hidden');
     }
 
@@ -1784,9 +1785,9 @@
 
     function renderGuides() {
       document.getElementById('guides-container').innerHTML = STUDY_GUIDES.map(g => `
-        <div class="glass-panel p-5 rounded-2xl space-y-2">
-          <h3 class="text-base font-bold text-gold-400">${g.title}</h3>
-          <ul class="list-disc list-inside text-xs text-slate-300 space-y-1.5 leading-relaxed">
+        <div class="glass-panel p-3.5 rounded-2xl space-y-1.5">
+          <h3 class="text-sm font-bold text-gold-400">${g.title}</h3>
+          <ul class="list-disc list-inside text-xs text-slate-300 space-y-1 leading-relaxed">
             ${g.rules.map(r => `<li>${r}</li>`).join('')}
           </ul>
         </div>
