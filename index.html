@@ -560,9 +560,10 @@
   <!-- APPLICATION ENGINE -->
   <script>
     /**
-     * Optional: Paste your public Web App URL (/exec) here if serving externally
-     * (e.g. from GitHub Pages or Firebase). If hosting inside Google Apps Script,
-     * leaving it empty is completely fine.
+     * =========================================================================
+     * PASTE YOUR DEPLOYED WEB APP URL HERE:
+     * (Found in Deploy > Manage deployments > Web App > URL ending in /exec)
+     * =========================================================================
      */
     const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
 
@@ -975,10 +976,10 @@
       }
     }
 
-    // --- UNIVERSAL API DISPATCHER ---
+    // --- UNIVERSAL API DISPATCHER (Resolves Network & Custom Domain Issues) ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
-        // Direct Native Call (When served inside Apps Script)
+        // Direct Native Call (When running inside Google Apps Script)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
@@ -1002,10 +1003,11 @@
           }
         }
 
-        // External / JSONP Dispatch
-        let targetUrl = WEB_APP_EXEC_URL.trim();
-        if (!targetUrl || targetUrl.includes('AKfycb...')) {
-          targetUrl = window.location.href.split('?')[0];
+        // Custom Domain & External Fallback
+        const targetUrl = WEB_APP_EXEC_URL.trim();
+        if (!targetUrl || !targetUrl.startsWith('https://script.google.com/macros/s/')) {
+          reject(new Error('Missing Web App URL. Please set your deployed Apps Script URL in WEB_APP_EXEC_URL in Index.html.'));
+          return;
         }
 
         const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 100000);
@@ -1015,7 +1017,7 @@
         try {
           url = new URL(targetUrl);
         } catch (e) {
-          reject(new Error('Invalid URL endpoint. If hosting externally, set WEB_APP_EXEC_URL in Index.html.'));
+          reject(new Error('Invalid URL format in WEB_APP_EXEC_URL.'));
           return;
         }
 
@@ -1025,7 +1027,7 @@
 
         const timeout = setTimeout(() => {
           cleanup();
-          reject(new Error('Connection timed out. Ensure the Web App is published with "Who has access: Anyone".'));
+          reject(new Error('Connection timed out. Verify your Google Apps Script is deployed with "Who has access: Anyone".'));
         }, 15000);
 
         function cleanup() {
@@ -1041,7 +1043,7 @@
 
         script.onerror = function() {
           cleanup();
-          reject(new Error('Network error. Check network connectivity or deployment settings.'));
+          reject(new Error('Could not connect to Google Apps Script. Ensure the script is deployed with "Anyone" access.'));
         };
 
         script.src = url.toString();
@@ -1114,13 +1116,18 @@
       openCertificateModal(record);
     }
 
-    // --- TEACHER PROFILE & AUTHENTICATION LOGIC ---
+    // --- TEACHER PROFILE & RE-LOGIN LOGIC ---
     function openTeacherAuthModal() {
       document.getElementById('modal-teacher-portal').classList.remove('hidden');
       if (appState.currentTeacher) {
         toggleTeacherView('dashboard');
+        updateTeacherNavUI();
       } else {
         toggleTeacherView('login');
+        setTimeout(() => {
+          const u = document.getElementById('login-username');
+          if (u) u.focus();
+        }, 100);
       }
     }
 
@@ -1191,17 +1198,21 @@
     }
 
     async function handleTeacherLogin() {
-      const username = document.getElementById('login-username').value.trim().toUpperCase();
-      const password = document.getElementById('login-password').value.trim();
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const username = usernameInput.value.trim().toUpperCase();
+      const password = passwordInput.value.trim();
 
       if (!username || !password) {
-        alert('Please enter your username and password.');
+        alert('Please enter both your Teacher Username and Password.');
+        if (!username) usernameInput.focus();
+        else passwordInput.focus();
         return;
       }
 
       const btn = document.getElementById('btn-login');
       btn.disabled = true;
-      btn.textContent = 'Authenticating...';
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Authenticating...`;
 
       try {
         const res = await callAppsScriptApi({
@@ -1217,10 +1228,17 @@
           appState.currentTeacher = res.teacher;
           localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
           setActiveTeacherCode(res.teacher.classCode);
+          
+          usernameInput.value = '';
+          passwordInput.value = '';
+
           updateTeacherNavUI();
           toggleTeacherView('dashboard');
+          pullScoresFromCloud();
         } else {
-          alert(res.message || 'Invalid username or password.');
+          alert(res.message || 'Invalid username or password. Please try again.');
+          passwordInput.value = '';
+          passwordInput.focus();
         }
       } catch (err) {
         btn.disabled = false;
@@ -1230,10 +1248,26 @@
     }
 
     function handleTeacherLogout() {
+      if (!confirm('Are you sure you want to log out of your teacher account?')) {
+        return;
+      }
+
       appState.currentTeacher = null;
       localStorage.removeItem(STORAGE_KEYS.TEACHER_PROFILE);
+
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+      document.getElementById('reg-fullname').value = '';
+      document.getElementById('reg-username').value = '';
+      document.getElementById('reg-password').value = '';
+      document.getElementById('reg-classcode').value = '';
+
       updateTeacherNavUI();
+      clearActiveTeacherCode();
       toggleTeacherView('login');
+      closeTeacherAuthModal();
+
+      alert('Logged out successfully.');
     }
 
     function generateCustomStudentLink() {
@@ -1302,6 +1336,11 @@
 
       try {
         let endpoint = WEB_APP_EXEC_URL.trim() || window.location.href;
+        if (!endpoint || !endpoint.startsWith('https://script.google.com/macros/s/')) {
+          if (spinner) spinner.classList.remove('fa-spin');
+          return;
+        }
+
         const url = new URL(endpoint);
         url.searchParams.set('action', 'fetch');
         url.searchParams.set('code', filterCode);
