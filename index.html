@@ -488,7 +488,7 @@
             <h3 class="text-sm font-bold text-white">Simultaneous Multi-Device Access</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            You can log into your teacher profile across your laptop, desktop, and mobile tablet simultaneously. The system authenticates directly against your central spreadsheet on every device independently.
+            You can log into your teacher profile across your laptop, desktop, and mobile tablet simultaneously[cite: 1]. The system authenticates directly against your central spreadsheet on every device independently[cite: 1, 2].
           </p>
         </div>
 
@@ -498,7 +498,7 @@
             <h3 class="text-sm font-bold text-white">Strict Operation Filtering & GEMDAS</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            Only the operations you check will appear in generated items. GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right).
+            Only the operations you check will appear in generated items[cite: 1]. GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right)[cite: 1].
           </p>
         </div>
       </div>
@@ -632,9 +632,9 @@
   <!-- APPLICATION ENGINE -->
   <script>
     /**
-     * Set deployed Web App URL for custom domain hosting (e.g., projectprime.irayahighschool.com)
+     * Paste deployed Web App URL for custom domain hosting (e.g., projectprime.irayahighschool.com)
      */
-    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec'; // <-- REPLACE WITH YOUR ACTUAL /exec URL
+    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
 
     const STORAGE_KEYS = {
       ACTIVE_CODE: 'PRIME_ACTIVE_TEACHER_CODE',
@@ -985,97 +985,193 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
       }
 
-      // 3. ORDER OF OPERATIONS: STRICT PEMDAS / GEMDAS
+      // 3. ORDER OF OPERATIONS: DYNAMIC PEMDAS / GEMDAS ENGINE
       if (domainId === 'gemdas') {
-        const hasAdd = ops.includes('+');
-        const hasSub = ops.includes('-');
-        const hasMul = ops.includes('*');
-        const hasDiv = ops.includes('/');
+        const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
+        const activeOps = allowedOps.length ? allowedOps : ['+'];
+        const numTerms = Math.max(2, Math.min(5, cfg.terms || 3));
 
+        function getOperatorsSequence(length) {
+          let pool = [];
+          let distinctNeeded = Math.min(length, activeOps.length);
+          let shuffled = [...activeOps].sort(() => 0.5 - Math.random());
+          for (let i = 0; i < distinctNeeded; i++) pool.push(shuffled[i]);
+          while (pool.length < length) {
+            pool.push(activeOps[randInt(0, activeOps.length - 1)]);
+          }
+          return pool.sort(() => 0.5 - Math.random());
+        }
+
+        const symMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
         let displayStr = '';
         let evalAns = 0;
         let hintSteps = [];
 
-        if ((hasMul || hasDiv) && (hasAdd || hasSub)) {
-          const a = randInt(2, 5);
-          const b = randInt(1, 6);
-          const c = randInt(1, 5);
-          const d = randInt(1, 10);
+        const opList = getOperatorsSequence(numTerms - 1);
 
-          if (hasMul && hasAdd && !hasDiv) {
-            displayStr = `${d} + ${a} × (${b} + ${c})`;
-            const grp = b + c;
-            const prod = a * grp;
-            evalAns = d + prod;
-            hintSteps = [
-              `Grouping: (${b} + ${c}) = ${grp}`,
-              `Multiply: ${a} × ${grp} = ${prod}`,
-              `Add: ${d} + ${prod} = ${evalAns}`
-            ];
-          } else if (hasDiv && hasSub) {
-            const divB = randInt(2, 4);
-            const q = randInt(2, 5);
-            const divA = divB * q;
-            const top = randInt(20, 40);
-            displayStr = `${top} − ${divA} ÷ ${divB}`;
-            evalAns = top - q;
-            hintSteps = [
-              `Division: ${divA} ÷ ${divB} = ${q}`,
-              `Subtract: ${top} − ${q} = ${evalAns}`
-            ];
-          } else {
-            const divB = randInt(2, 4);
-            const q = randInt(2, 4);
-            const divA = divB * q;
-            displayStr = `${a} × (${b} + ${c}) + ${divA} ÷ ${divB}`;
-            const grp = b + c;
-            const mult = a * grp;
-            evalAns = mult + q;
-            hintSteps = [
-              `Grouping: (${b} + ${c}) = ${grp}`,
-              `MD: ${a} × ${grp} = ${mult}, ${divA} ÷ ${divB} = ${q}`,
-              `Add: ${mult} + ${q} = ${evalAns}`
-            ];
-          }
-        } else if (hasAdd || hasSub) {
-          const a = randInt(5, 20);
-          const b = randInt(1, 10);
-          const c = randInt(1, 10);
-          const op1 = hasSub ? '−' : '+';
-          const op2 = hasAdd ? '+' : '−';
+        if (numTerms === 2) {
+          const op = opList[0];
+          const hasGrouping = Math.random() < 0.35 && ['+', '-'].includes(op);
+          let a = randInt(2, 12), b = randInt(2, 9);
           
-          const grp = op2 === '+' ? (b + c) : Math.max(0, b - c);
-          displayStr = `${a + grp} ${op1} (${b} ${op2} ${c})`;
-          evalAns = (a + grp) - grp;
-          hintSteps = [
-            `Grouping: (${b} ${op2} ${c}) = ${grp}`,
-            `AS: ${a + grp} − ${grp} = ${evalAns}`
-          ];
-        } else {
-          const a = randInt(2, 5);
-          const b = randInt(2, 4);
-          const c = randInt(2, 3);
-          if (hasMul && hasDiv) {
-            const prod = b * c;
-            displayStr = `(${prod} ÷ ${b}) × ${a}`;
-            hintSteps = [
-              `Grouping: (${prod} ÷ ${b}) = ${c}`,
-              `Multiply: ${c} × ${a} = ${c * a}`
-            ];
-            evalAns = c * a;
+          if (op === '/') {
+            b = randInt(2, 6);
+            evalAns = randInt(2, 8);
+            a = b * evalAns;
+          } else if (op === '*') {
+            evalAns = a * b;
+          } else if (op === '+') {
+            evalAns = a + b;
           } else {
-            displayStr = `(${a} × ${b}) × ${c}`;
-            evalAns = a * b * c;
-            hintSteps = [
-              `Grouping: (${a} × ${b}) = ${a * b}`,
-              `Multiply: ${a * b} × ${c} = ${evalAns}`
-            ];
+            if (a < b) [a, b] = [b, a];
+            evalAns = a - b;
+          }
+
+          if (hasGrouping) {
+            displayStr = `(${a} ${symMap[op]} ${b})²`;
+            evalAns = evalAns * evalAns;
+            hintSteps.push(`Step 1 (Parentheses): (${a} ${symMap[op]} ${b}) = ${Math.sqrt(evalAns)}`);
+            hintSteps.push(`Step 2 (Exponent): ${Math.sqrt(evalAns)}² = ${evalAns}`);
+          } else {
+            displayStr = `${a} ${symMap[op]} ${b}`;
+            hintSteps.push(`Solve: ${displayStr} = ${evalAns}`);
+          }
+        } 
+        else if (numTerms === 3) {
+          const op1 = opList[0];
+          const op2 = opList[1];
+          const pattern = randInt(1, 4);
+
+          // Pattern 1: (A op1 B) op2 C
+          if (pattern === 1) {
+            let a = randInt(2, 9), b = randInt(2, 9), c = randInt(2, 8);
+            let inside = 0;
+            if (op1 === '/') { b = randInt(2, 5); inside = randInt(2, 6); a = b * inside; }
+            else if (op1 === '*') inside = a * b;
+            else if (op1 === '+') inside = a + b;
+            else { if (a < b) [a, b] = [b, a]; inside = a - b; }
+
+            if (op2 === '/') {
+              let factor = randInt(2, 4);
+              inside = factor * randInt(2, 5);
+              if (op1 === '+') { a = Math.floor(inside / 2); b = inside - a; }
+              else if (op1 === '*') { a = inside; b = 1; }
+              else if (op1 === '-') { a = inside + 3; b = 3; }
+              c = factor;
+              evalAns = Math.floor(inside / c);
+            } else if (op2 === '*') { evalAns = inside * c; }
+            else if (op2 === '+') { evalAns = inside + c; }
+            else { evalAns = inside - c; }
+
+            displayStr = `(${a} ${symMap[op1]} ${b}) ${symMap[op2]} ${c}`;
+            hintSteps.push(`Step 1 (Parentheses): (${a} ${symMap[op1]} ${b}) = ${inside}`);
+            hintSteps.push(`Step 2 (${symMap[op2]}): ${inside} ${symMap[op2]} ${c} = ${evalAns}`);
+          }
+          // Pattern 2: A op1 (B op2 C)
+          else if (pattern === 2) {
+            let a = randInt(2, 8), b = randInt(2, 9), c = randInt(2, 6);
+            let inside = 0;
+            if (op2 === '/') { c = randInt(2, 4); inside = randInt(2, 6); b = c * inside; }
+            else if (op2 === '*') inside = b * c;
+            else if (op2 === '+') inside = b + c;
+            else { if (b < c) [b, c] = [c, b]; inside = b - c; }
+
+            if (op1 === '/') {
+              let factor = inside || 2;
+              evalAns = randInt(2, 6);
+              a = factor * evalAns;
+            } else if (op1 === '*') { evalAns = a * inside; }
+            else if (op1 === '+') { evalAns = a + inside; }
+            else { a = inside + randInt(2, 10); evalAns = a - inside; }
+
+            displayStr = `${a} ${symMap[op1]} (${b} ${symMap[op2]} ${c})`;
+            hintSteps.push(`Step 1 (Parentheses): (${b} ${symMap[op2]} ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (${symMap[op1]}): ${a} ${symMap[op1]} ${inside} = ${evalAns}`);
+          }
+          // Pattern 3: A² op1 B op2 C (Exponent First)
+          else if (pattern === 3 && activeOps.length >= 2) {
+            let base = randInt(2, 5);
+            let expVal = base * base;
+            let b = randInt(2, 6), c = randInt(1, 8);
+            
+            if (op1 === '*') {
+              let prod = expVal * b;
+              evalAns = op2 === '+' ? prod + c : prod - c;
+              displayStr = `${base}² × ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (Exponent): ${base}² = ${expVal}`);
+              hintSteps.push(`Step 2 (Multiplication): ${expVal} × ${b} = ${prod}`);
+              hintSteps.push(`Step 3 (${symMap[op2]}): ${prod} ${symMap[op2]} ${c} = ${evalAns}`);
+            } else {
+              let prod = b * c;
+              evalAns = op1 === '+' ? expVal + prod : expVal - prod;
+              displayStr = `${base}² ${symMap[op1]} ${b} × ${c}`;
+              hintSteps.push(`Step 1 (Exponent): ${base}² = ${expVal}`);
+              hintSteps.push(`Step 2 (Multiplication): ${b} × ${c} = ${prod}`);
+              hintSteps.push(`Step 3 (${symMap[op1]}): ${expVal} ${symMap[op1]} ${prod} = ${evalAns}`);
+            }
+          }
+          // Pattern 4: A op1 B op2 C (Left-to-Right Precedence)
+          else {
+            let a = randInt(2, 10), b = randInt(2, 8), c = randInt(2, 6);
+            if (op1 === '*' || op1 === '/') {
+              let first = (op1 === '*') ? a * b : a;
+              if (op1 === '/') { b = randInt(2, 5); first = randInt(2, 6); a = b * first; }
+              evalAns = (op2 === '+') ? first + c : ((op2 === '-') ? first - c : first * c);
+              displayStr = `${a} ${symMap[op1]} ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (MD Precedence): ${a} ${symMap[op1]} ${b} = ${first}`);
+              hintSteps.push(`Step 2 (${symMap[op2]}): ${first} ${symMap[op2]} ${c} = ${evalAns}`);
+            } else {
+              let second = (op2 === '*') ? b * c : b;
+              if (op2 === '/') { c = randInt(2, 4); second = randInt(2, 5); b = c * second; }
+              evalAns = (op1 === '+') ? a + second : a - second;
+              displayStr = `${a} ${symMap[op1]} ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (MD Precedence): ${b} ${symMap[op2]} ${c} = ${second}`);
+              hintSteps.push(`Step 2 (${symMap[op1]}): ${a} ${symMap[op1]} ${second} = ${evalAns}`);
+            }
+          }
+        } 
+        else {
+          let b = randInt(2, 6), c = randInt(1, 5);
+          let inside = b + c;
+          let m = randInt(2, 4);
+          let divD = randInt(2, 4), q = randInt(2, 5);
+          let divN = divD * q;
+          let extra = randInt(1, 10);
+
+          let chosen = [...opList];
+          let hasM = chosen.includes('*'), hasD = chosen.includes('/'), hasS = chosen.includes('-');
+
+          if (hasM && hasD) {
+            evalAns = (m * inside) - q + (numTerms === 5 ? extra : 0);
+            displayStr = `${m} × (${b} + ${c}) − ${divN} ÷ ${divD}` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Multiplication & Division): ${m} × ${inside} = ${m * inside}, and ${divN} ÷ ${divD} = ${q}`);
+            hintSteps.push(`Step 3 (Addition & Subtraction): ${m * inside} − ${q}` + (numTerms === 5 ? ` + ${extra} = ${evalAns}` : ` = ${evalAns}`));
+          } else if (hasM) {
+            let k = randInt(2, 6);
+            evalAns = m * inside + k + (numTerms === 5 ? extra : 0);
+            displayStr = `${m} × (${b} + ${c}) + ${k}` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Multiplication): ${m} × ${inside} = ${m * inside}`);
+            hintSteps.push(`Step 3 (Addition): ${evalAns}`);
+          } else {
+            let offset = randInt(10, 25);
+            evalAns = offset - inside + (numTerms === 5 ? extra : 0);
+            displayStr = `${offset} − (${b} + ${c})` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Addition/Subtraction): Result = ${evalAns}`);
           }
         }
 
-        const submode = `GEMDAS / PEMDAS (${numTerms} Terms)`;
+        const submode = `GEMDAS (${numTerms} Terms: ${activeOps.map(o => symMap[o]).join(' ')})`;
         const hint = hintSteps.join(' → ');
-        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Follow G → E → MD → AS order.' };
+        return { 
+          display: `${displayStr} = ?`, 
+          answer: String(evalAns), 
+          hint: hint, 
+          submode: submode, 
+          tip: 'Solve using exact GEMDAS sequence: Grouping → Exponents → Multiplication/Division → Addition/Subtraction.' 
+        };
       }
 
       // 4. RATIONAL FRACTIONS (Strict Operation Filter)
@@ -1328,7 +1424,7 @@
     // --- UNIVERSAL MULTI-DEVICE API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
-        // Direct Native Call (When running inside Google Apps Script iframe)
+        // Direct Native Call (When hosted inside Google Apps Script iframe)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
