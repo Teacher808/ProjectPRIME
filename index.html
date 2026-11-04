@@ -89,7 +89,7 @@
           <div class="flex items-center gap-2">
             <h1 class="text-base md:text-lg font-black tracking-tight text-white">PROJECT <span class="text-gold-400">PRIME</span></h1>
             <span class="hidden sm:inline-block text-[10px] font-bold uppercase px-2 py-0.5 rounded bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Auto-Sync
+              <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span> Multi-Device Sync
             </span>
           </div>
           <p class="text-[11px] text-slate-400 hidden sm:block">Program for Remediation and Improvement in Mathematics Education</p>
@@ -143,7 +143,7 @@
         </span>
         <h2 class="text-2xl md:text-4xl font-extrabold text-white">Choose a Mathematics Domain</h2>
         <p class="text-slate-400 text-xs md:text-sm max-w-xl mx-auto">
-          Scores are saved automatically to your teacher's profile as soon as you finish your session. Multi-term calculations (2 to 5 terms) are available for all fundamental and order-of-operation topics.
+          Scores are saved automatically to your teacher's profile. Multi-term equations only use the exact operations you select.
         </p>
       </div>
       <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5"></div>
@@ -172,12 +172,12 @@
             </div>
           </div>
 
-          <!-- NUMBER OF TERMS SELECTOR (Whole, Integers, Fractions, Decimals, PEMDAS) -->
+          <!-- NUMBER OF TERMS SELECTOR -->
           <div id="config-terms-box" class="hidden">
             <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
               <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms to Solve (2 to 5 Operands)
             </label>
-            <p class="text-[11px] text-slate-400 mb-2">Controls how many numbers or operands are chained in each expression.</p>
+            <p class="text-[11px] text-slate-400 mb-2">Controls how many numbers are in each equation.</p>
             <div class="grid grid-cols-4 gap-2">
               <button type="button" id="btn-terms-2" onclick="setConfigTerms(2)" class="p-2.5 rounded-lg text-xs font-bold border transition gold-btn">2 Terms</button>
               <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="p-2.5 rounded-lg text-xs font-bold border transition navy-btn">3 Terms</button>
@@ -237,9 +237,10 @@
             </div>
           </div>
 
-          <!-- Operations -->
+          <!-- Operations Selection (Strictly Enforced) -->
           <div id="config-operations-box">
-            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Operations Included</label>
+            <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">Operations Included (Strictly Filtered)</label>
+            <p class="text-[11px] text-slate-400 mb-2">Only the checked operation(s) will ever be used in generated problems.</p>
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
               <label class="flex items-center gap-2 p-2.5 rounded-lg bg-navy-900 border border-gold-500/20 cursor-pointer hover:border-gold-400">
                 <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-gold-400 w-4 h-4">
@@ -323,7 +324,7 @@
       </div>
     </section>
 
-    <!-- 4. RESULTS & AUTOMATIC SCORE SAVING VIEW -->
+    <!-- 4. RESULTS VIEW -->
     <section id="view-results" class="hidden max-w-xl mx-auto space-y-6">
       <div class="glass-panel p-6 md:p-8 rounded-3xl shadow-2xl text-center space-y-6">
         <div class="w-16 h-16 rounded-full bg-gold-500/20 text-gold-400 border border-gold-500/40 flex items-center justify-center text-3xl mx-auto">
@@ -477,53 +478,20 @@
         <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
           <div class="flex items-center gap-3">
             <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">1</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Create or Log in to Your Teacher Account</h3>
+            <h3 class="text-sm md:text-base font-bold text-white">Multi-Device Login (Laptops, Tablets, Phones)</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            Click the <strong class="text-gold-300">Teacher Portal</strong> button on the top right navigation bar[cite: 1]. If it is your first time, click <em>"Register here"</em> to encode your Full Name, Username/ID (e.g., <code class="text-gold-300 font-mono">REYES</code>), Password, and optional Base Class Code[cite: 1]. Your account is saved in the secure central Google Sheet database[cite: 2].
+            You can log into your teacher profile across your laptop, school desktop, and mobile tablet simultaneously[cite: 1]. The stateless authentication checks credentials against your Google Sheet on each device independently without session lockout[cite: 1, 2].
           </p>
         </div>
 
         <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
           <div class="flex items-center gap-3">
             <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">2</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Generate Your Shareable Student Link</h3>
+            <h3 class="text-sm md:text-base font-bold text-white">Strict Operation Filtering & GEMDAS</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            Once logged in, your Teacher Dashboard automatically creates a universal link[cite: 1]. You can enter a section tag (e.g., <code class="text-gold-300 font-mono">9A</code> or <code class="text-gold-300 font-mono">EINSTEIN</code>) and click <strong class="text-gold-300">Update Link</strong>[cite: 1]. Click <strong class="text-gold-300">Copy Link</strong> and share it with your learners via Messenger, Google Classroom, QR code, or chat[cite: 1].
-          </p>
-          <div class="ml-10 bg-navy-950 p-2.5 rounded-xl border border-slate-800 text-[11px] font-mono text-emerald-400">
-            Example: https://projectprime.irayahighschool.com/?teacher=REYES&sec=9A[cite: 1, 3]
-          </div>
-        </div>
-
-        <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">3</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Configuring Multi-Term Arithmetic & PEMDAS/GEMDAS</h3>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            When practicing Whole Numbers, Integers, Rational Fractions, Decimals, or the new <strong class="text-gold-300">Order of Operations (PEMDAS / GEMDAS)</strong> domain, select the <strong class="text-gold-300">Number of Terms (2 to 5 operands)</strong> to customize arithmetic complexity from basic operations to chained multi-step equations[cite: 1].
-          </p>
-        </div>
-
-        <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">4</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Automatic Score Logging & Certificate Issuance</h3>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            Upon finishing the session, learners enter their full name[cite: 1]. The score, accuracy percentage, mastery rating, and timestamp are transmitted to your central Google Sheet in real-time[cite: 1, 2]. Learners immediately receive a printable Achievement Certificate[cite: 1].
-          </p>
-        </div>
-
-        <div class="glass-panel p-5 rounded-2xl border border-gold-500/30 space-y-3">
-          <div class="flex items-center gap-3">
-            <span class="w-7 h-7 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">5</span>
-            <h3 class="text-sm md:text-base font-bold text-white">Monitor Grades & Export to CSV / Excel</h3>
-          </div>
-          <p class="text-xs text-slate-300 leading-relaxed pl-10">
-            Log into your Teacher Portal and click <strong class="text-gold-300">View My Gradebook</strong> or navigate to the <strong class="text-gold-300">Registry</strong> tab[cite: 1]. Student records appear in your authenticated table[cite: 1]. Click <strong class="text-gold-300">Export CSV</strong> to download the spreadsheet for your electronic class record or DepEd Form 137/138 analysis[cite: 1].
+            When configuring practice in Whole Numbers, Integers, or GEMDAS/PEMDAS, only the operations you explicitly check will appear in generated items[cite: 1]. All GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right)[cite: 1].
           </p>
         </div>
       </div>
@@ -546,9 +514,8 @@
         <button onclick="closeTeacherAuthModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
       </div>
 
-      <!-- VIEW A: TEACHER LOGIN FORM -->
       <div id="teacher-view-login" class="space-y-3">
-        <p class="text-xs text-slate-300">Log in to view your students' scores and generate shareable practice links.</p>
+        <p class="text-xs text-slate-300">Log in to view student scores and generate shareable practice links.</p>
         <div>
           <label class="block text-[11px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
           <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2.5 text-xs font-bold text-white uppercase outline-none focus:border-gold-400">
@@ -563,7 +530,6 @@
         </div>
       </div>
 
-      <!-- VIEW B: TEACHER REGISTRATION FORM -->
       <div id="teacher-view-register" class="hidden space-y-3">
         <p class="text-xs text-slate-300">Create your teacher profile to generate automated student links.</p>
         <div>
@@ -588,7 +554,6 @@
         </div>
       </div>
 
-      <!-- VIEW C: ACTIVE TEACHER DASHBOARD & LINK GENERATOR -->
       <div id="teacher-view-dashboard" class="hidden space-y-4">
         <div class="bg-navy-900/90 p-3 rounded-xl border border-gold-500/30 space-y-1">
           <div class="text-xs text-slate-400">Logged in as: <strong id="dash-teacher-name" class="text-white"></strong></div>
@@ -660,9 +625,6 @@
 
   <!-- APPLICATION ENGINE -->
   <script>
-    /**
-     * Optional: Paste deployed Web App URL if hosting on a custom domain (e.g. projectprime.irayahighschool.com)
-     */
     const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
 
     const STORAGE_KEYS = {
@@ -701,7 +663,7 @@
     ];
 
     const STUDY_GUIDES = [
-      { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence (PEMDAS).'] },
+      { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence.'] },
       { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).', 'Multiple signs: Evaluate left-to-right combining consecutive integer operations.'] },
       { title: '3. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first (innermost first).', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right in the order they appear.', 'A / S: Perform Addition and Subtraction from left to right in the order they appear.'] },
       { title: '4. Rational Fractions', rules: ['Add/Subtract: Find LCD, combine numerators, simplify with GCD.', 'Multi-term Fractions: Convert all 2 to 5 denominators to their common LCD before adding or subtracting numerators.'] }
@@ -909,12 +871,12 @@
       return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
     }
 
-    // MULTI-TERM PROBLEM GENERATOR (Whole, Integers, GEMDAS, Fractions, Decimals)
+    // MULTI-TERM PROBLEM GENERATOR (Strict Operations Filtering & Strict PEMDAS)
     function generateQuestionForDomain(domainId, cfg) {
       const ops = cfg.operations.length ? cfg.operations : ['+'];
       const numTerms = (['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
 
-      // 1. WHOLE NUMBERS (2 to 5 Terms)
+      // 1. WHOLE NUMBERS (Strict Operation Filter)
       if (domainId === 'whole') {
         const nf = cfg.numberField;
         const tableVal = nf === 'random' ? randInt(1, 12) : (nf !== 'none' ? parseInt(nf) : null);
@@ -931,14 +893,12 @@
           return { display: `${display} = ?`, answer: String(answer), hint, submode, tip: 'Type the exact whole number.' };
         }
 
-        const allowedOps = ops.filter(o => ['+', '-'].includes(o));
-        const activeOps = allowedOps.length ? allowedOps : ['+'];
         let operands = [];
         let operators = [];
 
         for (let i = 0; i < numTerms; i++) {
           operands.push(generateOperandByDigits(Math.min(4, cfg.digits)));
-          if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
+          if (i > 0) operators.push(ops[randInt(0, ops.length - 1)]);
         }
 
         let running = operands[0];
@@ -949,13 +909,28 @@
           let nextVal = operands[i];
 
           if (op === '-' && running < nextVal) {
-            op = '+';
-            operators[i - 1] = '+';
+            if (ops.includes('+')) { op = '+'; operators[i - 1] = '+'; }
+            else { running = nextVal + running; displayParts[0] = running; }
           }
-          if (op === '+') { running += nextVal; }
-          else { running -= nextVal; }
+          if (op === '/') {
+            // Clean division
+            nextVal = Math.max(1, randInt(1, 9));
+            operands[i] = nextVal;
+            running = running * nextVal;
+            displayParts[0] = running;
+            running = Math.floor(running / nextVal);
+          } else if (op === '*') {
+            nextVal = randInt(1, 9);
+            operands[i] = nextVal;
+            running *= nextVal;
+          } else if (op === '+') {
+            running += nextVal;
+          } else {
+            running -= nextVal;
+          }
 
-          displayParts.push(op === '-' ? '−' : '+');
+          const sym = op === '*' ? '×' : (op === '/' ? '÷' : (op === '-' ? '−' : '+'));
+          displayParts.push(sym);
           displayParts.push(nextVal);
         }
 
@@ -965,12 +940,9 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Calculate and type the whole number answer.' };
       }
 
-      // 2. SIGNED INTEGERS (2 to 5 Terms)
+      // 2. SIGNED INTEGERS (Strict Operation Filter)
       if (domainId === 'integers') {
         const fmt = n => (n < 0 ? `(${n})` : `${n}`);
-        const allowedOps = ops.filter(o => ['+', '-'].includes(o));
-        const activeOps = allowedOps.length ? allowedOps : ['+'];
-        
         let operands = [];
         let operators = [];
 
@@ -979,7 +951,7 @@
           if (cfg.integerMode === 'both-neg') { val = -val; }
           else if (cfg.integerMode === 'mixed') { if (Math.random() < 0.5) val = -val; }
           operands.push(val);
-          if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
+          if (i > 0) operators.push(ops[randInt(0, ops.length - 1)]);
         }
 
         let running = operands[0];
@@ -988,9 +960,13 @@
         for (let i = 1; i < numTerms; i++) {
           let op = operators[i - 1];
           let val = operands[i];
-          if (op === '+') running += val;
+          if (op === '*') { val = randInt(-5, 5) || 2; operands[i] = val; running *= val; }
+          else if (op === '/') { val = randInt(1, 4); operands[i] = val; running = running * val; displayParts[0] = fmt(running); running = Math.floor(running / val); }
+          else if (op === '+') running += val;
           else running -= val;
-          displayParts.push(op === '-' ? '−' : '+');
+
+          const sym = op === '*' ? '×' : (op === '/' ? '÷' : (op === '-' ? '−' : '+'));
+          displayParts.push(sym);
           displayParts.push(fmt(val));
         }
 
@@ -1000,119 +976,112 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
       }
 
-      // 3. ORDER OF OPERATIONS: PEMDAS / GEMDAS (2 to 5 Terms)
+      // 3. ORDER OF OPERATIONS: STRICT PEMDAS / GEMDAS (Strictly Respects Checked Operations)
       if (domainId === 'gemdas') {
-        const terms = Math.max(2, Math.min(5, numTerms));
+        const hasAdd = ops.includes('+');
+        const hasSub = ops.includes('-');
+        const hasMul = ops.includes('*');
+        const hasDiv = ops.includes('/');
+
         let displayStr = '';
         let evalAns = 0;
         let hintSteps = [];
 
-        if (terms === 2) {
-          const type = randInt(1, 3);
-          if (type === 1) { // Grouping with exponent: (a + b)²
-            const a = randInt(1, 5), b = randInt(1, 5);
-            const sum = a + b;
-            evalAns = sum * sum;
-            displayStr = `(${a} + ${b})²`;
-            hintSteps = [`Grouping: (${a} + ${b}) = ${sum}`, `Exponent: ${sum}² = ${evalAns}`];
-          } else if (type === 2) { // Multiplication / Division priority
-            const b = randInt(2, 6);
-            const q = randInt(2, 6);
-            const a = b * q;
-            const c = randInt(1, 10);
-            displayStr = `${c} + ${a} ÷ ${b}`;
-            evalAns = c + q;
-            hintSteps = [`Divide first: ${a} ÷ ${b} = ${q}`, `Add: ${c} + ${q} = ${evalAns}`];
-          } else {
-            const a = randInt(2, 5), b = randInt(2, 5), c = randInt(1, 15);
-            displayStr = `${a} × ${b} − ${c}`;
-            const prod = a * b;
-            evalAns = prod - c;
-            hintSteps = [`Multiply first: ${a} × ${b} = ${prod}`, `Subtract: ${prod} − ${c} = ${evalAns}`];
-          }
-        } else if (terms === 3) {
-          const type = randInt(1, 3);
-          if (type === 1) { // G - MD - AS: c + a × (b + d)
-            const b = randInt(2, 6), d = randInt(1, 5);
-            const a = randInt(2, 4);
-            const c = randInt(1, 12);
-            const inside = b + d;
-            const mult = a * inside;
-            evalAns = c + mult;
-            displayStr = `${c} + ${a} × (${b} + ${d})`;
+        // STRICT GEMDAS HIERARCHY:
+        // 1. Grouping (Parentheses)
+        // 2. Exponents
+        // 3. Multiplication & Division (Left-to-Right)
+        // 4. Addition & Subtraction (Left-to-Right)
+        
+        // Scenario A: If multiplication or division is checked along with addition/subtraction
+        if ((hasMul || hasDiv) && (hasAdd || hasSub)) {
+          const a = randInt(2, 5);
+          const b = randInt(1, 6);
+          const c = randInt(1, 5);
+          const d = randInt(1, 10);
+
+          if (hasMul && hasAdd && !hasDiv) {
+            displayStr = `${d} + ${a} × (${b} + ${c})`;
+            const grp = b + c;
+            const prod = a * grp;
+            evalAns = d + prod;
             hintSteps = [
-              `Grouping (Parentheses): (${b} + ${d}) = ${inside}`,
-              `Multiply: ${a} × ${inside} = ${mult}`,
-              `Add: ${c} + ${mult} = ${evalAns}`
+              `Step 1 (Grouping): (${b} + ${c}) = ${grp}`,
+              `Step 2 (Multiplication): ${a} × ${grp} = ${prod}`,
+              `Step 3 (Addition): ${d} + ${prod} = ${evalAns}`
             ];
-          } else if (type === 2) { // Exponents with MD: a² + b × c
-            const a = randInt(2, 5);
-            const b = randInt(2, 6), c = randInt(2, 5);
-            const expVal = a * a;
-            const prod = b * c;
-            evalAns = expVal + prod;
-            displayStr = `${a}² + ${b} × ${c}`;
-            hintSteps = [
-              `Evaluate Exponent: ${a}² = ${expVal}`,
-              `Multiply: ${b} × ${c} = ${prod}`,
-              `Add: ${expVal} + ${prod} = ${evalAns}`
-            ];
-          } else { // Division and multiplication left-to-right + AS
-            const d = randInt(2, 4);
+          } else if (hasDiv && hasSub) {
+            const divB = randInt(2, 4);
             const q = randInt(2, 5);
-            const num = d * q;
-            const m = randInt(2, 4);
-            const c = randInt(1, 10);
-            displayStr = `${num} ÷ ${d} × ${m} + ${c}`;
-            const prod = q * m;
-            evalAns = prod + c;
+            const divA = divB * q;
+            const top = randInt(20, 40);
+            displayStr = `${top} − ${divA} ÷ ${divB}`;
+            evalAns = top - q;
             hintSteps = [
-              `Divide first (left to right): ${num} ÷ ${d} = ${q}`,
-              `Multiply: ${q} × ${m} = ${prod}`,
-              `Add: ${prod} + ${c} = ${evalAns}`
+              `Step 1 (Division): ${divA} ÷ ${divB} = ${q}`,
+              `Step 2 (Subtraction): ${top} − ${q} = ${evalAns}`
+            ];
+          } else {
+            const divB = randInt(2, 4);
+            const q = randInt(2, 4);
+            const divA = divB * q;
+            displayStr = `${a} × (${b} + ${c}) + ${divA} ÷ ${divB}`;
+            const grp = b + c;
+            const mult = a * grp;
+            evalAns = mult + q;
+            hintSteps = [
+              `Step 1 (Grouping / Parentheses): (${b} + ${c}) = ${grp}`,
+              `Step 2 (Multiplication & Division): ${a} × ${grp} = ${mult}, and ${divA} ÷ ${divB} = ${q}`,
+              `Step 3 (Addition): ${mult} + ${q} = ${evalAns}`
             ];
           }
-        } else if (terms === 4) {
-          const b = randInt(1, 6), c = randInt(1, 5);
-          const mult = randInt(2, 4);
-          const divisor = randInt(2, 4);
-          const q = randInt(2, 5);
-          const dividend = divisor * q;
-          const inside = b + c;
-          const leftProd = mult * inside;
-          evalAns = leftProd - q;
-          displayStr = `${mult} × (${b} + ${c}) − ${dividend} ÷ ${divisor}`;
+        } 
+        // Scenario B: Only Addition and Subtraction selected
+        else if (hasAdd || hasSub) {
+          const a = randInt(5, 20);
+          const b = randInt(1, 10);
+          const c = randInt(1, 10);
+          const op1 = hasSub ? '−' : '+';
+          const op2 = hasAdd ? '+' : '−';
+          
+          displayStr = `${a} ${op1} (${b} ${op2} ${c})`;
+          const grp = op2 === '+' ? (b + c) : Math.max(0, b - c);
+          displayStr = `${a + grp} ${op1} (${b} ${op2} ${c})`;
+          evalAns = (a + grp) - grp;
           hintSteps = [
-            `Grouping: (${b} + ${c}) = ${inside}`,
-            `Multiply left-to-right: ${mult} × ${inside} = ${leftProd}`,
-            `Divide: ${dividend} ÷ ${divisor} = ${q}`,
-            `Subtract: ${leftProd} − ${q} = ${evalAns}`
+            `Step 1 (Grouping): (${b} ${op2} ${c}) = ${grp}`,
+            `Step 2 (Addition / Subtraction): ${a + grp} − ${grp} = ${evalAns}`
           ];
-        } else { // 5 Terms
-          const a = randInt(2, 4);
-          const b = randInt(1, 5), c = randInt(1, 4);
-          const d = randInt(2, 4);
-          const q = randInt(2, 4);
-          const divVal = d * q;
-          const offset = randInt(1, 8);
-          const inside = b + c;
-          const mult = a * inside;
-          evalAns = mult - q + offset;
-          displayStr = `${a} × (${b} + ${c}) − ${divVal} ÷ ${d} + ${offset}`;
-          hintSteps = [
-            `Grouping: (${b} + ${c}) = ${inside}`,
-            `Multiplication & Division left-to-right: ${a} × ${inside} = ${mult}, and ${divVal} ÷ ${d} = ${q}`,
-            `Expression becomes: ${mult} − ${q} + ${offset}`,
-            `Addition and Subtraction left-to-right: ${mult - q} + ${offset} = ${evalAns}`
-          ];
+        } 
+        // Scenario C: Only Multiplication and/or Division selected
+        else {
+          const a = randInt(2, 5);
+          const b = randInt(2, 4);
+          const c = randInt(2, 3);
+          if (hasMul && hasDiv) {
+            const prod = b * c;
+            displayStr = `(${prod} ÷ ${b}) × ${a}`;
+            hintSteps = [
+              `Step 1 (Grouping / Parentheses): (${prod} ÷ ${b}) = ${c}`,
+              `Step 2 (Multiplication): ${c} × ${a} = ${c * a}`
+            ];
+            evalAns = c * a;
+          } else {
+            displayStr = `(${a} × ${b}) × ${c}`;
+            evalAns = a * b * c;
+            hintSteps = [
+              `Step 1 (Grouping): (${a} × ${b}) = ${a * b}`,
+              `Step 2 (Multiply): ${a * b} × ${c} = ${evalAns}`
+            ];
+          }
         }
 
-        const submode = `${terms}-Term GEMDAS / PEMDAS`;
+        const submode = `GEMDAS / PEMDAS (${numTerms} Terms)`;
         const hint = hintSteps.join(' → ');
-        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Follow PEMDAS/GEMDAS rules to find the exact integer.' };
+        return { display: `${displayStr} = ?`, answer: String(evalAns), hint, submode, tip: 'Solve in exact order: Grouping → Exponents → Multiplication/Division → Addition/Subtraction.' };
       }
 
-      // 4. RATIONAL FRACTIONS (2 to 5 Terms)
+      // 4. RATIONAL FRACTIONS (Strict Operation Filter)
       if (domainId === 'fractions') {
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1162,7 +1131,7 @@
         return { display: `${display} = ?`, answer: ans, hint, submode, tip: 'Enter simplest form a/b (or whole number if denominator is 1).' };
       }
 
-      // 5. DECIMALS (2 to 5 Terms)
+      // 5. DECIMALS (Strict Operation Filter)
       if (domainId === 'decimals') {
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1200,7 +1169,7 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal answer.' };
       }
 
-      // 6. EXPONENTS (Standard 2-Term)
+      // 6. EXPONENTS
       if (domainId === 'exponents') {
         const base = randInt(2, 9); const exp = randInt(2, 4);
         const ans = Math.pow(base, exp);
@@ -1359,9 +1328,10 @@
       }
     }
 
-    // --- UNIVERSAL API DISPATCHER ---
+    // --- UNIVERSAL MULTI-DEVICE API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
+        // Direct Native Call (When hosted inside Google Apps Script iframe)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
@@ -1394,6 +1364,7 @@
           }
         }
 
+        // Custom Domain & External Fallback
         const targetUrl = WEB_APP_EXEC_URL.trim();
         if (!targetUrl || !targetUrl.startsWith('https://script.google.com/macros/s/')) {
           reject(new Error('Missing Web App URL. Set WEB_APP_EXEC_URL in Index.html.'));
@@ -1413,7 +1384,7 @@
 
         Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
         url.searchParams.set('callback', callbackName);
-        url.searchParams.set('_nocache', Date.now());
+        url.searchParams.set('_nocache', Date.now()); // Prevents cross-device cached responses
 
         const timeout = setTimeout(() => {
           cleanup();
@@ -1509,7 +1480,7 @@
       openCertificateModal(record);
     }
 
-    // --- TEACHER PROFILE & SECURE AUTHENTICATION LOGIC ---
+    // --- TEACHER PROFILE & MULTI-DEVICE AUTHENTICATION ---
     function openTeacherAuthModal() {
       document.getElementById('modal-teacher-portal').classList.remove('hidden');
       if (appState.currentTeacher) {
