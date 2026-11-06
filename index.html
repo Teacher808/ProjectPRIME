@@ -155,7 +155,7 @@
         </span>
         <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">Choose a Mathematics Domain</h2>
         <p class="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto px-2">
-          Select a category to begin interactive drills. Fractions support positive/negative values, similar, dissimilar, and mixed forms[cite: 1].
+          Select a category to begin interactive drills. Fractions feature custom numerator/denominator digits, 1–100 denominator range, and sign modes.
         </p>
       </div>
       <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
@@ -197,19 +197,20 @@
             </div>
           </div>
 
-          <!-- FRACTIONS SPECIAL CONTROLS: SUBTYPE & SIGN -->
-          <div id="config-fractions-box" class="hidden space-y-3 p-3 bg-navy-950/60 rounded-xl border border-gold-500/30">
+          <!-- FRACTIONS ADVANCED CONTROLS -->
+          <div id="config-fractions-box" class="hidden space-y-3.5 p-3.5 bg-navy-950/70 rounded-xl border border-gold-500/30">
             <div>
               <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
                 <i class="fa-solid fa-shapes mr-1"></i> Fraction Classification Form
               </label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
-                <button type="button" id="btn-frac-similar" onclick="setConfigFractionType('similar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Similar (Same Denom)</button>
+                <button type="button" id="btn-frac-similar" onclick="setConfigFractionType('similar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Similar</button>
                 <button type="button" id="btn-frac-dissimilar" onclick="setConfigFractionType('dissimilar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Dissimilar</button>
                 <button type="button" id="btn-frac-mixed" onclick="setConfigFractionType('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Mixed Numbers</button>
                 <button type="button" id="btn-frac-all" onclick="setConfigFractionType('all')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Mixed Types</button>
               </div>
             </div>
+
             <div>
               <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
                 Fraction Value Distribution
@@ -218,6 +219,47 @@
                 <button type="button" id="btn-fracsign-mixed" onclick="setConfigFractionSign('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Positive & Negative</button>
                 <button type="button" id="btn-fracsign-pos" onclick="setConfigFractionSign('pos')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Positive Only</button>
                 <button type="button" id="btn-fracsign-neg" onclick="setConfigFractionSign('neg')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Negative Only</button>
+              </div>
+            </div>
+
+            <!-- Numerator Digits -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Numerator Digits (1 to 4)</label>
+                <span id="label-num-digits" class="text-xs font-mono font-bold text-gold-400">1 Digit</span>
+              </div>
+              <input type="range" id="config-frac-num-digits" min="1" max="4" value="1" oninput="syncFracNumDigits(this.value)" class="w-full accent-gold-400 h-2 bg-navy-800 rounded-lg">
+            </div>
+
+            <!-- Denominator Digits -->
+            <div>
+              <div class="flex justify-between items-center mb-1">
+                <label class="text-[11px] font-bold text-slate-300 uppercase tracking-wider">Denominator Digits (1 to 4)</label>
+                <span id="label-den-digits" class="text-xs font-mono font-bold text-gold-400">1 Digit</span>
+              </div>
+              <input type="range" id="config-frac-den-digits" min="1" max="4" value="1" oninput="syncFracDenDigits(this.value)" class="w-full accent-gold-400 h-2 bg-navy-800 rounded-lg">
+            </div>
+
+            <!-- Denominator Range (1 to 100) -->
+            <div class="pt-1 border-t border-slate-800">
+              <label class="block text-[11px] font-bold text-gold-300 uppercase tracking-wider mb-1.5">
+                Denominator Value Range (1 to 100)
+              </label>
+              <div class="grid grid-cols-2 gap-3">
+                <div>
+                  <div class="flex justify-between text-[10px] text-slate-400 font-bold mb-1">
+                    <span>Min Denominator</span>
+                    <span id="label-den-min" class="text-gold-400 font-mono">2</span>
+                  </div>
+                  <input type="range" id="config-frac-den-min" min="1" max="99" value="2" oninput="syncFracDenMin(this.value)" class="w-full accent-gold-400 h-2 bg-navy-800 rounded-lg">
+                </div>
+                <div>
+                  <div class="flex justify-between text-[10px] text-slate-400 font-bold mb-1">
+                    <span>Max Denominator</span>
+                    <span id="label-den-max" class="text-gold-400 font-mono">12</span>
+                  </div>
+                  <input type="range" id="config-frac-den-max" min="2" max="100" value="12" oninput="syncFracDenMax(this.value)" class="w-full accent-gold-400 h-2 bg-navy-800 rounded-lg">
+                </div>
               </div>
             </div>
           </div>
@@ -245,7 +287,7 @@
             </select>
           </div>
 
-          <!-- Digits -->
+          <!-- Standard Digits (for non-fraction categories) -->
           <div id="config-digits-box">
             <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Number of Digits (1 to 10)</label>
             <div class="flex items-center gap-3">
@@ -313,7 +355,7 @@
         <div class="flex items-center gap-1.5 truncate">
           <span class="font-bold text-gold-400" id="quiz-progress-text">Q 1 of 10</span>
           <span class="text-slate-400">|</span>
-          <span class="text-slate-300 font-semibold truncate" id="quiz-cat-name">Whole Numbers</span>
+          <span class="text-slate-300 font-semibold truncate" id="quiz-cat-name">Rational Fractions</span>
         </div>
         <div class="flex items-center gap-2 shrink-0">
           <div class="flex items-center gap-1" id="quiz-chances-container"></div>
@@ -323,7 +365,7 @@
 
       <div class="glass-panel p-4 sm:p-6 rounded-2xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-2xl border-gold-500/30">
         <div class="text-[10px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
-        <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-wider my-2 break-all select-all">12 + 15 = ?</div>
+        <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-wider my-2 break-all select-all">1/2 + 3/4 = ?</div>
         <div id="quiz-problem-tip" class="text-[11px] text-slate-400 italic">Type your answer (fractions as a/b or -a/b, mixed as w a/b).</div>
       </div>
 
@@ -481,7 +523,7 @@
       </div>
     </section>
 
-    <!-- 6. STUDY GUIDES & TEACHER'S IMPLEMENTATION GUIDE VIEW -->
+    <!-- 6. STUDY GUIDES VIEW -->
     <section id="view-guides" class="hidden max-w-3xl mx-auto space-y-4">
       <div class="border-b border-gold-500/20 pb-3 flex items-center justify-between">
         <div>
@@ -511,7 +553,7 @@
             <h3 class="text-sm font-bold text-white">Fractions Configuration Options</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            Rational Fractions can be set to Similar (same denominator), Dissimilar (different denominators), or Mixed Numbers (e.g. $2\frac{1}{3}$)[cite: 1]. You can also switch between positive-only, negative-only, or mixed sign modes[cite: 1].
+            Rational Fractions can be set to Similar, Dissimilar, or Mixed Numbers. You can customize the exact number of digits for numerators and denominators (1–4 digits) and clamp the denominator value range between 1 and 100.
           </p>
         </div>
 
@@ -521,7 +563,7 @@
             <h3 class="text-sm font-bold text-white">Inputting Fraction Answers</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            Learners can enter reduced improper fractions (e.g. <code class="text-gold-300 font-mono">-7/3</code>), mixed numbers with a space (e.g. <code class="text-gold-300 font-mono">-2 1/3</code>), or integers (e.g. <code class="text-gold-300 font-mono">4</code>)[cite: 1]. The system accepts all mathematically equivalent simplest forms[cite: 1].
+            Learners can enter reduced improper fractions (e.g. <code class="text-gold-300 font-mono">-7/3</code>), mixed numbers with a space (e.g. <code class="text-gold-300 font-mono">-2 1/3</code>), or integers (e.g. <code class="text-gold-300 font-mono">4</code>). The system evaluates exact mathematical equivalence.
           </p>
         </div>
       </div>
@@ -545,7 +587,7 @@
       </div>
 
       <div id="teacher-view-login" class="space-y-2.5">
-        <p class="text-[11px] text-slate-300">Log in to view student scores and generate shareable practice links[cite: 1].</p>
+        <p class="text-[11px] text-slate-300">Log in to view student scores and generate shareable practice links.</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
           <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-bold text-white uppercase outline-none">
@@ -561,7 +603,7 @@
       </div>
 
       <div id="teacher-view-register" class="hidden space-y-2.5">
-        <p class="text-[11px] text-slate-300">Create your teacher profile to generate automated student links[cite: 1].</p>
+        <p class="text-[11px] text-slate-300">Create your teacher profile to generate automated student links.</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Full Name</label>
           <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
@@ -654,9 +696,6 @@
 
   <!-- APPLICATION ENGINE -->
   <script>
-    /**
-     * Paste deployed Web App URL for custom domain hosting (e.g., projectprime.irayahighschool.com)
-     */
     const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
 
     const STORAGE_KEYS = {
@@ -672,29 +711,25 @@
 
     function toSuperscript(str) { return String(str).split('').map(c => SUPERSCRIPT_MAP[c] || c).join(''); }
     
-    // Parses user input into a decimal float (supports: -5/6, -1 1/2, 2.5, 4)
     function parseFractionToValue(rawStr) {
       if (!rawStr) return NaN;
       let s = String(rawStr).trim().replace(/−/g, '-').replace(/\s+/g, ' ');
-      // Format: Mixed fraction "w n/d" or "-w n/d"
       let mixedMatch = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
       if (mixedMatch) {
-        let whole = parseInt(mixedMatch[1]);
-        let num = parseInt(mixedMatch[2]);
-        let den = parseInt(mixedMatch[3]);
+        let whole = parseInt(mixedMatch[1], 10);
+        let num = parseInt(mixedMatch[2], 10);
+        let den = parseInt(mixedMatch[3], 10);
         if (den === 0) return NaN;
         let sign = whole < 0 ? -1 : 1;
         return whole + (sign * (num / den));
       }
-      // Format: Simple fraction "n/d"
       let fracMatch = s.match(/^(-?\d+)\/(-?\d+)$/);
       if (fracMatch) {
-        let num = parseInt(fracMatch[1]);
-        let den = parseInt(fracMatch[2]);
+        let num = parseInt(fracMatch[1], 10);
+        let den = parseInt(fracMatch[2], 10);
         if (den === 0) return NaN;
         return num / den;
       }
-      // Format: Regular numeric value
       return parseFloat(s);
     }
 
@@ -714,7 +749,7 @@
       { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
       { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
       { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
-      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Similar, dissimilar, mixed numbers with positive & negative values.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Adjust numerator & denominator digits, denominator range (1–100), and types.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
       { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
       { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
       { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
@@ -724,8 +759,8 @@
     const STUDY_GUIDES = [
       { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence.'] },
       { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).', 'Multiple signs: Evaluate left-to-right combining consecutive integer operations.'] },
-      { title: '3. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Simply combine numerators over the common denominator.', 'Dissimilar: Find the Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), perform the operation, then simplify.', 'Signed Fractions: Negative sign belongs to numerator or whole fraction. Multiplying/dividing two negative fractions produces a positive.'] },
-      { title: '4. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first (innermost first).', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right in the order they appear.', 'A / S: Perform Addition and Subtraction from left to right in the order they appear.'] }
+      { title: '3. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Combine numerators over the common denominator.', 'Dissimilar: Find Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), compute, then simplify.', 'Digit & Denominator Controls: Tailor numerator/denominator digits and custom ranges up to 100.'] },
+      { title: '4. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first.', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right.', 'A / S: Perform Addition and Subtraction from left to right.'] }
     ];
 
     const appState = {
@@ -739,8 +774,12 @@
         integerMode: 'mixed', 
         operations: ['+', '-', '*', '/'],
         terms: 2,
-        fractionType: 'dissimilar', // 'similar', 'dissimilar', 'mixed', 'all'
-        fractionSign: 'mixed'      // 'mixed', 'pos', 'neg'
+        fractionType: 'dissimilar',
+        fractionSign: 'mixed',
+        fracNumDigits: 1,
+        fracDenDigits: 1,
+        fracDenMin: 2,
+        fracDenMax: 12
       },
       quiz: { questions: [], currentIndex: 0, score: 0, chances: 3, answeredCurrent: false },
       scores: [],
@@ -873,12 +912,16 @@
       if (domain.hasFractionsControl) {
         setConfigFractionType(appState.config.fractionType || 'dissimilar');
         setConfigFractionSign(appState.config.fractionSign || 'mixed');
+        syncFracNumDigits(appState.config.fracNumDigits || 1);
+        syncFracDenDigits(appState.config.fracDenDigits || 1);
+        syncFracDenMin(appState.config.fracDenMin || 2);
+        syncFracDenMax(appState.config.fracDenMax || 12);
       }
       switchTab('config');
     }
 
     function setConfigTerms(num) {
-      appState.config.terms = parseInt(num) || 2;
+      appState.config.terms = parseInt(num, 10) || 2;
       [2, 3, 4, 5].forEach(t => {
         const btn = document.getElementById('btn-terms-' + t);
         if (btn) {
@@ -907,15 +950,51 @@
       });
     }
 
+    function syncFracNumDigits(val) {
+      const n = Math.max(1, Math.min(4, parseInt(val, 10) || 1));
+      appState.config.fracNumDigits = n;
+      document.getElementById('config-frac-num-digits').value = n;
+      document.getElementById('label-num-digits').textContent = `${n} Digit${n > 1 ? 's' : ''}`;
+    }
+
+    function syncFracDenDigits(val) {
+      const n = Math.max(1, Math.min(4, parseInt(val, 10) || 1));
+      appState.config.fracDenDigits = n;
+      document.getElementById('config-frac-den-digits').value = n;
+      document.getElementById('label-den-digits').textContent = `${n} Digit${n > 1 ? 's' : ''}`;
+    }
+
+    function syncFracDenMin(val) {
+      let minVal = Math.max(1, Math.min(99, parseInt(val, 10) || 1));
+      if (minVal >= appState.config.fracDenMax) {
+        minVal = appState.config.fracDenMax - 1;
+      }
+      appState.config.fracDenMin = minVal;
+      document.getElementById('config-frac-den-min').value = minVal;
+      document.getElementById('label-den-min').textContent = minVal;
+      document.getElementById('config-frac-den-max').min = minVal + 1;
+    }
+
+    function syncFracDenMax(val) {
+      let maxVal = Math.max(2, Math.min(100, parseInt(val, 10) || 100));
+      if (maxVal <= appState.config.fracDenMin) {
+        maxVal = appState.config.fracDenMin + 1;
+      }
+      appState.config.fracDenMax = maxVal;
+      document.getElementById('config-frac-den-max').value = maxVal;
+      document.getElementById('label-den-max').textContent = maxVal;
+      document.getElementById('config-frac-den-min').max = maxVal - 1;
+    }
+
     function syncConfigCount(val) {
-      const n = Math.max(5, Math.min(100, parseInt(val) || 10));
+      const n = Math.max(5, Math.min(100, parseInt(val, 10) || 10));
       appState.config.count = n;
       document.getElementById('config-count-range').value = n;
       document.getElementById('config-count-num').value = n;
     }
 
     function syncConfigDigits(val) {
-      const n = Math.max(1, Math.min(10, parseInt(val) || 2));
+      const n = Math.max(1, Math.min(10, parseInt(val, 10) || 2));
       appState.config.digits = n;
       document.getElementById('config-digits-range').value = n;
       document.getElementById('config-digits-num').value = n;
@@ -948,9 +1027,19 @@
       appState.config.operations = checkedOps;
     }
 
-    function randInt(min, max) { return Math.floor(Math.random() * (max - min + 1)) + min; }
-    function gcd(a, b) { a = Math.abs(a); b = Math.abs(b); while (b) { [a, b] = [b, a % b]; } return a || 1; }
-    function lcm(a, b) { return Math.abs(a * b) / gcd(a, b); }
+    function randInt(min, max) { 
+      min = Math.floor(min); 
+      max = Math.floor(max); 
+      if (min > max) [min, max] = [max, min];
+      return Math.floor(Math.random() * (max - min + 1)) + min; 
+    }
+    
+    function gcd(a, b) { 
+      a = Math.abs(a); 
+      b = Math.abs(b); 
+      while (b) { [a, b] = [b, a % b]; } 
+      return a || 1; 
+    }
 
     function generateOperandByDigits(digits) {
       const d = Math.max(1, Math.min(10, digits));
@@ -958,15 +1047,14 @@
       return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
     }
 
-    // MULTI-TERM PROBLEM GENERATOR (Whole, Integers, GEMDAS, Fractions, Decimals)
     function generateQuestionForDomain(domainId, cfg) {
       const ops = cfg.operations.length ? cfg.operations : ['+'];
       const numTerms = (['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
 
-      // 1. WHOLE NUMBERS (Strict Operation Filter)
+      // 1. WHOLE NUMBERS
       if (domainId === 'whole') {
         const nf = cfg.numberField;
-        const tableVal = nf === 'random' ? randInt(1, 12) : (nf !== 'none' ? parseInt(nf) : null);
+        const tableVal = nf === 'random' ? randInt(1, 12) : (nf !== 'none' ? parseInt(nf, 10) : null);
 
         if (numTerms === 2 && tableVal) {
           const b = tableVal;
@@ -1026,7 +1114,7 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type the whole number answer.' };
       }
 
-      // 2. SIGNED INTEGERS (Strict Operation Filter)
+      // 2. SIGNED INTEGERS
       if (domainId === 'integers') {
         const fmt = n => (n < 0 ? `(${n})` : `${n}`);
         let operands = [];
@@ -1062,7 +1150,7 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
       }
 
-      // 3. ORDER OF OPERATIONS: DYNAMIC PEMDAS / GEMDAS ENGINE
+      // 3. GEMDAS ENGINE
       if (domainId === 'gemdas') {
         const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1244,29 +1332,57 @@
         };
       }
 
-      // 4. RATIONAL FRACTIONS (Similar, Dissimilar, Mixed Numbers, Signed)
+      // 4. RATIONAL FRACTIONS (Adjustable Digits & 1-100 Denominator Range)
       if (domainId === 'fractions') {
         const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
-        const fracType = cfg.fractionType || 'dissimilar'; // similar, dissimilar, mixed, all
-        const fracSign = cfg.fractionSign || 'mixed';     // mixed, pos, neg
+        const fracType = cfg.fractionType || 'dissimilar';
+        const fracSign = cfg.fractionSign || 'mixed';
+        const numDigits = cfg.fracNumDigits || 1;
+        const denDigits = cfg.fracDenDigits || 1;
+        let denMin = Math.max(1, cfg.fracDenMin || 2);
+        let denMax = Math.min(100, cfg.fracDenMax || 12);
+        if (denMin > denMax) [denMin, denMax] = [denMax, denMin];
 
-        // Helper to generate a single fraction term
+        function generateConstrainedDenominator() {
+          const dMin = Math.pow(10, denDigits - 1);
+          const dMax = Math.pow(10, denDigits) - 1;
+          const effMin = Math.max(denMin, dMin);
+          const effMax = Math.min(denMax, dMax);
+
+          if (effMin <= effMax) {
+            return randInt(effMin, effMax);
+          }
+          return randInt(denMin, denMax);
+        }
+
         function generateFractionTerm(fixedDenom = null) {
-          let den = fixedDenom || randInt(2, 8);
-          let num = randInt(1, den - 1);
-          let whole = 0;
+          let den = fixedDenom || generateConstrainedDenominator();
+          if (den <= 0) den = 2;
 
-          // Determine if this term should be a mixed number
+          let whole = 0;
           const makeMixed = (fracType === 'mixed') || (fracType === 'all' && Math.random() < 0.5);
           if (makeMixed) {
             whole = randInt(1, 4);
           }
 
-          // Convert to improper fraction value: totalNum / den
+          let numMin = Math.pow(10, numDigits - 1);
+          let numMax = Math.pow(10, numDigits) - 1;
+
+          let num = 1;
+          if (!makeMixed && numDigits === denDigits && den > 1) {
+            const maxAllowed = Math.min(numMax, den - 1);
+            if (numMin <= maxAllowed) {
+              num = randInt(numMin, maxAllowed);
+            } else {
+              num = randInt(1, den - 1);
+            }
+          } else {
+            num = randInt(numMin, numMax);
+          }
+
           let totalNum = (whole * den) + num;
 
-          // Determine sign
           let isNeg = false;
           if (fracSign === 'neg') isNeg = true;
           else if (fracSign === 'mixed') isNeg = Math.random() < 0.5;
@@ -1275,7 +1391,6 @@
             totalNum = -totalNum;
           }
 
-          // Build display string
           let str = '';
           if (whole > 0) {
             str = `${whole} ${num}/${den}`;
@@ -1294,8 +1409,7 @@
           };
         }
 
-        // Determine shared denominator if "similar" is selected
-        const sharedDenom = (fracType === 'similar') ? randInt(3, 9) : null;
+        const sharedDenom = (fracType === 'similar') ? generateConstrainedDenominator() : null;
 
         let termsList = [];
         let operators = [];
@@ -1305,7 +1419,6 @@
           if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
         }
 
-        // Perform sequential arithmetic on improper fractions
         let runningNum = termsList[0].improperNum;
         let runningDen = termsList[0].improperDen;
 
@@ -1329,14 +1442,12 @@
             runningDen = runningDen * nextNum;
           }
 
-          // Reduce intermediate fraction
           let g = gcd(runningNum, runningDen);
           runningNum = Math.floor(runningNum / g);
           runningDen = Math.floor(runningDen / g);
           if (runningDen < 0) { runningNum = -runningNum; runningDen = -runningDen; }
         }
 
-        // Build simplified improper and mixed answer forms
         let finalAnsStr = '';
         let mixedEquivStr = '';
 
@@ -1354,7 +1465,6 @@
           }
         }
 
-        // Build expression display
         let displayParts = [termsList[0].display];
         const symMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
         for (let i = 1; i < numTerms; i++) {
@@ -1363,7 +1473,7 @@
         }
 
         const display = displayParts.join(' ');
-        let submode = `${fracType.toUpperCase()} Fractions (${numTerms} Terms)`;
+        let submode = `${fracType.toUpperCase()} (${numDigits}N/${denDigits}D, Denom ${denMin}–${denMax})`;
         if (fracSign === 'mixed') submode += ' [Signed]';
 
         let hint = `Convert mixed numbers to improper fractions, resolve signs, and simplify: ${finalAnsStr}`;
@@ -1381,7 +1491,7 @@
         };
       }
 
-      // 5. DECIMALS (Strict Operation Filter)
+      // 5. DECIMALS
       if (domainId === 'decimals') {
         const allowedOps = ops.filter(o => ['+', '-'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
@@ -1494,7 +1604,6 @@
       const q = appState.quiz.questions[appState.quiz.currentIndex];
       let isCorrect = false;
 
-      // Fractional numeric equivalence check
       if (q.isFraction) {
         let userVal = parseFractionToValue(rawUser);
         if (!isNaN(userVal) && typeof q.targetValue === 'number') {
@@ -1502,7 +1611,6 @@
         }
       }
 
-      // Standard normalized text matching fallback
       if (!isCorrect) {
         let normUser = normalizeMathInput(rawUser);
         let normAns = normalizeMathInput(q.answer);
@@ -1595,7 +1703,6 @@
       }
     }
 
-    // --- UNIVERSAL MULTI-DEVICE API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
         if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -1649,7 +1756,7 @@
 
         const timeout = setTimeout(() => {
           cleanup();
-          reject(new Error('Connection timed out. Check tablet internet or deployment access settings.'));
+          reject(new Error('Connection timed out. Check connection or script permissions.'));
         }, 15000);
 
         function cleanup() {
@@ -1673,7 +1780,6 @@
       });
     }
 
-    // --- AUTOMATIC SCORE SAVING ENGINE ---
     async function triggerAutoSaveSubmission() {
       const nameInput = document.getElementById('student-name-input');
       const studentName = nameInput.value.trim();
@@ -1696,7 +1802,7 @@
 
       let extraConfig = '';
       if (appState.selectedDomain.id === 'fractions') {
-        extraConfig = `Type: ${appState.config.fractionType.toUpperCase()} | Sign: ${appState.config.fractionSign.toUpperCase()}`;
+        extraConfig = `${appState.config.fractionType.toUpperCase()} | ${appState.config.fracNumDigits}N/${appState.config.fracDenDigits}D | Den: ${appState.config.fracDenMin}–${appState.config.fracDenMax}`;
       } else if (['whole', 'integers', 'gemdas', 'decimals'].includes(appState.selectedDomain.id)) {
         extraConfig = `${appState.config.terms} Terms`;
       }
@@ -1747,7 +1853,6 @@
       openCertificateModal(record);
     }
 
-    // --- TEACHER PROFILE & MULTI-DEVICE AUTHENTICATION ---
     function openTeacherAuthModal() {
       document.getElementById('modal-teacher-portal').classList.remove('hidden');
       if (appState.currentTeacher) {
@@ -1948,7 +2053,6 @@
       document.getElementById('classroom-banner').classList.add('hidden');
     }
 
-    // --- SECURE GRADEBOOK RETRIEVAL ---
     async function pullScoresFromCloud() {
       if (!appState.currentTeacher) return;
 
