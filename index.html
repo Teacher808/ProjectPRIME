@@ -107,11 +107,10 @@
               <span class="w-1 h-1 rounded-full bg-emerald-400 inline-block animate-pulse mr-1"></span>Sync
             </span>
           </div>
-          <p class="text-[10px] text-slate-400 hidden sm:block">Automated Diagnostic Assessment & Teacher Gradebook</p>
+          <p class="text-[10px] text-slate-400 hidden sm:block">Program for Remediation and Improvement in Mathematics Education</p>
         </div>
       </div>
 
-      <!-- Action Navigation Buttons -->
       <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto">
         <button onclick="switchTab('home')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 navy-btn whitespace-nowrap">
           <i class="fa-solid fa-house"></i>
@@ -156,7 +155,7 @@
         </span>
         <h2 class="text-xl sm:text-2xl md:text-3xl font-extrabold text-white">Choose a Mathematics Domain</h2>
         <p class="text-slate-400 text-xs sm:text-sm max-w-xl mx-auto px-2">
-          Select a category to begin interactive drills. Multi-term equations only use the exact operations checked.
+          Select a category to begin interactive drills. Fractions support positive/negative values, similar, dissimilar, and mixed forms[cite: 1].
         </p>
       </div>
       <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
@@ -195,6 +194,31 @@
               <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">3</button>
               <button type="button" id="btn-terms-4" onclick="setConfigTerms(4)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">4</button>
               <button type="button" id="btn-terms-5" onclick="setConfigTerms(5)" class="py-2 rounded-lg text-xs font-bold border transition navy-btn">5</button>
+            </div>
+          </div>
+
+          <!-- FRACTIONS SPECIAL CONTROLS: SUBTYPE & SIGN -->
+          <div id="config-fractions-box" class="hidden space-y-3 p-3 bg-navy-950/60 rounded-xl border border-gold-500/30">
+            <div>
+              <label class="block text-xs font-bold text-gold-300 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-shapes mr-1"></i> Fraction Classification Form
+              </label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                <button type="button" id="btn-frac-similar" onclick="setConfigFractionType('similar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Similar (Same Denom)</button>
+                <button type="button" id="btn-frac-dissimilar" onclick="setConfigFractionType('dissimilar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Dissimilar</button>
+                <button type="button" id="btn-frac-mixed" onclick="setConfigFractionType('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Mixed Numbers</button>
+                <button type="button" id="btn-frac-all" onclick="setConfigFractionType('all')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Mixed Types</button>
+              </div>
+            </div>
+            <div>
+              <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-1">
+                Fraction Value Distribution
+              </label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" id="btn-fracsign-mixed" onclick="setConfigFractionSign('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Positive & Negative</button>
+                <button type="button" id="btn-fracsign-pos" onclick="setConfigFractionSign('pos')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Positive Only</button>
+                <button type="button" id="btn-fracsign-neg" onclick="setConfigFractionSign('neg')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition navy-btn text-center">Negative Only</button>
+              </div>
             </div>
           </div>
 
@@ -300,27 +324,26 @@
       <div class="glass-panel p-4 sm:p-6 rounded-2xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-2xl border-gold-500/30">
         <div class="text-[10px] uppercase tracking-wider text-gold-400 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
         <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-white tracking-wider my-2 break-all select-all">12 + 15 = ?</div>
-        <div id="quiz-problem-tip" class="text-[11px] text-slate-400 italic">Type your exact numeric answer below.</div>
+        <div id="quiz-problem-tip" class="text-[11px] text-slate-400 italic">Type your answer (fractions as a/b or -a/b, mixed as w a/b).</div>
       </div>
 
       <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300"></div>
 
       <div class="glass-panel p-3 rounded-2xl space-y-2">
         <div class="flex gap-1.5">
-          <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="Your answer..." onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border border-gold-500/40 focus:border-gold-400 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-gold-300 outline-none">
+          <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g., -5/6 or -1 1/2" onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-navy-900 border border-gold-500/40 focus:border-gold-400 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-gold-300 outline-none">
           <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs sm:text-sm flex items-center gap-1 shrink-0">
             <span>Check</span>
             <i class="fa-solid fa-circle-check"></i>
           </button>
         </div>
 
-        <!-- Virtual Math Toolbar (Fits mobile screens) -->
         <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 pt-1">
           <button type="button" onclick="insertToolbarSymbol('-')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">(-)</button>
           <button type="button" onclick="insertToolbarSymbol('/')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">a/b</button>
+          <button type="button" onclick="insertToolbarSymbol(' ')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">Space</button>
           <button type="button" onclick="insertToolbarSymbol('√')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">√(x)</button>
           <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">³√(x)</button>
-          <button type="button" onclick="insertToolbarSymbol('∜')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">⁴√(x)</button>
           <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1 rounded-lg bg-gold-500/20 text-gold-300 border border-gold-500/40 text-xs font-bold">xⁿ</button>
           <button type="button" onclick="insertToolbarSymbol('(')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">(</button>
           <button type="button" onclick="insertToolbarSymbol(')')" class="p-1 rounded-lg navy-btn text-xs font-mono font-bold">)</button>
@@ -485,20 +508,20 @@
         <div class="glass-panel p-4 rounded-2xl border border-gold-500/30 space-y-1.5">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">1</span>
-            <h3 class="text-sm font-bold text-white">Simultaneous Multi-Device Access</h3>
+            <h3 class="text-sm font-bold text-white">Fractions Configuration Options</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            You can log into your teacher profile across your laptop, desktop, and mobile tablet simultaneously[cite: 1]. The system authenticates directly against your central spreadsheet on every device independently[cite: 1, 2].
+            Rational Fractions can be set to Similar (same denominator), Dissimilar (different denominators), or Mixed Numbers (e.g. $2\frac{1}{3}$)[cite: 1]. You can also switch between positive-only, negative-only, or mixed sign modes[cite: 1].
           </p>
         </div>
 
         <div class="glass-panel p-4 rounded-2xl border border-gold-500/30 space-y-1.5">
           <div class="flex items-center gap-2">
             <span class="w-6 h-6 rounded-lg bg-gold-500/20 text-gold-300 font-mono font-black text-xs flex items-center justify-center border border-gold-500/40">2</span>
-            <h3 class="text-sm font-bold text-white">Strict Operation Filtering & GEMDAS</h3>
+            <h3 class="text-sm font-bold text-white">Inputting Fraction Answers</h3>
           </div>
           <p class="text-xs text-slate-300 leading-relaxed pl-8">
-            Only the operations you check will appear in generated items[cite: 1]. GEMDAS problems strictly resolve Grouping $\rightarrow$ Exponents $\rightarrow$ Multiplication/Division (left-to-right) $\rightarrow$ Addition/Subtraction (left-to-right)[cite: 1].
+            Learners can enter reduced improper fractions (e.g. <code class="text-gold-300 font-mono">-7/3</code>), mixed numbers with a space (e.g. <code class="text-gold-300 font-mono">-2 1/3</code>), or integers (e.g. <code class="text-gold-300 font-mono">4</code>)[cite: 1]. The system accepts all mathematically equivalent simplest forms[cite: 1].
           </p>
         </div>
       </div>
@@ -522,7 +545,7 @@
       </div>
 
       <div id="teacher-view-login" class="space-y-2.5">
-        <p class="text-[11px] text-slate-300">Log in to view student scores and generate shareable practice links.</p>
+        <p class="text-[11px] text-slate-300">Log in to view student scores and generate shareable practice links[cite: 1].</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Teacher Username / ID</label>
           <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs font-bold text-white uppercase outline-none">
@@ -538,7 +561,7 @@
       </div>
 
       <div id="teacher-view-register" class="hidden space-y-2.5">
-        <p class="text-[11px] text-slate-300">Create your teacher profile to generate automated student links.</p>
+        <p class="text-[11px] text-slate-300">Create your teacher profile to generate automated student links[cite: 1].</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-400 uppercase mb-1">Full Name</label>
           <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-navy-900 border border-gold-500/40 rounded-xl p-2 text-xs text-white outline-none">
@@ -601,7 +624,7 @@
         <div id="cert-student-name" class="text-xl sm:text-2xl font-extrabold text-gold-300 border-b border-gold-500/40 pb-1.5 inline-block px-4">Juan Dela Cruz</div>
         <div id="cert-student-section" class="text-xs font-semibold text-slate-400">Grade 8 - Section</div>
         <p class="text-xs text-slate-300 max-w-sm mx-auto">
-          has completed practice in <strong id="cert-category" class="text-white">Whole Numbers</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
+          has completed practice in <strong id="cert-category" class="text-white">Rational Fractions</strong> (<span id="cert-details" class="text-gold-300">Standard</span>).
         </p>
         <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto bg-navy-900/90 p-2.5 rounded-2xl border border-gold-500/30">
           <div>
@@ -648,8 +671,35 @@
     const NORMAL_MAP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+' };
 
     function toSuperscript(str) { return String(str).split('').map(c => SUPERSCRIPT_MAP[c] || c).join(''); }
+    
+    // Parses user input into a decimal float (supports: -5/6, -1 1/2, 2.5, 4)
+    function parseFractionToValue(rawStr) {
+      if (!rawStr) return NaN;
+      let s = String(rawStr).trim().replace(/−/g, '-').replace(/\s+/g, ' ');
+      // Format: Mixed fraction "w n/d" or "-w n/d"
+      let mixedMatch = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+      if (mixedMatch) {
+        let whole = parseInt(mixedMatch[1]);
+        let num = parseInt(mixedMatch[2]);
+        let den = parseInt(mixedMatch[3]);
+        if (den === 0) return NaN;
+        let sign = whole < 0 ? -1 : 1;
+        return whole + (sign * (num / den));
+      }
+      // Format: Simple fraction "n/d"
+      let fracMatch = s.match(/^(-?\d+)\/(-?\d+)$/);
+      if (fracMatch) {
+        let num = parseInt(fracMatch[1]);
+        let den = parseInt(fracMatch[2]);
+        if (den === 0) return NaN;
+        return num / den;
+      }
+      // Format: Regular numeric value
+      return parseFloat(s);
+    }
+
     function normalizeMathInput(str) {
-      let s = String(str || '').trim().replace(/\s+/g, '').replace(/−/g, '-');
+      let s = String(str || '').trim().replace(/\s+/g, ' ').replace(/−/g, '-');
       let out = ''; let inSup = false;
       for (const ch of s) {
         if (NORMAL_MAP[ch] !== undefined) {
@@ -664,7 +714,7 @@
       { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
       { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
       { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
-      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Proper/improper fraction calculations with multi-term arithmetic.', hasOperations: true, hasTerms: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Similar, dissimilar, mixed numbers with positive & negative values.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
       { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
       { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Powers, product rules, and true superscript notation.', hasOperations: false, hasTerms: false },
       { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Principal square, cube, and fourth roots.', hasOperations: false, hasTerms: false },
@@ -674,8 +724,8 @@
     const STUDY_GUIDES = [
       { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence.'] },
       { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).', 'Multiple signs: Evaluate left-to-right combining consecutive integer operations.'] },
-      { title: '3. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first (innermost first).', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right in the order they appear.', 'A / S: Perform Addition and Subtraction from left to right in the order they appear.'] },
-      { title: '4. Rational Fractions', rules: ['Add/Subtract: Find LCD, combine numerators, simplify with GCD.', 'Multi-term Fractions: Convert all 2 to 5 denominators to their common LCD before adding or subtracting numerators.'] }
+      { title: '3. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Simply combine numerators over the common denominator.', 'Dissimilar: Find the Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), perform the operation, then simplify.', 'Signed Fractions: Negative sign belongs to numerator or whole fraction. Multiplying/dividing two negative fractions produces a positive.'] },
+      { title: '4. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first (innermost first).', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right in the order they appear.', 'A / S: Perform Addition and Subtraction from left to right in the order they appear.'] }
     ];
 
     const appState = {
@@ -688,7 +738,9 @@
         regrouping: 'with', 
         integerMode: 'mixed', 
         operations: ['+', '-', '*', '/'],
-        terms: 2
+        terms: 2,
+        fractionType: 'dissimilar', // 'similar', 'dissimilar', 'mixed', 'all'
+        fractionSign: 'mixed'      // 'mixed', 'pos', 'neg'
       },
       quiz: { questions: [], currentIndex: 0, score: 0, chances: 3, answeredCurrent: false },
       scores: [],
@@ -810,6 +862,7 @@
       document.getElementById('config-domain-title').textContent = domain.title;
 
       document.getElementById('config-terms-box').classList.toggle('hidden', !domain.hasTerms);
+      document.getElementById('config-fractions-box').classList.toggle('hidden', !domain.hasFractionsControl);
       document.getElementById('config-numberfield-box').classList.toggle('hidden', !domain.hasNumberField);
       document.getElementById('config-digits-box').classList.toggle('hidden', !domain.hasDigits);
       document.getElementById('config-regrouping-box').classList.toggle('hidden', !domain.hasRegrouping);
@@ -817,6 +870,10 @@
       document.getElementById('config-operations-box').classList.toggle('hidden', !domain.hasOperations);
       
       setConfigTerms(appState.config.terms || (domain.id === 'gemdas' ? 3 : 2));
+      if (domain.hasFractionsControl) {
+        setConfigFractionType(appState.config.fractionType || 'dissimilar');
+        setConfigFractionSign(appState.config.fractionSign || 'mixed');
+      }
       switchTab('config');
     }
 
@@ -826,6 +883,26 @@
         const btn = document.getElementById('btn-terms-' + t);
         if (btn) {
           btn.className = `py-2 rounded-lg text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'navy-btn'}`;
+        }
+      });
+    }
+
+    function setConfigFractionType(type) {
+      appState.config.fractionType = type;
+      ['similar', 'dissimilar', 'mixed', 'all'].forEach(t => {
+        const btn = document.getElementById('btn-frac-' + t);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${t === type ? 'gold-btn' : 'navy-btn'}`;
+        }
+      });
+    }
+
+    function setConfigFractionSign(sign) {
+      appState.config.fractionSign = sign;
+      ['mixed', 'pos', 'neg'].forEach(s => {
+        const btn = document.getElementById('btn-fracsign-' + s);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${s === sign ? 'gold-btn' : 'navy-btn'}`;
         }
       });
     }
@@ -881,7 +958,7 @@
       return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
     }
 
-    // MULTI-TERM PROBLEM GENERATOR (Strict Operations Filtering & Strict PEMDAS)
+    // MULTI-TERM PROBLEM GENERATOR (Whole, Integers, GEMDAS, Fractions, Decimals)
     function generateQuestionForDomain(domainId, cfg) {
       const ops = cfg.operations.length ? cfg.operations : ['+'];
       const numTerms = (['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
@@ -1042,7 +1119,6 @@
           const op2 = opList[1];
           const pattern = randInt(1, 4);
 
-          // Pattern 1: (A op1 B) op2 C
           if (pattern === 1) {
             let a = randInt(2, 9), b = randInt(2, 9), c = randInt(2, 8);
             let inside = 0;
@@ -1066,9 +1142,7 @@
             displayStr = `(${a} ${symMap[op1]} ${b}) ${symMap[op2]} ${c}`;
             hintSteps.push(`Step 1 (Parentheses): (${a} ${symMap[op1]} ${b}) = ${inside}`);
             hintSteps.push(`Step 2 (${symMap[op2]}): ${inside} ${symMap[op2]} ${c} = ${evalAns}`);
-          }
-          // Pattern 2: A op1 (B op2 C)
-          else if (pattern === 2) {
+          } else if (pattern === 2) {
             let a = randInt(2, 8), b = randInt(2, 9), c = randInt(2, 6);
             let inside = 0;
             if (op2 === '/') { c = randInt(2, 4); inside = randInt(2, 6); b = c * inside; }
@@ -1087,9 +1161,7 @@
             displayStr = `${a} ${symMap[op1]} (${b} ${symMap[op2]} ${c})`;
             hintSteps.push(`Step 1 (Parentheses): (${b} ${symMap[op2]} ${c}) = ${inside}`);
             hintSteps.push(`Step 2 (${symMap[op1]}): ${a} ${symMap[op1]} ${inside} = ${evalAns}`);
-          }
-          // Pattern 3: A² op1 B op2 C (Exponent First)
-          else if (pattern === 3 && activeOps.length >= 2) {
+          } else if (pattern === 3 && activeOps.length >= 2) {
             let base = randInt(2, 5);
             let expVal = base * base;
             let b = randInt(2, 6), c = randInt(1, 8);
@@ -1109,9 +1181,7 @@
               hintSteps.push(`Step 2 (Multiplication): ${b} × ${c} = ${prod}`);
               hintSteps.push(`Step 3 (${symMap[op1]}): ${expVal} ${symMap[op1]} ${prod} = ${evalAns}`);
             }
-          }
-          // Pattern 4: A op1 B op2 C (Left-to-Right Precedence)
-          else {
+          } else {
             let a = randInt(2, 10), b = randInt(2, 8), c = randInt(2, 6);
             if (op1 === '*' || op1 === '/') {
               let first = (op1 === '*') ? a * b : a;
@@ -1174,54 +1244,141 @@
         };
       }
 
-      // 4. RATIONAL FRACTIONS (Strict Operation Filter)
+      // 4. RATIONAL FRACTIONS (Similar, Dissimilar, Mixed Numbers, Signed)
       if (domainId === 'fractions') {
-        const allowedOps = ops.filter(o => ['+', '-'].includes(o));
+        const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
         const activeOps = allowedOps.length ? allowedOps : ['+'];
+        const fracType = cfg.fractionType || 'dissimilar'; // similar, dissimilar, mixed, all
+        const fracSign = cfg.fractionSign || 'mixed';     // mixed, pos, neg
+
+        // Helper to generate a single fraction term
+        function generateFractionTerm(fixedDenom = null) {
+          let den = fixedDenom || randInt(2, 8);
+          let num = randInt(1, den - 1);
+          let whole = 0;
+
+          // Determine if this term should be a mixed number
+          const makeMixed = (fracType === 'mixed') || (fracType === 'all' && Math.random() < 0.5);
+          if (makeMixed) {
+            whole = randInt(1, 4);
+          }
+
+          // Convert to improper fraction value: totalNum / den
+          let totalNum = (whole * den) + num;
+
+          // Determine sign
+          let isNeg = false;
+          if (fracSign === 'neg') isNeg = true;
+          else if (fracSign === 'mixed') isNeg = Math.random() < 0.5;
+
+          if (isNeg) {
+            totalNum = -totalNum;
+          }
+
+          // Build display string
+          let str = '';
+          if (whole > 0) {
+            str = `${whole} ${num}/${den}`;
+            if (isNeg) str = `-${str}`;
+          } else {
+            str = isNeg ? `-${num}/${den}` : `${num}/${den}`;
+          }
+
+          return {
+            whole,
+            num,
+            den,
+            improperNum: totalNum,
+            improperDen: den,
+            display: isNeg ? `(${str})` : str
+          };
+        }
+
+        // Determine shared denominator if "similar" is selected
+        const sharedDenom = (fracType === 'similar') ? randInt(3, 9) : null;
 
         let termsList = [];
         let operators = [];
 
         for (let i = 0; i < numTerms; i++) {
-          const d = randInt(2, 8);
-          const n = randInt(1, d - 1);
-          termsList.push({ n, d });
+          termsList.push(generateFractionTerm(sharedDenom));
           if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
         }
 
-        let commonD = termsList[0].d;
-        for (let i = 1; i < numTerms; i++) {
-          commonD = lcm(commonD, termsList[i].d);
-        }
-
-        let numRunning = termsList[0].n * (commonD / termsList[0].d);
-        let displayParts = [`${termsList[0].n}/${termsList[0].d}`];
+        // Perform sequential arithmetic on improper fractions
+        let runningNum = termsList[0].improperNum;
+        let runningDen = termsList[0].improperDen;
 
         for (let i = 1; i < numTerms; i++) {
           let op = operators[i - 1];
-          let termNum = termsList[i].n * (commonD / termsList[i].d);
-          
-          if (op === '-' && numRunning < termNum) {
-            op = '+';
-            operators[i - 1] = '+';
-          }
-          if (op === '+') numRunning += termNum;
-          else numRunning -= termNum;
+          let nextNum = termsList[i].improperNum;
+          let nextDen = termsList[i].improperDen;
 
-          displayParts.push(op === '-' ? '−' : '+');
-          displayParts.push(`${termsList[i].n}/${termsList[i].d}`);
+          if (op === '+') {
+            runningNum = (runningNum * nextDen) + (nextNum * runningDen);
+            runningDen = runningDen * nextDen;
+          } else if (op === '-') {
+            runningNum = (runningNum * nextDen) - (nextNum * runningDen);
+            runningDen = runningDen * nextDen;
+          } else if (op === '*') {
+            runningNum = runningNum * nextNum;
+            runningDen = runningDen * nextDen;
+          } else if (op === '/') {
+            if (nextNum === 0) nextNum = 1;
+            runningNum = runningNum * nextDen;
+            runningDen = runningDen * nextNum;
+          }
+
+          // Reduce intermediate fraction
+          let g = gcd(runningNum, runningDen);
+          runningNum = Math.floor(runningNum / g);
+          runningDen = Math.floor(runningDen / g);
+          if (runningDen < 0) { runningNum = -runningNum; runningDen = -runningDen; }
         }
 
-        const g = gcd(numRunning, commonD);
-        let finNum = numRunning / g;
-        let finDen = commonD / g;
-        if (finDen < 0) { finNum = -finNum; finDen = -finDen; }
-        const ans = finDen === 1 ? `${finNum}` : `${finNum}/${finDen}`;
+        // Build simplified improper and mixed answer forms
+        let finalAnsStr = '';
+        let mixedEquivStr = '';
+
+        if (runningDen === 1) {
+          finalAnsStr = `${runningNum}`;
+        } else {
+          finalAnsStr = `${runningNum}/${runningDen}`;
+          let absNum = Math.abs(runningNum);
+          if (absNum > runningDen) {
+            let w = Math.floor(absNum / runningDen);
+            let rem = absNum % runningDen;
+            if (rem > 0) {
+              mixedEquivStr = `${runningNum < 0 ? '-' : ''}${w} ${rem}/${runningDen}`;
+            }
+          }
+        }
+
+        // Build expression display
+        let displayParts = [termsList[0].display];
+        const symMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+        for (let i = 1; i < numTerms; i++) {
+          displayParts.push(symMap[operators[i - 1]]);
+          displayParts.push(termsList[i].display);
+        }
 
         const display = displayParts.join(' ');
-        const submode = `${numTerms}-Term Rational Fractions`;
-        const hint = `Convert to common LCD (${commonD}) and simplify: ${ans}.`;
-        return { display: `${display} = ?`, answer: ans, hint, submode, tip: 'Enter simplest form a/b.' };
+        let submode = `${fracType.toUpperCase()} Fractions (${numTerms} Terms)`;
+        if (fracSign === 'mixed') submode += ' [Signed]';
+
+        let hint = `Convert mixed numbers to improper fractions, resolve signs, and simplify: ${finalAnsStr}`;
+        if (mixedEquivStr) hint += ` (or ${mixedEquivStr})`;
+
+        return { 
+          display: `${display} = ?`, 
+          answer: finalAnsStr, 
+          altAnswer: mixedEquivStr,
+          targetValue: runningNum / runningDen,
+          isFraction: true,
+          hint: hint, 
+          submode: submode, 
+          tip: 'Enter in simplest form a/b, mixed number w a/b, or whole number.' 
+        };
       }
 
       // 5. DECIMALS (Strict Operation Filter)
@@ -1335,7 +1492,24 @@
       if (!rawUser) return;
 
       const q = appState.quiz.questions[appState.quiz.currentIndex];
-      const isCorrect = normalizeMathInput(rawUser) === normalizeMathInput(q.answer);
+      let isCorrect = false;
+
+      // Fractional numeric equivalence check
+      if (q.isFraction) {
+        let userVal = parseFractionToValue(rawUser);
+        if (!isNaN(userVal) && typeof q.targetValue === 'number') {
+          isCorrect = Math.abs(userVal - q.targetValue) < 0.0001;
+        }
+      }
+
+      // Standard normalized text matching fallback
+      if (!isCorrect) {
+        let normUser = normalizeMathInput(rawUser);
+        let normAns = normalizeMathInput(q.answer);
+        let normAlt = q.altAnswer ? normalizeMathInput(q.altAnswer) : null;
+        isCorrect = (normUser === normAns) || (normAlt && normUser === normAlt);
+      }
+
       const fb = document.getElementById('quiz-feedback-box');
       fb.classList.remove('hidden');
 
@@ -1424,7 +1598,6 @@
     // --- UNIVERSAL MULTI-DEVICE API DISPATCHER ---
     function callAppsScriptApi(params) {
       return new Promise((resolve, reject) => {
-        // Direct Native Call (When hosted inside Google Apps Script iframe)
         if (typeof google !== 'undefined' && google.script && google.script.run) {
           if (params.action === 'teacher_register') {
             google.script.run
@@ -1449,7 +1622,6 @@
           }
         }
 
-        // Custom Domain & External Fallback (Tablets, Phones, External Browsers)
         const targetUrl = (typeof WEB_APP_EXEC_URL !== 'undefined' ? WEB_APP_EXEC_URL : '').trim();
         if (!targetUrl || !targetUrl.startsWith('https://script.google.com/macros/s/')) {
           reject(new Error('Missing Web App URL. Set WEB_APP_EXEC_URL in Index.html.'));
@@ -1522,8 +1694,14 @@
         localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
       } catch (e) {}
 
-      const termsInfo = ['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(appState.selectedDomain.id) ? `${appState.config.terms} Terms` : '';
-      const configDetails = `${appState.config.digits}D | ${termsInfo} | Ops: ${appState.config.operations.join('')}`;
+      let extraConfig = '';
+      if (appState.selectedDomain.id === 'fractions') {
+        extraConfig = `Type: ${appState.config.fractionType.toUpperCase()} | Sign: ${appState.config.fractionSign.toUpperCase()}`;
+      } else if (['whole', 'integers', 'gemdas', 'decimals'].includes(appState.selectedDomain.id)) {
+        extraConfig = `${appState.config.terms} Terms`;
+      }
+
+      const configDetails = `${appState.config.digits}D | ${extraConfig} | Ops: ${appState.config.operations.join('')}`;
 
       const record = {
         timestamp: new Date().toISOString(),
