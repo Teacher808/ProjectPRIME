@@ -12,7 +12,7 @@
       theme: {
         extend: {
           colors: {
-            brand: {
+            gold: {
               50: '#fffbeb',
               100: '#fef3c7',
               200: '#fde68a',
@@ -87,14 +87,10 @@
       box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
       transition: all 0.2s ease;
     }
-    .gold-btn:hover:not(:disabled), .gold-btn:active:not(:disabled) {
+    .gold-btn:hover, .gold-btn:active {
       filter: brightness(1.08);
       box-shadow: 0 6px 16px rgba(217, 119, 6, 0.35);
       transform: translateY(-0.5px);
-    }
-    .gold-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
 
     .light-btn {
@@ -103,14 +99,10 @@
       color: #1e293b;
       transition: all 0.2s ease;
     }
-    .light-btn:hover:not(:disabled), .light-btn:active:not(:disabled) {
+    .light-btn:hover, .light-btn:active {
       background: #f8fafc;
       border-color: #d97706;
       color: #b45309;
-    }
-    .light-btn:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
     }
 
     @media print {
@@ -128,7 +120,7 @@
     }
   </style>
 </head>
-<body class="flex flex-col min-h-[100dvh] relative selection:bg-brand-500 selection:text-white">
+<body class="flex flex-col min-h-[100dvh] relative selection:bg-gold-500 selection:text-white">
 
   <!-- ANIMATED MATHEMATICAL CANVAS -->
   <canvas id="math-bg-canvas"></canvas>
@@ -136,15 +128,15 @@
   <div class="relative z-10 flex flex-col flex-grow">
 
     <!-- TOP NAVIGATION HEADER -->
-    <header class="sticky top-0 z-30 light-glass border-b border-brand-200/80 px-3 py-2.5 sm:px-4 sm:py-3 w-full">
+    <header class="sticky top-0 z-30 light-glass border-b border-amber-200/80 px-3 py-2.5 sm:px-4 sm:py-3 w-full">
       <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
         <div onclick="switchTab('home')" class="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0">
-          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-brand-500 to-brand-700 flex items-center justify-center text-white font-black text-base sm:text-xl shadow-md shadow-brand-600/30 group-hover:scale-105 transition">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-black text-base sm:text-xl shadow-md shadow-amber-600/30 group-hover:scale-105 transition">
             <i class="fa-solid fa-square-root-variable"></i>
           </div>
           <div>
             <div class="flex items-center gap-1 sm:gap-2">
-              <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 leading-tight">PROJECT <span class="text-brand-600 font-serif">PRIME</span></h1>
+              <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 leading-tight">PROJECT <span class="text-amber-600 font-serif">PRIME</span></h1>
               <span class="hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
                 <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse mr-1"></span>Live
               </span>
@@ -155,34 +147,34 @@
 
         <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto">
           <button onclick="switchTab('home')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
-            <i class="fa-solid fa-house text-brand-600"></i>
+            <i class="fa-solid fa-house text-amber-600"></i>
             <span class="hidden sm:inline">Home</span>
           </button>
 
-          <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 bg-brand-50 border border-brand-300 text-brand-800 hover:bg-brand-100 transition whitespace-nowrap">
-            <i class="fa-solid fa-user-tie text-brand-600"></i>
+          <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-user-tie text-amber-600"></i>
             <span id="nav-teacher-label">Teacher Portal</span>
           </button>
 
           <button onclick="switchTab('scores')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
-            <i class="fa-solid fa-chart-simple text-brand-600"></i>
+            <i class="fa-solid fa-chart-simple text-amber-600"></i>
             <span class="hidden sm:inline">Registry</span>
           </button>
 
           <button onclick="switchTab('guides')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
-            <i class="fa-solid fa-book-open text-brand-600"></i>
+            <i class="fa-solid fa-book-open text-amber-600"></i>
             <span class="hidden sm:inline">Guides</span>
           </button>
         </div>
       </div>
 
       <!-- Active Class Code Banner -->
-      <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-brand-50/90 border border-brand-300 px-3 py-1.5 rounded-lg text-[11px] sm:text-xs text-brand-900 flex items-center justify-between shadow-sm">
+      <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-amber-50/90 border border-amber-300 px-3 py-1.5 rounded-lg text-[11px] sm:text-xs text-amber-900 flex items-center justify-between shadow-sm">
         <div class="flex items-center gap-2 truncate font-medium">
-          <i class="fa-solid fa-school text-brand-600 shrink-0"></i>
-          <span class="truncate">Teacher Class Code: <strong id="banner-code-display" class="font-mono text-brand-700 font-bold"></strong></span>
+          <i class="fa-solid fa-school text-amber-600 shrink-0"></i>
+          <span class="truncate">Teacher Class Code: <strong id="banner-code-display" class="font-mono text-amber-700 font-bold"></strong></span>
         </div>
-        <button onclick="clearActiveTeacherCode()" class="text-brand-700 hover:text-red-600 text-xs underline font-semibold ml-2 shrink-0">Clear</button>
+        <button onclick="clearActiveTeacherCode()" class="text-amber-700 hover:text-red-600 text-xs underline font-semibold ml-2 shrink-0">Clear</button>
       </div>
     </header>
 
@@ -192,12 +184,12 @@
       <!-- 1. HOME VIEW (DOMAINS) -->
       <section id="view-home" class="space-y-4 sm:space-y-6">
         <div class="text-center space-y-1.5 py-2 sm:py-4">
-          <span class="inline-block px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-brand-100 text-brand-800 border border-brand-300">
+          <span class="inline-block px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-amber-100 text-amber-800 border border-amber-300">
             Interactive Diagnostic Engine
           </span>
           <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 font-serif">Mathematical Curriculum Domains</h2>
           <p class="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto px-2 font-medium">
-            Practice modular arithmetic drills, sign operations, GEMDAS sequences, exponents, roots, and rational fractions.
+            Practice modular arithmetic drills, sign operations, GEMDAS sequences, and rational fractions with precise numerator and denominator controls.
           </p>
         </div>
         <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
@@ -205,13 +197,13 @@
 
       <!-- 2. PRACTICE CONFIGURATION VIEW -->
       <section id="view-config" class="hidden max-w-xl mx-auto space-y-4">
-        <div class="light-glass p-5 sm:p-6 rounded-3xl shadow-xl space-y-4 border border-brand-200">
-          <div class="flex items-center justify-between border-b border-brand-200 pb-3">
+        <div class="light-glass p-5 sm:p-6 rounded-3xl shadow-xl space-y-4 border border-amber-200">
+          <div class="flex items-center justify-between border-b border-amber-200 pb-3">
             <div>
-              <span id="config-domain-badge" class="text-[10px] font-bold text-brand-700 uppercase tracking-wider">Category</span>
+              <span id="config-domain-badge" class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Category</span>
               <h3 id="config-domain-title" class="text-lg sm:text-xl font-bold text-slate-900 font-serif">Configure Practice</h3>
             </div>
-            <button onclick="switchTab('home')" class="text-slate-500 hover:text-brand-700 text-xs font-semibold">
+            <button onclick="switchTab('home')" class="text-slate-500 hover:text-amber-700 text-xs font-semibold">
               <i class="fa-solid fa-arrow-left mr-1"></i> Back
             </button>
           </div>
@@ -221,14 +213,14 @@
             <div>
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Number of Questions (5 to 100)</label>
               <div class="flex items-center gap-3">
-                <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-brand-600 h-2 bg-slate-200 rounded-lg">
-                <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-14 bg-white border border-brand-300 rounded-lg py-1 px-1.5 text-center font-bold text-brand-700 text-sm shadow-sm">
+                <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-14 bg-white border border-amber-300 rounded-lg py-1 px-1.5 text-center font-bold text-amber-700 text-sm shadow-sm">
               </div>
             </div>
 
             <!-- Number of Terms Selector -->
             <div id="config-terms-box" class="hidden">
-              <label class="block text-xs font-bold text-brand-800 uppercase tracking-wider mb-1">
+              <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
                 <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms (Operands)
               </label>
               <div class="grid grid-cols-4 gap-2">
@@ -239,82 +231,66 @@
               </div>
             </div>
 
-            <!-- EXPONENTS & POWERS LAWS SELECTOR -->
-            <div id="config-exponents-box" class="hidden space-y-3 p-4 bg-brand-50/70 rounded-2xl border border-brand-300">
+            <!-- EXPONENTS CONTROLS -->
+            <div id="config-exponents-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
               <div>
-                <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-2">
-                  <i class="fa-solid fa-superscript mr-1 text-brand-600"></i> Laws of Exponents Selection
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-superscript mr-1"></i> Laws of Exponents
                 </label>
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                  <button type="button" id="btn-exp-mixed" onclick="setConfigExponentLaw('mixed')" class="p-2 rounded-xl font-bold border transition text-left gold-btn flex items-center justify-between">
-                    <span>Mixed (All Laws)</span>
-                    <span class="font-mono text-[10px] opacity-80">Random</span>
-                  </button>
-                  <button type="button" id="btn-exp-product" onclick="setConfigExponentLaw('product')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Product Rule</span>
-                    <span class="font-mono text-[10px] text-brand-700">xᵃ · xᵇ = xᵃ⁺ᵇ</span>
-                  </button>
-                  <button type="button" id="btn-exp-quotient" onclick="setConfigExponentLaw('quotient')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Quotient Rule</span>
-                    <span class="font-mono text-[10px] text-brand-700">xᵃ / xᵇ = xᵃ⁻ᵇ</span>
-                  </button>
-                  <button type="button" id="btn-exp-power" onclick="setConfigExponentLaw('power')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Power of a Power</span>
-                    <span class="font-mono text-[10px] text-brand-700">(xᵃ)ᵇ = xᵃᵇ</span>
-                  </button>
-                  <button type="button" id="btn-exp-product-power" onclick="setConfigExponentLaw('product-power')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Power of a Product</span>
-                    <span class="font-mono text-[10px] text-brand-700">(xy)ᵃ = xᵃyᵃ</span>
-                  </button>
-                  <button type="button" id="btn-exp-quotient-power" onclick="setConfigExponentLaw('quotient-power')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Power of a Quotient</span>
-                    <span class="font-mono text-[10px] text-brand-700">(x/y)ᵃ = xᵃ/yᵃ</span>
-                  </button>
-                  <button type="button" id="btn-exp-negative" onclick="setConfigExponentLaw('negative')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Negative Exponent</span>
-                    <span class="font-mono text-[10px] text-brand-700">x⁻ⁿ = 1/xⁿ</span>
-                  </button>
-                  <button type="button" id="btn-exp-zero" onclick="setConfigExponentLaw('zero')" class="p-2 rounded-xl font-bold border transition text-left light-btn flex items-center justify-between">
-                    <span>Zero Exponent Rule</span>
-                    <span class="font-mono text-[10px] text-brand-700">x⁰ = 1</span>
-                  </button>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  <button type="button" id="btn-exp-product" onclick="setConfigExponentLaw('product')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Product Rule</button>
+                  <button type="button" id="btn-exp-quotient" onclick="setConfigExponentLaw('quotient')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Quotient Rule</button>
+                  <button type="button" id="btn-exp-power_power" onclick="setConfigExponentLaw('power_power')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Power</button>
+                  <button type="button" id="btn-exp-power_product" onclick="setConfigExponentLaw('power_product')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Product</button>
+                  <button type="button" id="btn-exp-power_quotient" onclick="setConfigExponentLaw('power_quotient')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Quotient</button>
+                  <button type="button" id="btn-exp-negative" onclick="setConfigExponentLaw('negative')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Negative Rule</button>
+                  <button type="button" id="btn-exp-zero" onclick="setConfigExponentLaw('zero')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Zero Rule</button>
+                  <button type="button" id="btn-exp-mixed" onclick="setConfigExponentLaw('mixed')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition gold-btn text-center">Mixed Laws</button>
                 </div>
               </div>
             </div>
 
-            <!-- ROOTS & RADICALS CONTROLS -->
-            <div id="config-radicals-box" class="hidden space-y-3.5 p-4 bg-brand-50/70 rounded-2xl border border-brand-300">
+            <!-- RADICALS CONTROLS -->
+            <div id="config-radicals-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
               <div>
-                <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
-                  <i class="fa-solid fa-square-root-variable mr-1 text-brand-600"></i> Problem Type Mode
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-square-root-variable mr-1"></i> Root Index
                 </label>
-                <div class="grid grid-cols-2 gap-2 text-xs">
-                  <button type="button" id="btn-radmode-simplify" onclick="setConfigRadicalMode('simplify')" class="py-2 px-2 rounded-xl font-bold border transition text-center gold-btn">
-                    Simplifying Radicals (√N → a√b)
-                  </button>
-                  <button type="button" id="btn-radmode-arithmetic" onclick="setConfigRadicalMode('arithmetic')" class="py-2 px-2 rounded-xl font-bold border transition text-center light-btn">
-                    Arithmetic (+, −, ×, ÷)
-                  </button>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-3">
+                  <button type="button" id="btn-radtype-sqrt" onclick="setConfigRadicalType('sqrt')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Square Roots</button>
+                  <button type="button" id="btn-radtype-cbrt" onclick="setConfigRadicalType('cbrt')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Cube Roots</button>
+                  <button type="button" id="btn-radtype-4th" onclick="setConfigRadicalType('4th')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">4th Roots</button>
+                  <button type="button" id="btn-radtype-mixed" onclick="setConfigRadicalType('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Mixed Roots</button>
+                </div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  Problem Type
+                </label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" id="btn-radmode-simp" onclick="setConfigRadicalMode('simp')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Simplify Radicals</button>
+                  <button type="button" id="btn-radmode-arith" onclick="setConfigRadicalMode('arith')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Arithmetic Ops</button>
                 </div>
               </div>
+            </div>
 
+            <!-- PERCENTAGES CONTROLS -->
+            <div id="config-percentages-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
               <div>
-                <label class="block text-xs font-bold text-slate-800 uppercase tracking-wider mb-1.5">
-                  Radical Index (Root Type)
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-percent mr-1"></i> Percentage Skill Progression
                 </label>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 text-xs">
-                  <button type="button" id="btn-radroot-all" onclick="setConfigRadicalRoot('all')" class="py-1.5 px-2 rounded-xl font-bold border transition gold-btn text-center">Mixed Roots</button>
-                  <button type="button" id="btn-radroot-square" onclick="setConfigRadicalRoot('square')" class="py-1.5 px-2 rounded-xl font-bold border transition light-btn text-center">Square (√x)</button>
-                  <button type="button" id="btn-radroot-cube" onclick="setConfigRadicalRoot('cube')" class="py-1.5 px-2 rounded-xl font-bold border transition light-btn text-center">Cube (³√x)</button>
-                  <button type="button" id="btn-radroot-fourth" onclick="setConfigRadicalRoot('fourth')" class="py-1.5 px-2 rounded-xl font-bold border transition light-btn text-center">4th Root (⁴√x)</button>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  <button type="button" id="btn-pct-conversion" onclick="setConfigPercentageMode('conversion')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition gold-btn text-center">Conversions</button>
+                  <button type="button" id="btn-pct-basic" onclick="setConfigPercentageMode('basic')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Percent of Base</button>
+                  <button type="button" id="btn-pct-change" onclick="setConfigPercentageMode('change')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Percent Change</button>
+                  <button type="button" id="btn-pct-applied" onclick="setConfigPercentageMode('applied')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Applied & Word</button>
                 </div>
               </div>
             </div>
 
             <!-- FRACTIONS ADVANCED CONTROLS -->
-            <div id="config-fractions-box" class="hidden space-y-3.5 p-3.5 bg-brand-50/70 rounded-2xl border border-brand-300">
+            <div id="config-fractions-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
               <div>
-                <label class="block text-xs font-bold text-brand-800 uppercase tracking-wider mb-1">
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
                   <i class="fa-solid fa-shapes mr-1"></i> Fraction Classification Form
                 </label>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
@@ -340,39 +316,39 @@
               <div>
                 <div class="flex justify-between items-center mb-1">
                   <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Numerator Digits (1 to 4)</label>
-                  <span id="label-num-digits" class="text-xs font-mono font-bold text-brand-700">1 Digit</span>
+                  <span id="label-num-digits" class="text-xs font-mono font-bold text-amber-700">1 Digit</span>
                 </div>
-                <input type="range" id="config-frac-num-digits" min="1" max="4" value="1" oninput="syncFracNumDigits(this.value)" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg">
+                <input type="range" id="config-frac-num-digits" min="1" max="4" value="1" oninput="syncFracNumDigits(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
               </div>
 
               <!-- Denominator Digits -->
               <div>
                 <div class="flex justify-between items-center mb-1">
                   <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Denominator Digits (1 to 4)</label>
-                  <span id="label-den-digits" class="text-xs font-mono font-bold text-brand-700">1 Digit</span>
+                  <span id="label-den-digits" class="text-xs font-mono font-bold text-amber-700">1 Digit</span>
                 </div>
-                <input type="range" id="config-frac-den-digits" min="1" max="4" value="1" oninput="syncFracDenDigits(this.value)" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg">
+                <input type="range" id="config-frac-den-digits" min="1" max="4" value="1" oninput="syncFracDenDigits(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
               </div>
 
               <!-- Denominator Range (1 to 100) -->
-              <div class="pt-1 border-t border-brand-200">
-                <label class="block text-[11px] font-bold text-brand-800 uppercase tracking-wider mb-1.5">
+              <div class="pt-1 border-t border-amber-200">
+                <label class="block text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1.5">
                   Denominator Value Range (1 to 100)
                 </label>
                 <div class="grid grid-cols-2 gap-3">
                   <div>
                     <div class="flex justify-between text-[10px] text-slate-500 font-bold mb-1">
                       <span>Min Denominator</span>
-                      <span id="label-den-min" class="text-brand-700 font-mono">2</span>
+                      <span id="label-den-min" class="text-amber-700 font-mono">2</span>
                     </div>
-                    <input type="range" id="config-frac-den-min" min="1" max="99" value="2" oninput="syncFracDenMin(this.value)" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg">
+                    <input type="range" id="config-frac-den-min" min="1" max="99" value="2" oninput="syncFracDenMin(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
                   </div>
                   <div>
                     <div class="flex justify-between text-[10px] text-slate-500 font-bold mb-1">
                       <span>Max Denominator</span>
-                      <span id="label-den-max" class="text-brand-700 font-mono">12</span>
+                      <span id="label-den-max" class="text-amber-700 font-mono">12</span>
                     </div>
-                    <input type="range" id="config-frac-den-max" min="2" max="100" value="12" oninput="syncFracDenMax(this.value)" class="w-full accent-brand-600 h-2 bg-slate-200 rounded-lg">
+                    <input type="range" id="config-frac-den-max" min="2" max="100" value="12" oninput="syncFracDenMax(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
                   </div>
                 </div>
               </div>
@@ -380,10 +356,10 @@
 
             <!-- Table Focus -->
             <div id="config-numberfield-box" class="hidden">
-              <label class="block text-xs font-bold text-brand-800 uppercase tracking-wider mb-1">
+              <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
                 <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
               </label>
-              <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-white border border-brand-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 outline-none shadow-sm">
+              <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 outline-none shadow-sm">
                 <option value="none">Free Number Field (Use Digits Only)</option>
                 <option value="1">Table 1</option>
                 <option value="2">Table 2</option>
@@ -405,8 +381,8 @@
             <div id="config-digits-box">
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Number of Digits (1 to 10)</label>
               <div class="flex items-center gap-3">
-                <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-brand-600 h-2 bg-slate-200 rounded-lg">
-                <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-14 bg-white border border-brand-300 rounded-lg py-1 px-1.5 text-center font-bold text-brand-700 text-sm shadow-sm">
+                <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-14 bg-white border border-amber-300 rounded-lg py-1 px-1.5 text-center font-bold text-amber-700 text-sm shadow-sm">
               </div>
             </div>
 
@@ -433,20 +409,20 @@
             <div id="config-operations-box">
               <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Operations Included</label>
               <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-brand-200 cursor-pointer shadow-sm">
-                  <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-brand-600 w-3.5 h-3.5">
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-amber-600 w-3.5 h-3.5">
                   <span class="text-xs font-bold text-slate-800">Add (+)</span>
                 </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-brand-200 cursor-pointer shadow-sm">
-                  <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-brand-600 w-3.5 h-3.5">
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-amber-600 w-3.5 h-3.5">
                   <span class="text-xs font-bold text-slate-800">Sub (−)</span>
                 </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-brand-200 cursor-pointer shadow-sm">
-                  <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-brand-600 w-3.5 h-3.5">
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-amber-600 w-3.5 h-3.5">
                   <span class="text-xs font-bold text-slate-800">Mul (×)</span>
                 </label>
-                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-brand-200 cursor-pointer shadow-sm">
-                  <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-brand-600 w-3.5 h-3.5">
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-amber-600 w-3.5 h-3.5">
                   <span class="text-xs font-bold text-slate-800">Div (÷)</span>
                 </label>
               </div>
@@ -465,9 +441,9 @@
 
       <!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
       <section id="view-quiz" class="hidden flex flex-col justify-between max-w-xl mx-auto space-y-2.5">
-        <div class="light-glass px-3 py-2 rounded-xl flex items-center justify-between text-xs border border-brand-200">
+        <div class="light-glass px-3 py-2 rounded-xl flex items-center justify-between text-xs border border-amber-200">
           <div class="flex items-center gap-1.5 truncate">
-            <span class="font-bold text-brand-700 font-mono" id="quiz-progress-text">Q 1 of 10</span>
+            <span class="font-bold text-amber-700 font-mono" id="quiz-progress-text">Q 1 of 10</span>
             <span class="text-slate-300">|</span>
             <span class="text-slate-700 font-semibold truncate" id="quiz-cat-name">Rational Fractions</span>
           </div>
@@ -477,32 +453,53 @@
           </div>
         </div>
 
-        <div class="light-glass p-5 sm:p-6 rounded-3xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-xl border border-brand-300">
-          <div class="text-[10px] uppercase tracking-wider text-brand-700 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
-          <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-wider my-2 break-all select-all">1/2 + 3/4 = ?</div>
+        <div class="light-glass p-5 sm:p-6 rounded-3xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-xl border border-amber-300">
+          <div class="text-[10px] uppercase tracking-wider text-amber-700 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
+          <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-wider my-2 break-words select-all">1/2 + 3/4 = ?</div>
           <div id="quiz-problem-tip" class="text-[11px] text-slate-500 italic">Type answer (fractions as a/b or -a/b, mixed as w a/b).</div>
         </div>
 
         <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300"></div>
 
-        <div class="light-glass p-3 rounded-2xl space-y-2 border border-brand-200">
+        <div class="light-glass p-3 rounded-2xl space-y-2 border border-amber-200">
           <div class="flex gap-1.5">
-            <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g., -5/6 or -1 1/2" onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-white border border-brand-300 focus:border-brand-600 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-slate-900 outline-none shadow-inner">
+            <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g., -5/6 or -1 1/2" onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-white border border-amber-300 focus:border-amber-600 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-slate-900 outline-none shadow-inner">
             <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs sm:text-sm flex items-center gap-1 shrink-0">
               <span>Check</span>
               <i class="fa-solid fa-circle-check"></i>
             </button>
           </div>
 
-          <div class="grid grid-cols-4 sm:grid-cols-8 gap-1 pt-1">
-            <button type="button" onclick="insertToolbarSymbol('-')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">(-)</button>
-            <button type="button" onclick="insertToolbarSymbol('/')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">a/b</button>
-            <button type="button" onclick="insertToolbarSymbol(' ')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">Space</button>
-            <button type="button" onclick="insertToolbarSymbol('√')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">√(x)</button>
-            <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">³√(x)</button>
-            <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1 rounded-lg bg-brand-100 text-brand-800 border border-brand-300 text-xs font-bold">xⁿ</button>
-            <button type="button" onclick="insertToolbarSymbol('(')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">(</button>
-            <button type="button" onclick="insertToolbarSymbol(')')" class="p-1 rounded-lg light-btn text-xs font-mono font-bold">)</button>
+          <div class="grid grid-cols-7 gap-1.5 pt-1">
+            <!-- Numbers Row 1 & 2 -->
+            <button type="button" onclick="insertToolbarSymbol('1')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">1</button>
+            <button type="button" onclick="insertToolbarSymbol('2')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">2</button>
+            <button type="button" onclick="insertToolbarSymbol('3')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">3</button>
+            <button type="button" onclick="insertToolbarSymbol('4')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">4</button>
+            <button type="button" onclick="insertToolbarSymbol('5')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">5</button>
+            <button type="button" onclick="insertToolbarSymbol('6')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">6</button>
+            <button type="button" onclick="insertToolbarSymbol('7')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">7</button>
+            
+            <button type="button" onclick="insertToolbarSymbol('8')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">8</button>
+            <button type="button" onclick="insertToolbarSymbol('9')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">9</button>
+            <button type="button" onclick="insertToolbarSymbol('0')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">0</button>
+            
+            <!-- Operations & Symbols -->
+            <button type="button" onclick="insertToolbarSymbol('-')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">(-)</button>
+            <button type="button" onclick="insertToolbarSymbol('.')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">.</button>
+            <button type="button" onclick="insertToolbarSymbol('%')" class="p-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-300 text-xs sm:text-sm font-mono font-bold">%</button>
+            <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">a/b</button>
+            
+            <!-- Advanced Symbols & Actions Row 3 -->
+            <button type="button" onclick="insertToolbarSymbol(' ')" class="p-1.5 rounded-lg light-btn text-[10px] sm:text-xs font-mono font-bold uppercase">Spc</button>
+            <button type="button" onclick="insertToolbarSymbol('√')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">√x</button>
+            <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">³√x</button>
+            <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 text-xs sm:text-sm font-bold">xⁿ</button>
+            <button type="button" onclick="insertToolbarSymbol('(')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">(</button>
+            <button type="button" onclick="insertToolbarSymbol(')')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">)</button>
+            <button type="button" onclick="handleBackspace()" class="p-1.5 rounded-lg bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 text-xs sm:text-sm font-bold flex items-center justify-center transition">
+              <i class="fa-solid fa-delete-left"></i>
+            </button>
           </div>
         </div>
 
@@ -513,8 +510,8 @@
 
       <!-- 4. RESULTS VIEW -->
       <section id="view-results" class="hidden max-w-md mx-auto space-y-4">
-        <div class="light-glass p-6 rounded-3xl shadow-2xl text-center space-y-4 border border-brand-300">
-          <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 border border-brand-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
+        <div class="light-glass p-6 rounded-3xl shadow-2xl text-center space-y-4 border border-amber-300">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
             <i class="fa-solid fa-award"></i>
           </div>
           <div>
@@ -522,19 +519,19 @@
             <p class="text-[11px] text-slate-500 mt-0.5">Confirm student details to submit scores to your teacher's registry.</p>
           </div>
 
-          <div class="bg-brand-50/80 p-3.5 rounded-2xl border border-brand-200 flex items-center justify-around shadow-sm">
+          <div class="bg-amber-50/80 p-3.5 rounded-2xl border border-amber-200 flex items-center justify-around shadow-sm">
             <div>
-              <div class="text-2xl font-black text-brand-700 font-mono" id="results-score-display">0 / 0</div>
+              <div class="text-2xl font-black text-amber-700 font-mono" id="results-score-display">0 / 0</div>
               <div class="text-[10px] text-slate-500 uppercase font-semibold">Score</div>
             </div>
-            <div class="h-6 w-px bg-brand-200"></div>
+            <div class="h-6 w-px bg-amber-200"></div>
             <div>
               <div class="text-2xl font-black text-emerald-700 font-mono" id="results-percentage-display">0%</div>
               <div class="text-[10px] text-slate-500 uppercase font-semibold">Accuracy</div>
             </div>
-            <div class="h-6 w-px bg-brand-200"></div>
+            <div class="h-6 w-px bg-amber-200"></div>
             <div>
-              <div class="text-xs font-bold text-brand-900 mt-1" id="results-mastery-display">Proficient</div>
+              <div class="text-xs font-bold text-amber-900 mt-1" id="results-mastery-display">Proficient</div>
               <div class="text-[10px] text-slate-500 uppercase font-semibold">Rating</div>
             </div>
           </div>
@@ -542,22 +539,22 @@
           <div class="space-y-3 text-left">
             <div>
               <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Student Full Name <span class="text-red-500">*</span></label>
-              <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-white border border-brand-300 rounded-xl p-2.5 text-xs font-semibold text-slate-900 outline-none shadow-sm">
+              <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-xs font-semibold text-slate-900 outline-none shadow-sm">
             </div>
             <div class="grid grid-cols-2 gap-2">
               <div>
                 <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">Grade & Section</label>
-                <input type="text" id="student-section-input" placeholder="e.g., 9-Einstein" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+                <input type="text" id="student-section-input" placeholder="e.g., 9-Einstein" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
               </div>
               <div>
                 <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">Teacher Code</label>
-                <input type="text" id="student-code-input" placeholder="e.g., REYES" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs font-mono font-bold text-brand-700 uppercase outline-none shadow-sm">
+                <input type="text" id="student-code-input" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-700 uppercase outline-none shadow-sm">
               </div>
             </div>
           </div>
 
           <div id="results-sync-status" class="text-[11px] text-slate-600 flex items-center justify-center gap-1.5 py-1">
-            <i class="fa-solid fa-cloud text-brand-600"></i>
+            <i class="fa-solid fa-cloud text-amber-600"></i>
             <span>Ready to record to gradebook</span>
           </div>
 
@@ -573,8 +570,8 @@
 
       <!-- 5. TEACHER REGISTRY VIEW -->
       <section id="view-scores" class="hidden space-y-4">
-        <div id="scores-locked-state" class="light-glass p-6 sm:p-10 rounded-3xl text-center space-y-3 max-w-md mx-auto border border-brand-300">
-          <div class="w-12 h-12 rounded-full bg-brand-100 text-brand-700 border border-brand-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
+        <div id="scores-locked-state" class="light-glass p-6 sm:p-10 rounded-3xl text-center space-y-3 max-w-md mx-auto border border-amber-300 hidden">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
             <i class="fa-solid fa-lock"></i>
           </div>
           <h3 class="text-lg font-black text-slate-900 font-serif">Teacher Authentication Required</h3>
@@ -588,14 +585,14 @@
         </div>
 
         <div id="scores-unlocked-state" class="hidden space-y-4">
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-brand-200 pb-3">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200 pb-3">
             <div>
-              <span class="text-[10px] font-bold text-brand-700 uppercase tracking-wider">Teacher Gradebook</span>
+              <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider" id="registry-title-label">Teacher Gradebook</span>
               <h2 class="text-xl font-black text-slate-900 font-serif">Student Score Registry</h2>
             </div>
             <div class="flex items-center gap-2">
-              <button onclick="pullScoresFromCloud()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-brand-100 border border-brand-300 text-brand-800 hover:bg-brand-200 flex items-center gap-1 shadow-sm">
-                <i class="fa-solid fa-rotate text-brand-700" id="sync-spinner"></i>
+              <button onclick="pullScoresFromCloud()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 border border-amber-300 text-amber-800 hover:bg-amber-200 flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-rotate text-amber-700" id="sync-spinner"></i>
                 <span>Refresh</span>
               </button>
               <button onclick="exportScoresToCSV()" class="px-3 py-1.5 rounded-xl text-xs font-bold gold-btn flex items-center gap-1">
@@ -605,20 +602,20 @@
             </div>
           </div>
 
-          <div class="light-glass p-3 rounded-2xl flex flex-col sm:flex-row items-center gap-2 border border-brand-200">
+          <div class="light-glass p-3 rounded-2xl flex flex-col sm:flex-row items-center gap-2 border border-amber-200">
             <div class="relative flex-grow w-full">
               <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-400 text-xs"></i>
-              <input type="text" id="filter-classcode" placeholder="Filter student name or section..." oninput="renderScoresTable()" class="w-full bg-white border border-brand-200 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-slate-800 outline-none shadow-inner">
+              <input type="text" id="filter-classcode" placeholder="Filter student name or section..." oninput="renderScoresTable()" class="w-full bg-white border border-amber-200 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-slate-800 outline-none shadow-inner">
             </div>
             <div class="text-xs text-slate-600 font-mono whitespace-nowrap self-end sm:self-center">
-              Active Code: <strong id="filter-code-tag" class="text-brand-700"></strong>
+              Active Code: <strong id="filter-code-tag" class="text-amber-700"></strong>
             </div>
           </div>
 
-          <div class="light-glass rounded-2xl overflow-hidden shadow-lg border border-brand-200">
+          <div class="light-glass rounded-2xl overflow-hidden shadow-lg border border-amber-200">
             <div class="overflow-x-auto w-full">
               <table class="w-full text-left text-xs whitespace-nowrap">
-                <thead class="bg-brand-100/70 text-brand-900 uppercase font-bold text-[10px] tracking-wider border-b border-brand-200">
+                <thead class="bg-amber-100/70 text-amber-900 uppercase font-bold text-[10px] tracking-wider border-b border-amber-200">
                   <tr>
                     <th class="py-2.5 px-3">Date</th>
                     <th class="py-2.5 px-3">Student Name</th>
@@ -631,7 +628,7 @@
                     <th class="py-2.5 px-3 text-center">Actions</th>
                   </tr>
                 </thead>
-                <tbody id="scores-table-body" class="divide-y divide-brand-100/80 bg-white/70"></tbody>
+                <tbody id="scores-table-body" class="divide-y divide-amber-100/80 bg-white/70"></tbody>
               </table>
             </div>
           </div>
@@ -640,9 +637,9 @@
 
       <!-- 6. STUDY GUIDES VIEW -->
       <section id="view-guides" class="hidden max-w-3xl mx-auto space-y-4">
-        <div class="border-b border-brand-200 pb-3 flex items-center justify-between">
+        <div class="border-b border-amber-200 pb-3 flex items-center justify-between">
           <div>
-            <span class="text-[10px] font-bold text-brand-700 uppercase tracking-wider">Reference Center</span>
+            <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Reference Center</span>
             <h2 class="text-xl font-black text-slate-900 font-serif">Rules & Instructional Guides</h2>
           </div>
           <button onclick="switchTab('home')" class="text-xs font-bold light-btn px-2.5 py-1 rounded-lg">
@@ -662,9 +659,9 @@
         </div>
 
         <div id="guides-teacher-view" class="space-y-3">
-          <div class="light-glass p-4 rounded-2xl border border-brand-200 space-y-1.5">
+          <div class="light-glass p-4 rounded-2xl border border-amber-200 space-y-1.5">
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-lg bg-brand-100 text-brand-800 font-mono font-black text-xs flex items-center justify-center border border-brand-300">1</span>
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 font-mono font-black text-xs flex items-center justify-center border border-amber-300">1</span>
               <h3 class="text-sm font-bold text-slate-900">Student Question Review & Diagnostics</h3>
             </div>
             <p class="text-xs text-slate-600 leading-relaxed pl-8">
@@ -672,13 +669,13 @@
             </p>
           </div>
 
-          <div class="light-glass p-4 rounded-2xl border border-brand-200 space-y-1.5">
+          <div class="light-glass p-4 rounded-2xl border border-amber-200 space-y-1.5">
             <div class="flex items-center gap-2">
-              <span class="w-6 h-6 rounded-lg bg-brand-100 text-brand-800 font-mono font-black text-xs flex items-center justify-center border border-brand-300">2</span>
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 font-mono font-black text-xs flex items-center justify-center border border-amber-300">2</span>
               <h3 class="text-sm font-bold text-slate-900">Student Record Deletion & Self-Service</h3>
             </div>
             <p class="text-xs text-slate-600 leading-relaxed pl-8">
-              Teachers can delete inaccurate or duplicate student submissions directly from the Registry. Under the Teacher Portal, teachers can also update their profile credentials or delete their own teacher account permanently.
+              Teachers can delete inaccurate or duplicate student submissions directly from the Registry. Under the Teacher Portal, teachers can also update their profile credentials or delete their own teacher account permanently. Students can also view their local history in the registry without needing to login.
             </p>
           </div>
         </div>
@@ -693,10 +690,10 @@
 
   <!-- MODAL: TEACHER ACCOUNT & PROFILE MANAGEMENT PORTAL -->
   <div id="modal-teacher-portal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
-    <div class="light-glass max-w-sm w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-brand-300 max-h-[90dvh] overflow-y-auto">
-      <div class="flex items-center justify-between border-b border-brand-200 pb-2.5">
+    <div class="light-glass max-w-sm w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-amber-300 max-h-[90dvh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
         <div class="flex items-center gap-2">
-          <i class="fa-solid fa-user-tie text-brand-600 text-base"></i>
+          <i class="fa-solid fa-user-tie text-amber-600 text-base"></i>
           <h3 class="text-sm sm:text-base font-bold text-slate-900 font-serif" id="teacher-modal-title">Teacher Portal</h3>
         </div>
         <button onclick="closeTeacherAuthModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-sm"></i></button>
@@ -707,15 +704,15 @@
         <p class="text-[11px] text-slate-600">Log in to view student submissions, manage links, review answers, and manage your account.</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Teacher Username / ID</label>
-          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
+          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Password</label>
-          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <button onclick="handleTeacherLogin()" id="btn-login" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Login to Account</button>
         <div class="text-center pt-1.5">
-          <button onclick="toggleTeacherView('register')" class="text-[11px] text-brand-700 underline font-semibold">New Teacher? Register Here</button>
+          <button onclick="toggleTeacherView('register')" class="text-[11px] text-amber-700 underline font-semibold">New Teacher? Register Here</button>
         </div>
       </div>
 
@@ -724,42 +721,42 @@
         <p class="text-[11px] text-slate-600">Create your teacher profile to generate automated student links and monitor practice records.</p>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Full Name</label>
-          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Teacher ID / Username</label>
-          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
+          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Base Class Code (Optional)</label>
-          <input type="text" id="reg-classcode" placeholder="e.g., REYES" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs font-mono font-bold text-brand-700 uppercase outline-none shadow-sm">
+          <input type="text" id="reg-classcode" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-700 uppercase outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Assigned Section(s)</label>
-          <input type="text" id="reg-sections" placeholder="e.g., 9-Einstein, 9-Newton" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="text" id="reg-sections" placeholder="e.g., 9-Einstein, 9-Newton" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Password</label>
-          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <button onclick="handleTeacherRegister()" id="btn-register" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Create Account</button>
         <div class="text-center pt-1.5">
-          <button onclick="toggleTeacherView('login')" class="text-[11px] text-brand-700 underline font-semibold">Already have an account? Log in</button>
+          <button onclick="toggleTeacherView('login')" class="text-[11px] text-amber-700 underline font-semibold">Already have an account? Log in</button>
         </div>
       </div>
 
       <!-- VIEW: DASHBOARD -->
       <div id="teacher-view-dashboard" class="hidden space-y-3">
-        <div class="bg-brand-50/90 p-2.5 rounded-2xl border border-brand-300 space-y-0.5 shadow-sm">
+        <div class="bg-amber-50/90 p-2.5 rounded-2xl border border-amber-300 space-y-0.5 shadow-sm">
           <div class="text-[11px] text-slate-600">Teacher: <strong id="dash-teacher-name" class="text-slate-900 font-bold"></strong></div>
-          <div class="text-[11px] text-slate-600">Class Code: <strong id="dash-teacher-code" class="text-brand-800 font-mono font-bold"></strong></div>
+          <div class="text-[11px] text-slate-600">Class Code: <strong id="dash-teacher-code" class="text-amber-800 font-mono font-bold"></strong></div>
           <div class="text-[10px] text-slate-500">Sections: <span id="dash-teacher-sections" class="text-slate-700 font-medium">None</span></div>
         </div>
 
         <div class="space-y-1.5">
           <label class="block text-[10px] font-bold text-slate-600 uppercase">Generate Student Practice Link</label>
           <div class="flex items-center gap-1.5">
-            <input type="text" id="gen-section-subcode" placeholder="Section (e.g. 9A)" class="w-1/2 bg-white border border-brand-300 rounded-xl p-1.5 text-xs text-slate-900 uppercase outline-none shadow-sm">
+            <input type="text" id="gen-section-subcode" placeholder="Section (e.g. 9A)" class="w-1/2 bg-white border border-amber-300 rounded-xl p-1.5 text-xs text-slate-900 uppercase outline-none shadow-sm">
             <button onclick="generateCustomStudentLink()" class="w-1/2 py-1.5 rounded-xl font-bold gold-btn text-xs">Update Link</button>
           </div>
         </div>
@@ -773,14 +770,14 @@
         </div>
 
         <div class="pt-1 flex gap-2">
-          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-brand-100 border border-brand-300 text-brand-900 text-xs shadow-sm">Gradebook</button>
+          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-amber-100 border border-amber-300 text-amber-900 text-xs shadow-sm">Gradebook</button>
           <button onclick="openEditTeacherProfileView()" class="w-1/2 py-2 rounded-xl font-bold light-btn text-xs flex items-center justify-center gap-1 text-slate-700">
-            <i class="fa-solid fa-pen-to-square text-[10px] text-brand-600"></i>
+            <i class="fa-solid fa-pen-to-square text-[10px] text-amber-600"></i>
             <span>Edit Profile</span>
           </button>
         </div>
 
-        <div class="border-t border-brand-200/80 pt-2 flex items-center justify-between">
+        <div class="border-t border-amber-200/80 pt-2 flex items-center justify-between">
           <button onclick="handleTeacherLogout()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold underline">Log Out</button>
           <button onclick="handleDeleteTeacherAccount()" class="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1">
             <i class="fa-solid fa-trash-can text-[10px]"></i>
@@ -792,26 +789,26 @@
       <!-- VIEW: EDIT TEACHER PROFILE -->
       <div id="teacher-view-edit" class="hidden space-y-2.5">
         <div class="flex items-center justify-between">
-          <span class="text-[11px] font-bold text-brand-700 uppercase tracking-wide">Edit Account Information</span>
+          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Edit Account Information</span>
           <button onclick="toggleTeacherView('dashboard')" class="text-[11px] text-slate-500 underline font-semibold">Cancel</button>
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Full Name</label>
-          <input type="text" id="edit-fullname" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="text" id="edit-fullname" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Class Code</label>
-          <input type="text" id="edit-classcode" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs font-mono font-bold text-brand-800 uppercase outline-none shadow-sm">
+          <input type="text" id="edit-classcode" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-800 uppercase outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Assigned Section(s)</label>
-          <input type="text" id="edit-sections" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="text" id="edit-sections" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
         <div>
           <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">New Password (Leave blank to keep)</label>
-          <input type="password" id="edit-newpassword" placeholder="••••••••" class="w-full bg-white border border-brand-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+          <input type="password" id="edit-newpassword" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
-        <div class="pt-1 border-t border-brand-200">
+        <div class="pt-1 border-t border-amber-200">
           <label class="block text-[10px] font-bold text-red-600 uppercase mb-1">Verify Current Password <span class="text-red-600">*</span></label>
           <input type="password" id="edit-curpassword" placeholder="Current password required" class="w-full bg-white border border-red-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
         </div>
@@ -823,21 +820,21 @@
 
   <!-- MODAL: DETAILED STUDENT QUESTION REVIEW -->
   <div id="modal-review-session" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
-    <div class="light-glass max-w-lg w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-brand-300 max-h-[90dvh] flex flex-col bg-white">
-      <div class="flex items-center justify-between border-b border-brand-200 pb-2.5">
+    <div class="light-glass max-w-lg w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-amber-300 max-h-[90dvh] flex flex-col bg-white">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
         <div>
-          <span class="text-[10px] font-bold text-brand-700 uppercase tracking-wider font-mono">Submission Audit</span>
+          <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider font-mono">Submission Audit</span>
           <h3 class="text-sm sm:text-base font-bold text-slate-900 font-serif" id="review-student-title">Review Student Work</h3>
         </div>
         <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
       </div>
 
-      <div class="bg-brand-50/90 p-2.5 rounded-2xl border border-brand-200 text-xs flex justify-between items-center shadow-sm">
+      <div class="bg-amber-50/90 p-2.5 rounded-2xl border border-amber-200 text-xs flex justify-between items-center shadow-sm">
         <div>
           <span class="text-slate-500 font-medium">Domain:</span> <strong id="review-domain-text" class="text-slate-800"></strong>
         </div>
         <div>
-          <span class="text-slate-500 font-medium">Score:</span> <strong id="review-score-text" class="text-brand-800 font-mono"></strong>
+          <span class="text-slate-500 font-medium">Score:</span> <strong id="review-score-text" class="text-amber-800 font-mono"></strong>
         </div>
       </div>
 
@@ -845,7 +842,7 @@
         <!-- Populated dynamically -->
       </div>
 
-      <div class="pt-2 border-t border-brand-200 flex justify-end">
+      <div class="pt-2 border-t border-amber-200 flex justify-end">
         <button onclick="closeReviewModal()" class="px-4 py-2 rounded-xl font-bold light-btn text-xs">Close Review</button>
       </div>
     </div>
@@ -854,18 +851,18 @@
   <!-- MODAL: CERTIFICATE -->
   <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
     <div class="max-w-lg w-full space-y-3">
-      <div id="certificate-print-area" class="light-glass p-6 sm:p-8 rounded-3xl border-2 border-brand-500 text-center space-y-4 shadow-2xl relative overflow-hidden bg-white">
-        <div class="text-[10px] font-bold uppercase tracking-widest text-brand-700 font-serif">PROJECT PRIME • Achievement Record</div>
+      <div id="certificate-print-area" class="light-glass p-6 sm:p-8 rounded-3xl border-2 border-amber-500 text-center space-y-4 shadow-2xl relative overflow-hidden bg-white">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-amber-700 font-serif">PROJECT PRIME • Achievement Record</div>
         <h2 class="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-wide font-serif">Certificate of Mastery</h2>
         <p class="text-xs text-slate-600 font-medium">This hereby certifies that</p>
-        <div id="cert-student-name" class="text-xl sm:text-2xl font-extrabold text-brand-800 border-b-2 border-brand-400 pb-1 inline-block px-4 font-serif">Juan Dela Cruz</div>
+        <div id="cert-student-name" class="text-xl sm:text-2xl font-extrabold text-amber-800 border-b-2 border-amber-400 pb-1 inline-block px-4 font-serif">Juan Dela Cruz</div>
         <div id="cert-student-section" class="text-xs font-semibold text-slate-600">Grade 8 - Section</div>
         <p class="text-xs text-slate-600 max-w-sm mx-auto">
-          has successfully completed practice in <strong id="cert-category" class="text-slate-900">Rational Fractions</strong> (<span id="cert-details" class="text-brand-800">Standard</span>).
+          has successfully completed practice in <strong id="cert-category" class="text-slate-900">Rational Fractions</strong> (<span id="cert-details" class="text-amber-800">Standard</span>).
         </p>
-        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto bg-brand-50/90 p-2.5 rounded-2xl border border-brand-300 shadow-sm">
+        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto bg-amber-50/90 p-2.5 rounded-2xl border border-amber-300 shadow-sm">
           <div>
-            <div id="cert-score" class="text-lg font-black text-brand-800 font-mono">10/10</div>
+            <div id="cert-score" class="text-lg font-black text-amber-800 font-mono">10/10</div>
             <div class="text-[9px] uppercase text-slate-500 font-bold">Score</div>
           </div>
           <div>
@@ -873,12 +870,12 @@
             <div class="text-[9px] uppercase text-slate-500 font-bold">Accuracy</div>
           </div>
           <div>
-            <div id="cert-rating" class="text-[11px] font-bold text-brand-900 mt-1 font-serif">Mastery</div>
+            <div id="cert-rating" class="text-[11px] font-bold text-amber-900 mt-1 font-serif">Mastery</div>
             <div class="text-[9px] uppercase text-slate-500 font-bold">Rating</div>
           </div>
         </div>
-        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-3 border-t border-brand-200">
-          <span>Teacher Code: <strong id="cert-code" class="text-brand-800 font-mono font-bold">GENERAL</strong></span>
+        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-3 border-t border-amber-200">
+          <span>Teacher Code: <strong id="cert-code" class="text-amber-800 font-mono font-bold">GENERAL</strong></span>
           <span id="cert-date">Date</span>
         </div>
       </div>
@@ -900,6 +897,19 @@
       SAVED_STUDENT_NAME: 'PRIME_SAVED_STUDENT_NAME',
       SAVED_STUDENT_SEC: 'PRIME_SAVED_STUDENT_SEC'
     };
+    
+    const safeStorage = {
+      data: {},
+      setItem: function(k, v) {
+        try { window.localStorage.setItem(k, v); } catch (e) { this.data[k] = v; }
+      },
+      getItem: function(k) {
+        try { return window.localStorage.getItem(k) || this.data[k]; } catch (e) { return this.data[k] || null; }
+      },
+      removeItem: function(k) {
+        try { window.localStorage.removeItem(k); } catch (e) { delete this.data[k]; }
+      }
+    };
 
     const SUPERSCRIPT_MAP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'⁺' };
     const NORMAL_MAP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+' };
@@ -908,9 +918,8 @@
 
     function parseFractionToValue(rawStr) {
       if (!rawStr) return NaN;
+      if (/[a-zA-Z]/.test(rawStr)) return NaN; // Prevent variables from parsing as mixed fractions
       let s = String(rawStr).trim().replace(/−/g, '-').replace(/\s+/g, ' ');
-      // Prevents algebraic/exponent parsing from failing fraction logic
-      if (/[a-zA-Z]/.test(s)) return NaN;
       let mixedMatch = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
       if (mixedMatch) {
         let whole = parseInt(mixedMatch[1], 10);
@@ -931,43 +940,36 @@
     }
 
     function normalizeMathInput(str) {
-      let s = String(str || '').trim().replace(/\s+/g, '').replace(/−/g, '-').replace(/·/g, '*').replace(/×/g, '*');
-      s = s.replace(/\\sqrt\[3\]/g, '³√').replace(/\\sqrt\[4\]/g, '⁴√').replace(/\\sqrt/g, '√');
-      s = s.replace(/cbrt/g, '³√').replace(/sqrt/g, '√');
-      s = s.replace(/\*√/g, '√').replace(/\*³√/g, '³√').replace(/\*⁴√/g, '⁴√');
-      s = s.replace(/√\((\d+)\)/g, '√$1').replace(/³√\((\d+)\)/g, '³√$1').replace(/⁴√\((\d+)\)/g, '⁴√$1');
-
-      let out = '';
+      let s = String(str || '').trim().replace(/\s+/g, ' ').replace(/−/g, '-').replace(/\*/g, '');
+      s = s.replace(/\^\(([^)]+)\)/g, '^$1'); 
+      let out = ''; let inSup = false;
       for (const ch of s) {
         if (NORMAL_MAP[ch] !== undefined) {
-          out += '^' + NORMAL_MAP[ch];
-        } else {
-          out += ch;
-        }
+          if (!inSup) { out += '^'; inSup = true; }
+          out += NORMAL_MAP[ch];
+        } else { inSup = false; out += ch; }
       }
-      out = out.replace(/\^+/g, '^');
-      out = out.replace(/\(([a-zA-Z0-9]+)\)\^/g, '$1^');
-      return out.toLowerCase();
+      return out.toLowerCase().replace(/(^|[^0-9])1(√|³√|⁴√)/g, '$1$2').replace(/[\$%]/g, '').trim();
     }
 
     const DOMAINS = [
-      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true, mathFormula: 'a + b · c ∈ ℕ' },
-      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true, mathFormula: 'ℤ = {..., -2, -1, 0, 1, 2}' },
-      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true, mathFormula: 'G → E → MD → AS' },
-      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Adjust numerator & denominator digits, denominator range (1–100), and types.', hasOperations: true, hasTerms: true, hasFractionsControl: true, mathFormula: 'ℚ = { a/b | a, b ∈ ℤ, b ≠ 0 }' },
-      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true, mathFormula: 'x = ∑ d_k · 10^{-k}' },
-      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Product, quotient, power of power, power of product/quotient, negative & zero exponent rules.', hasExponentsControl: true, hasOperations: false, hasTerms: false, mathFormula: 'aᵐ · aⁿ = aᵐ⁺ⁿ' },
-      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Simplifying square, cube, & 4th roots, arithmetic (+, −, ×, ÷), with multi-term options.', hasRadicalsControl: true, hasOperations: true, hasTerms: true, mathFormula: 'ⁿ√x = x^{1/n}' },
-      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false, mathFormula: 'ax + b = c ⇒ x = (c-b)/a' }
+      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
+      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
+      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Adjust numerator & denominator digits, denominator range (1–100), and types.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Product, Quotient, Power of a Power, and Negative/Zero exponent rules.', hasExponentsControl: true },
+      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Simplify and compute arithmetic expressions with square, cube, and 4th roots.', hasRadicalsControl: true, hasOperations: true, hasTerms: true },
+      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false },
+      { id: 'percentages', title: 'Percentages', badge: 'Domain 9', icon: 'fa-percent', desc: 'Conversions, percent of a number, percent change, and multi-step real-world applications.', hasPercentageMode: true }
     ];
 
     const STUDY_GUIDES = [
-      { title: '1. Whole Numbers & Regrouping', rules: ['Addition: Carry tens to the left column.', 'Subtraction: Borrow 1 unit (worth 10) from the next place value.', 'Multi-term Order: In equations with 3+ terms, perform operations from left to right unless multiplication/division takes precedence.'] },
-      { title: '2. Signed Integers', rules: ['Same signs: Add absolute values and keep the common sign.', 'Different signs: Subtract smaller from larger, take larger absolute value sign.', 'Subtraction: Keep-Change-Change (add the opposite).', 'Multiple signs: Evaluate left-to-right combining consecutive integer operations.'] },
-      { title: '3. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Combine numerators over the common denominator.', 'Dissimilar: Find Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), compute, then simplify.', 'Digit & Denominator Controls: Tailor numerator/denominator digits and custom ranges up to 100.'] },
-      { title: '4. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first.', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right.', 'A / S: Perform Addition and Subtraction from left to right.'] },
-      { title: '5. Laws of Exponents & Powers', rules: ['Product Rule: When multiplying like bases, add exponents: xᵃ · xᵇ = xᵃ⁺ᵇ.', 'Quotient Rule: When dividing like bases, subtract exponents: xᵃ / xᵇ = xᵃ⁻ᵇ.', 'Power of a Power Rule: Multiply exponents: (xᵃ)ᵇ = xᵃᵇ.', 'Power of a Product: Apply exponent to every factor: (xy)ᵃ = xᵃyᵃ.', 'Power of a Quotient: Apply exponent to numerator and denominator: (x/y)ᵃ = xᵃ/yᵃ.', 'Negative Exponent Rule: Invert to reciprocal: x⁻ⁿ = 1/xⁿ.', 'Zero Exponent Rule: Any non-zero base raised to power 0 equals 1: x⁰ = 1.'] },
-      { title: '6. Roots & Radicals', rules: ['Simplifying: Factor out the largest perfect square (or cube/4th power): √(a²b) = a√b.', 'Like Radicals: You can only add or subtract terms with the same index and radicand: a√x + b√x = (a+b)√x.', 'Multiplication: Multiply coefficients and radicands: (a√x)(b√y) = ab√(xy).', 'Division: Divide coefficients and radicands: (a√x)/(b√y) = (a/b)√(x/y).', 'Cube and 4th roots: Apply the index n: ³√(x³) = x, ⁴√(x⁴) = x.'] }
+      { title: '1. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first.', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right.', 'A / S: Perform Addition and Subtraction from left to right.'] },
+      { title: '2. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Combine numerators over the common denominator.', 'Dissimilar: Find Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), compute, then simplify.'] },
+      { title: '3. Laws of Exponents', rules: ['Product: x^a · x^b = x^(a+b)', 'Quotient: x^a / x^b = x^(a-b)', 'Power of Power: (x^a)^b = x^(a·b)', 'Negative Exponent: x^(-a) = 1 / x^a', 'Zero Exponent: x^0 = 1'] },
+      { title: '4. Roots and Radicals', rules: ['Product: √a · √b = √(ab)', 'Quotient: √a / √b = √(a/b)', 'Addition: Only like radicals can be added (e.g. 2√3 + 4√3 = 6√3)'] },
+      { title: '5. Percentages & Applications', rules: ['Conversions: Decimal to percent, multiply by 100. Percent to decimal, divide by 100.', 'Percent of a Number: Multiply the decimal form of the percent by the number.', 'Percent Change: (New - Old) / Old × 100.', 'Successive Change Misconception: A 20% increase followed by a 20% decrease does NOT result in the original amount.'] }
     ];
 
     const appState = {
@@ -988,8 +990,9 @@
         fracDenMin: 2,
         fracDenMax: 12,
         exponentLaw: 'mixed',
-        radicalMode: 'simplify',
-        radicalRoot: 'all'
+        radicalType: 'mixed',
+        radicalMode: 'simp',
+        percentageMode: 'conversion'
       },
       quiz: { questions: [], currentIndex: 0, score: 0, chances: 3, answeredCurrent: false },
       scores: [],
@@ -1109,24 +1112,24 @@
 
     function loadSavedState() {
       try {
-        const savedTeacher = localStorage.getItem(STORAGE_KEYS.TEACHER_PROFILE);
+        const savedTeacher = safeStorage.getItem(STORAGE_KEYS.TEACHER_PROFILE);
         if (savedTeacher) {
           appState.currentTeacher = JSON.parse(savedTeacher);
           updateTeacherNavUI();
         }
 
-        const savedCode = localStorage.getItem(STORAGE_KEYS.ACTIVE_CODE);
+        const savedCode = safeStorage.getItem(STORAGE_KEYS.ACTIVE_CODE);
         if (savedCode) {
           setActiveTeacherCode(savedCode);
         }
 
-        const savedName = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+        const savedName = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
         if (savedName) document.getElementById('student-name-input').value = savedName;
 
-        const savedSec = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_SEC);
+        const savedSec = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_SEC);
         if (savedSec) document.getElementById('student-section-input').value = savedSec;
       } catch (e) {
-        console.warn('LocalStorage unavailable:', e);
+        console.warn('safeStorage warning:', e);
       }
     }
 
@@ -1165,43 +1168,55 @@
       const btnTeachers = document.getElementById('tab-btn-teachers-guide');
       const btnMath = document.getElementById('tab-btn-math-guide');
 
-      if (btnTeachers) btnTeachers.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isTeacher ? 'gold-btn' : 'light-btn'}`;
-      if (btnMath) btnMath.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${!isTeacher ? 'gold-btn' : 'light-btn'}`;
+      btnTeachers.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isTeacher ? 'gold-btn' : 'light-btn'}`;
+      btnMath.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${!isTeacher ? 'gold-btn' : 'light-btn'}`;
     }
 
     function updateScoresViewSecurity() {
-      const lockedState = document.getElementById('scores-locked-state');
-      const unlockedState = document.getElementById('scores-unlocked-state');
+      document.getElementById('scores-locked-state').classList.add('hidden');
+      document.getElementById('scores-unlocked-state').classList.remove('hidden');
 
       if (!appState.currentTeacher) {
-        lockedState.classList.remove('hidden');
-        unlockedState.classList.add('hidden');
-        appState.scores = [];
+        document.getElementById('registry-title-label').textContent = 'Local Device History';
+        document.getElementById('filter-code-tag').textContent = 'LOCAL (NOT SYNCED)';
+        pullLocalScores();
       } else {
-        lockedState.classList.add('hidden');
-        unlockedState.classList.remove('hidden');
-        const tag = document.getElementById('filter-code-tag');
-        if (tag) tag.textContent = appState.currentTeacher.classCode;
+        document.getElementById('registry-title-label').textContent = 'Teacher Gradebook';
+        document.getElementById('filter-code-tag').textContent = appState.currentTeacher.classCode;
         pullScoresFromCloud();
       }
+    }
+    
+    function pullLocalScores() {
+      const local = safeStorage.getItem('PRIME_LOCAL_SCORES');
+      if (local) {
+        try {
+          appState.scores = JSON.parse(local);
+        } catch (e) {
+          appState.scores = [];
+        }
+      } else {
+        appState.scores = [];
+      }
+      renderScoresTable();
     }
 
     function renderCategoriesGrid() {
       const grid = document.getElementById('categories-grid');
       if (!grid) return;
       grid.innerHTML = DOMAINS.map(d => `
-        <div onclick="openDomainConfig('${d.id}')" class="light-glass p-4 rounded-2xl cursor-pointer hover:border-brand-400 transition group flex flex-col justify-between space-y-2">
+        <div onclick="openDomainConfig('${d.id}')" class="light-glass p-4 rounded-2xl cursor-pointer hover:border-amber-400 transition group flex flex-col justify-between space-y-2">
           <div class="space-y-1.5">
             <div class="flex items-center justify-between">
-              <span class="text-[9px] font-bold uppercase tracking-wider text-brand-700 font-mono">${d.badge}</span>
-              <div class="w-7 h-7 rounded-lg bg-brand-100 border border-brand-300 flex items-center justify-center text-brand-700 group-hover:bg-brand-600 group-hover:text-white transition shadow-sm">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 font-mono">${d.badge}</span>
+              <div class="w-7 h-7 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition shadow-sm">
                 <i class="fa-solid ${d.icon} text-xs"></i>
               </div>
             </div>
-            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-brand-700 transition font-serif">${d.title}</h3>
+            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-amber-700 transition font-serif">${d.title}</h3>
             <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${d.desc}</p>
           </div>
-          <div class="pt-1.5 border-t border-brand-100 flex items-center justify-between text-[11px] font-bold text-brand-700">
+          <div class="pt-1.5 border-t border-amber-100 flex items-center justify-between text-[11px] font-bold text-amber-700">
             <span>Start Practice</span>
             <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
           </div>
@@ -1215,15 +1230,21 @@
       document.getElementById('config-domain-badge').textContent = domain.badge;
       document.getElementById('config-domain-title').textContent = domain.title;
 
-      document.getElementById('config-terms-box').classList.toggle('hidden', !domain.hasTerms);
-      document.getElementById('config-fractions-box').classList.toggle('hidden', !domain.hasFractionsControl);
-      document.getElementById('config-exponents-box').classList.toggle('hidden', !domain.hasExponentsControl);
-      document.getElementById('config-radicals-box').classList.toggle('hidden', !domain.hasRadicalsControl);
-      document.getElementById('config-numberfield-box').classList.toggle('hidden', !domain.hasNumberField);
-      document.getElementById('config-digits-box').classList.toggle('hidden', !domain.hasDigits);
-      document.getElementById('config-regrouping-box').classList.toggle('hidden', !domain.hasRegrouping);
-      document.getElementById('config-integers-box').classList.toggle('hidden', !domain.hasIntegersMode);
-      document.getElementById('config-operations-box').classList.toggle('hidden', !domain.hasOperations);
+      const toggleVis = (id, cond) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !cond);
+      };
+
+      toggleVis('config-terms-box', domain.hasTerms);
+      toggleVis('config-fractions-box', domain.hasFractionsControl);
+      toggleVis('config-exponents-box', domain.hasExponentsControl);
+      toggleVis('config-radicals-box', domain.hasRadicalsControl);
+      toggleVis('config-percentages-box', domain.hasPercentageMode);
+      toggleVis('config-numberfield-box', domain.hasNumberField);
+      toggleVis('config-digits-box', domain.hasDigits);
+      toggleVis('config-regrouping-box', domain.hasRegrouping);
+      toggleVis('config-integers-box', domain.hasIntegersMode);
+      toggleVis('config-operations-box', domain.hasOperations);
       
       setConfigTerms(appState.config.terms || (domain.id === 'gemdas' ? 3 : 2));
       if (domain.hasFractionsControl) {
@@ -1234,48 +1255,18 @@
         syncFracDenMin(appState.config.fracDenMin || 2);
         syncFracDenMax(appState.config.fracDenMax || 12);
       }
+      if (domain.hasRadicalsControl) {
+        setConfigRadicalType(appState.config.radicalType || 'mixed');
+        setConfigRadicalMode(appState.config.radicalMode || 'simp');
+      }
       if (domain.hasExponentsControl) {
         setConfigExponentLaw(appState.config.exponentLaw || 'mixed');
       }
-      if (domain.hasRadicalsControl) {
-        setConfigRadicalMode(appState.config.radicalMode || 'simplify');
-        setConfigRadicalRoot(appState.config.radicalRoot || 'all');
+      if (domain.hasPercentageMode) {
+        setConfigPercentageMode(appState.config.percentageMode || 'conversion');
       }
+
       switchTab('config');
-    }
-
-    function setConfigRadicalMode(mode) {
-      appState.config.radicalMode = mode;
-      const isSimplify = mode === 'simplify';
-      const btnSimp = document.getElementById('btn-radmode-simplify');
-      const btnArith = document.getElementById('btn-radmode-arithmetic');
-      if (btnSimp) btnSimp.className = `py-2 px-2 rounded-xl font-bold border transition text-center ${isSimplify ? 'gold-btn' : 'light-btn'}`;
-      if (btnArith) btnArith.className = `py-2 px-2 rounded-xl font-bold border transition text-center ${!isSimplify ? 'gold-btn' : 'light-btn'}`;
-      
-      const termsBox = document.getElementById('config-terms-box');
-      const opsBox = document.getElementById('config-operations-box');
-      if (termsBox) termsBox.classList.toggle('hidden', isSimplify);
-      if (opsBox) opsBox.classList.toggle('hidden', isSimplify);
-    }
-
-    function setConfigRadicalRoot(root) {
-      appState.config.radicalRoot = root;
-      ['all', 'square', 'cube', 'fourth'].forEach(r => {
-        const btn = document.getElementById('btn-radroot-' + r);
-        if (btn) {
-          btn.className = `py-1.5 px-2 rounded-xl font-bold border transition text-center ${r === root ? 'gold-btn' : 'light-btn'}`;
-        }
-      });
-    }
-
-    function setConfigExponentLaw(law) {
-      appState.config.exponentLaw = law;
-      ['mixed', 'product', 'quotient', 'power', 'product-power', 'quotient-power', 'negative', 'zero'].forEach(r => {
-        const btn = document.getElementById('btn-exp-' + r);
-        if (btn) {
-          btn.className = `p-2 rounded-xl font-bold border transition text-left flex items-center justify-between ${r === law ? 'gold-btn' : 'light-btn'}`;
-        }
-      });
     }
 
     function setConfigTerms(num) {
@@ -1283,7 +1274,47 @@
       [2, 3, 4, 5].forEach(t => {
         const btn = document.getElementById('btn-terms-' + t);
         if (btn) {
-          btn.className = `py-2 rounded-xl text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'light-btn'}`;
+          btn.className = `py-2 rounded-lg text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'light-btn'}`;
+        }
+      });
+    }
+    
+    function setConfigExponentLaw(law) {
+      appState.config.exponentLaw = law;
+      const laws = ['product', 'quotient', 'power_power', 'power_product', 'power_quotient', 'negative', 'zero', 'mixed'];
+      laws.forEach(l => {
+        const btn = document.getElementById('btn-exp-' + l);
+        if (btn) btn.className = `py-1.5 px-2 rounded-lg text-[10px] font-bold border transition text-center ${l === law ? 'gold-btn' : 'light-btn'}`;
+      });
+    }
+
+    function setConfigRadicalType(type) {
+      appState.config.radicalType = type;
+      ['sqrt', 'cbrt', '4th', 'mixed'].forEach(t => {
+        const btn = document.getElementById('btn-radtype-' + t);
+        if (btn) btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${t === type ? 'gold-btn' : 'light-btn'}`;
+      });
+    }
+
+    function setConfigRadicalMode(mode) {
+      appState.config.radicalMode = mode;
+      const btnSimp = document.getElementById('btn-radmode-simp');
+      const btnArith = document.getElementById('btn-radmode-arith');
+      if (btnSimp) btnSimp.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${mode === 'simp' ? 'gold-btn' : 'light-btn'}`;
+      if (btnArith) btnArith.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${mode === 'arith' ? 'gold-btn' : 'light-btn'}`;
+
+      const opsBox = document.getElementById('config-operations-box');
+      const termsBox = document.getElementById('config-terms-box');
+      if (opsBox) opsBox.classList.toggle('hidden', mode === 'simp');
+      if (termsBox) termsBox.classList.toggle('hidden', mode === 'simp');
+    }
+
+    function setConfigPercentageMode(mode) {
+      appState.config.percentageMode = mode;
+      ['conversion', 'basic', 'change', 'applied'].forEach(m => {
+        const btn = document.getElementById('btn-pct-' + m);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-[11px] font-bold border transition text-center ${m === mode ? 'gold-btn' : 'light-btn'}`;
         }
       });
     }
@@ -1887,294 +1918,296 @@
         return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal.' };
       }
 
-      // 6. EXPONENTS & POWERS
+      // 6. EXPONENTS
       if (domainId === 'exponents') {
-        const law = cfg.exponentLaw || 'mixed';
-        const laws = ['product', 'quotient', 'power', 'product-power', 'quotient-power', 'negative', 'zero'];
-        const selectedLaw = law === 'mixed' ? laws[randInt(0, laws.length - 1)] : law;
+        const mode = cfg.exponentLaw || 'mixed';
+        const types = ['product', 'quotient', 'power_power', 'power_product', 'power_quotient', 'negative', 'zero'];
+        const type = mode === 'mixed' ? types[randInt(0, 6)] : mode;
 
         let base = ['x', 'y', 'a', 'b', 'm', 'n'][randInt(0, 5)];
-        let m = randInt(2, 6);
-        let n = randInt(2, 6);
-        
-        if (selectedLaw === 'product') {
-          return {
-            display: `${base}^${m} · ${base}^${n} = ?`,
-            answer: `${base}^${m + n}`,
-            altAnswer: `${base}${toSuperscript(m + n)}`,
-            isFraction: false,
-            hint: `Product Rule: Add exponents. ${m} + ${n} = ${m + n}.`,
-            submode: 'Product Rule',
-            tip: `Type ${base}^${m+n} or ${base}${toSuperscript(m+n)}`
-          };
-        } else if (selectedLaw === 'quotient') {
-          if (m < n) [m, n] = [n, m]; 
-          if (m === n) m++;
-          return {
-            display: `${base}^${m} / ${base}^${n} = ?`,
-            answer: `${base}^${m - n}`,
-            altAnswer: `${base}${toSuperscript(m - n)}`,
-            isFraction: false,
-            hint: `Quotient Rule: Subtract exponents. ${m} - ${n} = ${m - n}.`,
-            submode: 'Quotient Rule',
-            tip: `Type ${base}^${m-n}`
-          };
-        } else if (selectedLaw === 'power') {
-          return {
-            display: `(${base}^${m})^${n} = ?`,
-            answer: `${base}^${m * n}`,
-            altAnswer: `${base}${toSuperscript(m * n)}`,
-            isFraction: false,
-            hint: `Power of a Power: Multiply exponents. ${m} × ${n} = ${m * n}.`,
-            submode: 'Power of a Power',
-            tip: `Type ${base}^${m*n}`
-          };
-        } else if (selectedLaw === 'product-power') {
-          let base2 = base === 'x' ? 'y' : (base === 'a' ? 'b' : 'x');
-          return {
-            display: `(${base}${base2})^${m} = ?`,
-            answer: `${base}^${m}${base2}^${m}`,
-            altAnswer: `${base}${toSuperscript(m)}${base2}${toSuperscript(m)}`,
-            isFraction: false,
-            hint: `Power of a Product: Apply exponent to both factors.`,
-            submode: 'Power of a Product',
-            tip: `Type ${base}^${m}${base2}^${m}`
-          };
-        } else if (selectedLaw === 'quotient-power') {
-          let base2 = base === 'x' ? 'y' : (base === 'a' ? 'b' : 'y');
-          return {
-            display: `(${base}/${base2})^${m} = ?`,
-            answer: `${base}^${m}/${base2}^${m}`,
-            altAnswer: `${base}${toSuperscript(m)}/${base2}${toSuperscript(m)}`,
-            isFraction: false,
-            hint: `Power of a Quotient: Apply exponent to numerator and denominator.`,
-            submode: 'Power of a Quotient',
-            tip: `Type ${base}^${m}/${base2}^${m}`
-          };
-        } else if (selectedLaw === 'negative') {
-          return {
-            display: `${base}^-${m} = ?`,
-            answer: `1/${base}^${m}`,
-            altAnswer: `1/${base}${toSuperscript(m)}`,
-            isFraction: false,
-            hint: `Negative Exponent: Move base to denominator to make exponent positive.`,
-            submode: 'Negative Exponent',
-            tip: `Type 1/${base}^${m}`
-          };
-        } else if (selectedLaw === 'zero') {
-          let num = randInt(2, 99);
-          const bases = [`${base}`, `(${num}${base})`, `${num}`, `(${base}y)`];
-          let chosen = bases[randInt(0, bases.length - 1)];
-          return {
-            display: `${chosen}^0 = ?`,
-            answer: `1`,
-            altAnswer: `1`,
-            isFraction: false,
-            hint: `Zero Exponent Rule: Any non-zero expression raised to power 0 is 1.`,
-            submode: 'Zero Exponent',
-            tip: `Type 1`
-          };
+        let display = '', answer = '', hint = '', tip = 'Type in simplified exponent form (e.g. x^5).', submode = '';
+
+        if (type === 'product') {
+          let e1 = randInt(2, 9), e2 = randInt(2, 9);
+          display = `${base}^${e1} · ${base}^${e2} = ?`;
+          answer = `${base}^${e1 + e2}`;
+          hint = `Add the exponents: ${e1} + ${e2} = ${e1 + e2}`;
+          submode = 'Product Rule';
+        } else if (type === 'quotient') {
+          let e1 = randInt(5, 12), e2 = randInt(2, e1 - 1);
+          display = `(${base}^${e1}) / (${base}^${e2}) = ?`;
+          answer = `${base}^${e1 - e2}`;
+          hint = `Subtract the exponents: ${e1} - ${e2} = ${e1 - e2}`;
+          submode = 'Quotient Rule';
+        } else if (type === 'power_power') {
+          let e1 = randInt(2, 6), e2 = randInt(2, 5);
+          display = `(${base}^${e1})^${e2} = ?`;
+          answer = `${base}^${e1 * e2}`;
+          hint = `Multiply the exponents: ${e1} × ${e2} = ${e1 * e2}`;
+          submode = 'Power of a Power Rule';
+        } else if (type === 'power_product') {
+          let coef = randInt(2, 5);
+          let e1 = randInt(2, 4);
+          display = `(${coef}${base})^${e1} = ?`;
+          answer = `${Math.pow(coef, e1)}${base}^${e1}`;
+          hint = `Raise both coefficient and variable to power ${e1}: ${coef}^${e1} = ${Math.pow(coef, e1)}`;
+          submode = 'Power of a Product Rule';
+        } else if (type === 'power_quotient') {
+          let base2 = ['p', 'q', 'c', 'd'][randInt(0, 3)];
+          let e1 = randInt(2, 5);
+          display = `(${base}/${base2})^${e1} = ?`;
+          answer = `${base}^${e1}/${base2}^${e1}`;
+          hint = `Raise numerator and denominator to power ${e1}.`;
+          submode = 'Power of a Quotient Rule';
+        } else if (type === 'negative') {
+          let e1 = randInt(2, 8);
+          if (Math.random() > 0.5) {
+            display = `${base}^(-${e1}) = ?`;
+            answer = `1/${base}^${e1}`;
+            hint = `Negative exponent moves base to denominator.`;
+          } else {
+            display = `1 / ${base}^(-${e1}) = ?`;
+            answer = `${base}^${e1}`;
+            hint = `Negative exponent in denominator moves base to numerator.`;
+          }
+          submode = 'Negative Exponent Rule';
+        } else if (type === 'zero') {
+          let coef = randInt(2, 20);
+          display = `(${coef}${base})^0 = ?`;
+          answer = `1`;
+          hint = `Any non-zero expression raised to the 0 power is 1.`;
+          tip = 'Type the numeric value.';
+          submode = 'Zero Exponent Rule';
         }
+        return { display, answer, hint, submode, tip };
       }
 
-      // 7. ROOTS & RADICALS
+      // 7. RADICALS
       if (domainId === 'radicals') {
-        const radMode = cfg.radicalMode || 'simplify';
-        const radRoot = cfg.radicalRoot || 'all';
+        const mode = cfg.radicalMode || 'simp';
+        const type = cfg.radicalType || 'mixed';
+        const rTypes = ['sqrt', 'cbrt', '4th'];
+        const rType = type === 'mixed' ? rTypes[randInt(0, 2)] : type;
+        
+        let sym = rType === 'sqrt' ? '√' : (rType === 'cbrt' ? '³√' : '⁴√');
+        let index = rType === 'sqrt' ? 2 : (rType === 'cbrt' ? 3 : 4);
+        
+        if (mode === 'simp') {
+          let out = randInt(2, 8);
+          let inn = [2, 3, 5, 6, 7][randInt(0, 4)];
+          let val = Math.pow(out, index) * inn;
+          let display = `${sym}${val} = ?`;
+          let answer = `${out}${sym}${inn}`;
+          let hint = `${val} = ${Math.pow(out, index)} × ${inn}. The ${index} root of ${Math.pow(out, index)} is ${out}.`;
+          return { display, answer, hint, submode: `Simplify ${sym}`, tip: `Type outside number, then ${sym} symbol, then inside number.` };
+        } else {
+          // arithmetic
+          const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
+          const activeOps = allowedOps.length ? allowedOps : ['+'];
+          const op = activeOps[randInt(0, activeOps.length - 1)];
 
-        function chooseIndex() {
-          if (radRoot === 'square') return 2;
-          if (radRoot === 'cube') return 3;
-          if (radRoot === 'fourth') return 4;
-          const pool = [2, 2, 3, 4];
-          return pool[randInt(0, pool.length - 1)];
-        }
-
-        const idx = chooseIndex();
-        const rootSym = idx === 2 ? '√' : (idx === 3 ? '³√' : '⁴√');
-
-        if (radMode === 'simplify') {
-          let a, b, radicand;
-          if (idx === 2) {
-            a = randInt(2, 8);
-            const primes = [2, 3, 5, 6, 7];
-            const isPerfect = Math.random() < 0.25;
-            if (isPerfect) {
-              radicand = a * a;
-              return {
-                display: `√(${radicand}) = ?`,
-                answer: String(a),
-                altAnswer: String(a),
-                isFraction: false,
-                hint: `Principal Square Root: √(${radicand}) = ${a}.`,
-                submode: `Square Root (${rootSym})`,
-                tip: `Type the whole number: ${a}.`
-              };
-            }
-            b = primes[randInt(0, primes.length - 1)];
-            radicand = a * a * b;
-            const ansFormatted = `${a}√${b}`;
-            const ansCarat = `${a}*√${b}`;
-            return {
-              display: `√(${radicand}) = ?`,
-              answer: ansFormatted,
-              altAnswer: ansCarat,
-              isFraction: false,
-              hint: `Simplifying: √(${radicand}) = √(${a * a} · ${b}) = ${a}√${b}.`,
-              submode: `Simplifying Square Roots (${rootSym})`,
-              tip: `Type in simplest form (e.g. ${a}√${b}). Use the √(x) button.`
-            };
-          } else if (idx === 3) {
-            a = randInt(2, 5);
-            const isPerfect = Math.random() < 0.3;
-            if (isPerfect) {
-              radicand = a * a * a;
-              return {
-                display: `³√(${radicand}) = ?`,
-                answer: String(a),
-                altAnswer: String(a),
-                isFraction: false,
-                hint: `Cube Root: ³√(${radicand}) = ${a}.`,
-                submode: `Cube Root (³√)`,
-                tip: `Type evaluated integer: ${a}.`
-              };
-            }
-            b = randInt(2, 5);
-            radicand = (a * a * a) * b;
-            const ansFormatted = `${a}³√${b}`;
-            return {
-              display: `³√(${radicand}) = ?`,
-              answer: ansFormatted,
-              altAnswer: `${a}*³√${b}`,
-              isFraction: false,
-              hint: `Simplifying: ³√(${radicand}) = ³√(${a * a * a} · ${b}) = ${a}³√${b}.`,
-              submode: `Simplifying Cube Roots (³√)`,
-              tip: `Type in simplest form (e.g. ${a}³√${b}). Use ³√(x).`
-            };
-          } else {
-            a = randInt(2, 3);
-            const isPerfect = Math.random() < 0.4;
-            if (isPerfect) {
-              radicand = Math.pow(a, 4);
-              return {
-                display: `⁴√(${radicand}) = ?`,
-                answer: String(a),
-                altAnswer: String(a),
-                isFraction: false,
-                hint: `Fourth Root: ⁴√(${radicand}) = ${a}.`,
-                submode: `Fourth Root (⁴√)`,
-                tip: `Type evaluated integer: ${a}.`
-              };
-            }
-            b = randInt(2, 3);
-            radicand = Math.pow(a, 4) * b;
-            const ansFormatted = `${a}⁴√${b}`;
-            return {
-              display: `⁴√(${radicand}) = ?`,
-              answer: ansFormatted,
-              altAnswer: `${a}*⁴√${b}`,
-              isFraction: false,
-              hint: `Simplifying: ⁴√(${radicand}) = ⁴√(${Math.pow(a, 4)} · ${b}) = ${a}⁴√${b}.`,
-              submode: `Simplifying 4th Roots (⁴√)`,
-              tip: `Type in simplest form (e.g. ${a}⁴√${b}).`
-            };
-          }
-        }
-
-        const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
-        const activeOps = allowedOps.length ? allowedOps : ['+'];
-        const numRadTerms = Math.max(2, Math.min(5, cfg.terms || 2));
-
-        if (numRadTerms === 2 && (activeOps.includes('*') || activeOps.includes('/')) && Math.random() < 0.5) {
-          const isMul = activeOps.includes('*') && (!activeOps.includes('/') || Math.random() < 0.5);
-          if (isMul) {
-            const p = randInt(2, 6);
-            const q = randInt(2, 5);
-            const r = p * q;
-            const display = `${rootSym}${p} · ${rootSym}${q}`;
-            const ans = `${rootSym}${r}`;
-            return {
-              display: `${display} = ?`,
-              answer: ans,
-              altAnswer: `${rootSym}(${r})`,
-              isFraction: false,
-              hint: `Multiplication of radicals: ${rootSym}a · ${rootSym}b = ${rootSym}(a·b) → ${ans}.`,
-              submode: `Multiplication of Radicals`,
-              tip: `Combine under single radical.`
-            };
-          } else {
-            const factor = randInt(2, 6);
-            const den = randInt(2, 4);
-            const num = den * (factor * factor);
-            const display = `${rootSym}${num} / ${rootSym}${den}`;
-            return {
-              display: `${display} = ?`,
-              answer: String(factor),
-              altAnswer: String(factor),
-              isFraction: false,
-              hint: `Division: ${rootSym}(${num}/${den}) = ${rootSym}(${factor * factor}) = ${factor}.`,
-              submode: `Division of Radicals`,
-              tip: `Evaluate to simplest form.`
-            };
-          }
-        }
-
-        const baseRadicand = [2, 3, 5, 6, 7][randInt(0, 4)];
-        let coeffs = [];
-        let operators = [];
-        for (let i = 0; i < numRadTerms; i++) {
-          coeffs.push(randInt(2, 9));
-          if (i > 0) operators.push(activeOps.includes('-') && Math.random() < 0.5 ? '-' : '+');
-        }
-
-        let runningCoeff = coeffs[0];
-        let displayParts = [`${coeffs[0]}${rootSym}${baseRadicand}`];
-
-        for (let i = 1; i < numRadTerms; i++) {
-          const op = operators[i - 1];
-          const c = coeffs[i];
-          if (op === '+') {
-            runningCoeff += c;
-          } else {
-            if (runningCoeff <= c) {
-              runningCoeff += c;
-              operators[i - 1] = '+';
+          if (op === '*' || op === '/') {
+            let out1 = randInt(1, 5), inn1 = [2, 3, 5][randInt(0, 2)];
+            let out2 = randInt(1, 5), inn2 = [2, 3, 5][randInt(0, 2)];
+            if (op === '*') {
+               let outAns = out1 * out2;
+               let innAns = inn1 * inn2;
+               let extraOut = 1;
+               for(let i=2; i<=innAns; i++) {
+                 if (innAns % Math.pow(i, index) === 0) {
+                   extraOut *= i;
+                   innAns /= Math.pow(i, index);
+                   i--;
+                 }
+               }
+               outAns *= extraOut;
+               let ansStr = innAns === 1 ? `${outAns}` : `${outAns}${sym}${innAns}`;
+               if (outAns === 1 && innAns !== 1) ansStr = `${sym}${innAns}`;
+               return {
+                 display: `${out1 > 1 ? out1 : ''}${sym}${inn1} × ${out2 > 1 ? out2 : ''}${sym}${inn2} = ?`,
+                 answer: ansStr,
+                 hint: `Multiply outsides and insides, then simplify.`,
+                 submode: `Radical Multiplication`,
+                 tip: `Format as a${sym}b or whole number.`
+               };
             } else {
-              runningCoeff -= c;
+               let ansOut = randInt(1, 4), ansInn = [2,3,5][randInt(0,2)];
+               let outAns = ansOut, innAns = ansInn;
+               let outAnsStr = innAns === 1 ? `${outAns}` : (outAns===1?`${sym}${innAns}`:`${outAns}${sym}${innAns}`);
+               
+               let displayOut1 = outAns * out2;
+               let displayInn1 = innAns * inn2;
+               return {
+                 display: `${displayOut1 > 1 ? displayOut1 : ''}${sym}${displayInn1} ÷ ${out2 > 1 ? out2 : ''}${sym}${inn2} = ?`,
+                 answer: outAnsStr,
+                 hint: `Divide outsides and insides, then simplify.`,
+                 submode: `Radical Division`,
+                 tip: `Format as a${sym}b or whole number.`
+               };
             }
+          } else {
+            // addition / subtraction
+            let inn = [2, 3, 5, 6, 7][randInt(0, 4)];
+            let termsCount = Math.max(2, Math.min(5, cfg.terms || 2));
+            let dispArr = [];
+            let totalOut = 0;
+            let hints = [];
+            for (let i = 0; i < termsCount; i++) {
+               let out = randInt(1, 8);
+               let isSub = i > 0 && Math.random() > 0.5;
+               if (isSub) { totalOut -= out; dispArr.push(`− ${out === 1 ? '' : out}${sym}${inn}`); hints.push(`-${out}`); }
+               else { totalOut += out; dispArr.push(`${i > 0 ? '+ ' : ''}${out === 1 ? '' : out}${sym}${inn}`); hints.push(`+${out}`); }
+            }
+            let display = dispArr.join(' ') + ' = ?';
+            let answer = totalOut === 0 ? '0' : (totalOut === 1 ? `${sym}${inn}` : (totalOut === -1 ? `-${sym}${inn}` : `${totalOut}${sym}${inn}`));
+            return { display, answer, hint: `Combine like terms: ${hints.join(' ')} = ${totalOut}`, submode: `Radical Add/Sub`, tip: `Format as a${sym}b or 0.` };
           }
-          displayParts.push(operators[i - 1] === '-' ? '−' : '+');
-          displayParts.push(`${c}${rootSym}${baseRadicand}`);
         }
-
-        const displayStr = displayParts.join(' ');
-        let finalAns = '';
-        if (runningCoeff === 0) finalAns = '0';
-        else if (runningCoeff === 1) finalAns = `${rootSym}${baseRadicand}`;
-        else if (runningCoeff === -1) finalAns = `-${rootSym}${baseRadicand}`;
-        else finalAns = `${runningCoeff}${rootSym}${baseRadicand}`;
-
-        let hintOpParts = [coeffs[0]];
-        for (let i = 1; i < numRadTerms; i++) {
-          hintOpParts.push(operators[i - 1] === '-' ? '-' : '+');
-          hintOpParts.push(coeffs[i]);
-        }
-        let hintStr = hintOpParts.join(' ');
-
-        return {
-          display: `${displayStr} = ?`,
-          answer: finalAns,
-          altAnswer: runningCoeff === 1 ? `1${rootSym}${baseRadicand}` : `${runningCoeff}*${rootSym}${baseRadicand}`,
-          isFraction: false,
-          hint: `Combine like radicals: (${hintStr}) · ${rootSym}${baseRadicand} = ${finalAns}.`,
-          submode: `${numRadTerms}-Term Radical Arithmetic`,
-          tip: `Combine like terms into simplest form (e.g. ${finalAns}).`
-        };
       }
 
       // 8. LINEAR EQUATIONS
-      const x = randInt(-10, 12) || 3; const m = randInt(2, 9); const b = randInt(-15, 15); const rhs = m * x + b;
-      return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
+      if (domainId === 'algebra') {
+        const x = randInt(-10, 12) || 3; const m = randInt(2, 9); const b = randInt(-15, 15); const rhs = m * x + b;
+        return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
+      }
+
+      // 9. PERCENTAGES
+      if (domainId === 'percentages') {
+        const mode = cfg.percentageMode || 'conversion';
+        let display = '', answer = '', hint = '', tip = 'Type the numeric value.', submode = '';
+
+        if (mode === 'conversion') {
+          const types = ['frac2pct', 'dec2pct', 'pct2dec', 'pct2frac'];
+          const type = types[randInt(0, 3)];
+          if (type === 'frac2pct') {
+            let den = [2, 4, 5, 10, 20, 25, 50][randInt(0, 6)];
+            let num = randInt(1, den * 1.5);
+            display = `Convert to percent: ${num}/${den}`;
+            answer = String((num / den) * 100) + '%';
+            hint = `Divide ${num} by ${den} to get a decimal, then multiply by 100.`;
+            tip = 'Include the % sign (e.g., 50%).';
+            submode = 'Conversions (Fraction to Percent)';
+          } else if (type === 'dec2pct') {
+            let dec = (randInt(1, 250) / 100).toFixed(2);
+            display = `Convert to percent: ${dec}`;
+            answer = String(parseFloat(dec) * 100) + '%';
+            hint = `Multiply ${dec} by 100 (move decimal two places right).`;
+            tip = 'Include the % sign.';
+            submode = 'Conversions (Decimal to Percent)';
+          } else if (type === 'pct2dec') {
+            let pct = randInt(1, 250);
+            display = `Convert to decimal: ${pct}%`;
+            answer = String(pct / 100);
+            hint = `Divide ${pct} by 100 (move decimal two places left).`;
+            tip = 'Write as a decimal.';
+            submode = 'Conversions (Percent to Decimal)';
+          } else { // pct2frac
+            let pcts = [5, 10, 20, 25, 30, 40, 50, 60, 75, 80, 90, 150];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            display = `Convert to fraction in simplest form: ${pct}%`;
+            let g = gcd(pct, 100);
+            answer = `${pct/g}/${100/g}`;
+            hint = `Write ${pct}/100 and simplify by dividing numerator and denominator by ${g}.`;
+            tip = 'Format as a/b (e.g., 1/4).';
+            submode = 'Conversions (Percent to Fraction)';
+          }
+        } else if (mode === 'basic') {
+          const types = ['pctOfNum', 'whatPct', 'numIsPct'];
+          const type = types[randInt(0, 2)];
+          if (type === 'pctOfNum') {
+            let pcts = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(2, 20) * 10;
+            display = `What is ${pct}% of ${base}?`;
+            answer = String((pct / 100) * base);
+            hint = `Multiply ${pct/100} × ${base} = ${answer}.`;
+            tip = 'Write the exact number.';
+            submode = 'Percent of a Number';
+          } else if (type === 'whatPct') {
+            let pcts = [10, 20, 25, 40, 50, 60, 75, 80];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(2, 10) * 10;
+            let part = (pct / 100) * base;
+            display = `${part} is what percent of ${base}?`;
+            answer = String(pct) + '%';
+            hint = `Divide ${part} by ${base}, then multiply by 100.`;
+            tip = 'Include the % sign.';
+            submode = 'Finding the Percent';
+          } else {
+            let pcts = [10, 20, 25, 40, 50];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(4, 20) * 10;
+            let part = (pct / 100) * base;
+            display = `${part} is ${pct}% of what number?`;
+            answer = String(base);
+            hint = `Divide ${part} by ${pct/100}. (${part} ÷ ${pct/100} = ${base})`;
+            tip = 'Write the exact base number.';
+            submode = 'Finding the Base';
+          }
+        } else if (mode === 'change') {
+          let oldVal = randInt(5, 20) * 10;
+          let percentChange = [10, 20, 25, 30, 40, 50][randInt(0, 5)];
+          let isIncrease = Math.random() > 0.5;
+          let changeAmount = (percentChange / 100) * oldVal;
+          let newVal = isIncrease ? oldVal + changeAmount : oldVal - changeAmount;
+
+          if (Math.random() > 0.5) {
+            display = `Find the percent change from ${oldVal} to ${newVal}.`;
+            answer = String(percentChange) + '%';
+            let incDec = isIncrease ? "increase" : "decrease";
+            hint = `Change is |${newVal} - ${oldVal}| = ${changeAmount}. Percent change = (${changeAmount} / ${oldVal}) × 100 = ${percentChange}% ${incDec}.`;
+            tip = 'Write the percentage (e.g., 20%).';
+            submode = 'Calculating Percent Change';
+          } else {
+            display = `If ${oldVal} is ${isIncrease ? 'increased' : 'decreased'} by ${percentChange}%, what is the new value?`;
+            answer = String(newVal);
+            hint = `Find ${percentChange}% of ${oldVal} (${changeAmount}), then ${isIncrease ? 'add to' : 'subtract from'} the original.`;
+            tip = 'Write the exact new value.';
+            submode = `Applying Percent ${isIncrease ? 'Decrease' : 'Decrease'}`;
+          }
+        } else if (mode === 'applied') {
+          const types = ['tax', 'discount', 'successive', 'original'];
+          const type = types[randInt(0, 3)];
+          if (type === 'tax') {
+            let price = randInt(10, 100);
+            let tax = randInt(5, 10);
+            let final = price * (1 + tax / 100);
+            display = `A shirt costs $${price}. If sales tax is ${tax}%, what is the final total price?`;
+            answer = String(parseFloat(final.toFixed(2))); 
+            hint = `Tax amount is $${(price * tax / 100).toFixed(2)}. Add to $${price}.`;
+            tip = 'Enter the number (e.g. 52.5 or 52.50). Do not include $.';
+            submode = 'Real-World: Tax & Markup';
+          } else if (type === 'discount') {
+            let price = randInt(20, 150);
+            let discount = [10, 15, 20, 25, 30, 40, 50][randInt(0, 6)];
+            let final = price * (1 - discount / 100);
+            display = `A jacket originally costs $${price} is on sale for ${discount}% off. What is the sale price?`;
+            answer = String(parseFloat(final.toFixed(2)));
+            hint = `Discount is ${discount}% of $${price} = $${(price * discount / 100).toFixed(2)}. Subtract from $${price}.`;
+            tip = 'Enter the number. Do not include $.';
+            submode = 'Real-World: Discounts';
+          } else if (type === 'successive') {
+            let start = [100, 200, 50][randInt(0, 2)];
+            display = `A $${start} item is marked up by 20%, then discounted by 20%. What is the final price?`;
+            let ansVal = start * 1.2 * 0.8;
+            answer = String(ansVal);
+            hint = `After markup: $${start * 1.2}. Then 20% off $${start * 1.2} is $${start * 1.2 * 0.2} off. Final: $${ansVal}. (Common error: assuming it returns to $${start}).`;
+            tip = 'Enter the final number. Do not include $.';
+            submode = 'Real-World: Multi-Step Change';
+          } else {
+            let final = randInt(2, 10) * 10;
+            let discount = [10, 20, 25, 50][randInt(0, 3)];
+            let original = final / (1 - discount / 100);
+            display = `After a ${discount}% discount, a game costs $${final}. What was the original price?`;
+            answer = String(original);
+            hint = `$${final} represents ${100 - discount}% of the original price. Solve: 0.${100-discount}x = ${final}.`;
+            tip = 'Enter the original number. Do not include $.';
+            submode = 'Real-World: Finding Original Price';
+          }
+        }
+        
+        return { display, answer, hint, submode, tip };
+      }
     }
 
     function startQuizSession() {
@@ -2214,7 +2247,7 @@
 
     function renderChancesHearts() {
       const container = document.getElementById('quiz-chances-container');
-      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-brand-500' : 'text-slate-300'} text-xs"></i>`).join('');
+      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-amber-500' : 'text-slate-300'} text-xs"></i>`).join('');
     }
 
     function handleQuizInputKeydown(e) {
@@ -2264,15 +2297,15 @@
         appState.quiz.chances--;
         renderChancesHearts();
         if (appState.quiz.chances > 0) {
-          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-brand-50 border-brand-300 text-brand-900 shadow-sm';
-          fb.innerHTML = `<div class="font-bold text-brand-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Incorrect. ${appState.quiz.chances} attempt(s) left.</div>`;
+          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-amber-50 border-amber-300 text-amber-900 shadow-sm';
+          fb.innerHTML = `<div class="font-bold text-amber-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Incorrect. ${appState.quiz.chances} attempt(s) left.</div>`;
           inputEl.select();
         } else {
           appState.quiz.answeredCurrent = true;
           q.userResponse = rawUser;
           q.wasCorrect = false;
           fb.className = 'p-3 rounded-xl text-xs font-medium border bg-red-50 border-red-300 text-red-900 shadow-sm';
-          fb.innerHTML = `<div class="font-bold text-red-700 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Answer: <span class="font-mono text-brand-800">${q.answer}</span></div><div>${q.hint}</div>`;
+          fb.innerHTML = `<div class="font-bold text-red-700 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Answer: <span class="font-mono text-amber-800">${q.answer}</span></div><div>${q.hint}</div>`;
           lockQuestionAndShowNext();
         }
       }
@@ -2298,6 +2331,25 @@
       const input = document.getElementById('quiz-answer-input');
       const start = input.selectionStart || input.value.length;
       input.value = input.value.slice(0, start) + sym + input.value.slice(input.selectionEnd || input.value.length);
+      
+      // Move cursor immediately after inserted symbol
+      const newPos = start + sym.length;
+      input.setSelectionRange(newPos, newPos);
+      input.focus();
+    }
+
+    function handleBackspace() {
+      const input = document.getElementById('quiz-answer-input');
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      
+      if (start === end && start > 0) {
+        input.value = input.value.slice(0, start - 1) + input.value.slice(end);
+        input.setSelectionRange(start - 1, start - 1);
+      } else if (start !== end) {
+        input.value = input.value.slice(0, start) + input.value.slice(end);
+        input.setSelectionRange(start, start);
+      }
       input.focus();
     }
 
@@ -2331,7 +2383,7 @@
 
       switchTab('results');
 
-      const savedName = localStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+      const savedName = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
       if (savedName && savedName.trim() !== '') {
         triggerAutoSaveSubmission();
       }
@@ -2458,18 +2510,13 @@
       }));
 
       try {
-        localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_NAME, studentName);
-        localStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
+        safeStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_NAME, studentName);
+        safeStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
       } catch (e) {}
 
       let extraConfig = '';
       if (appState.selectedDomain.id === 'fractions') {
         extraConfig = `${appState.config.fractionType.toUpperCase()} | ${appState.config.fracNumDigits}N/${appState.config.fracDenDigits}D | Den: ${appState.config.fracDenMin}–${appState.config.fracDenMax}`;
-      } else if (appState.selectedDomain.id === 'exponents') {
-        extraConfig = `Law: ${appState.config.exponentLaw.toUpperCase()}`;
-      } else if (appState.selectedDomain.id === 'radicals') {
-        extraConfig = `Mode: ${appState.config.radicalMode.toUpperCase()} | Root: ${appState.config.radicalRoot.toUpperCase()}`;
-        if (appState.config.radicalMode === 'arithmetic') extraConfig += ` | ${appState.config.terms} Terms`;
       } else if (['whole', 'integers', 'gemdas', 'decimals'].includes(appState.selectedDomain.id)) {
         extraConfig = `${appState.config.terms} Terms`;
       }
@@ -2491,8 +2538,16 @@
         questionDetails: JSON.stringify(questionDetails)
       };
 
+      const localScores = safeStorage.getItem('PRIME_LOCAL_SCORES');
+      let parsedLocal = [];
+      if (localScores) {
+        try { parsedLocal = JSON.parse(localScores); } catch (e) {}
+      }
+      parsedLocal.push(record);
+      safeStorage.setItem('PRIME_LOCAL_SCORES', JSON.stringify(parsedLocal));
+
       const statusEl = document.getElementById('results-sync-status');
-      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-brand-600"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-600"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
 
       if (typeof google !== 'undefined' && google.script && google.script.run) {
         google.script.run
@@ -2515,7 +2570,7 @@
         await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
         statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i><span class="text-emerald-800 font-semibold">Score recorded to teacher gradebook!</span>`;
       } catch (err) {
-        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-brand-600"></i><span class="text-brand-800 font-semibold">Recorded offline</span>`;
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i><span class="text-amber-800 font-semibold">Recorded offline</span>`;
       }
 
       openCertificateModal(record);
@@ -2590,8 +2645,8 @@
 
         if (res && res.status === 'success') {
           appState.currentTeacher = res.teacher;
-          localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-          localStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
           setActiveTeacherCode(res.teacher.classCode);
           updateTeacherNavUI();
           toggleTeacherView('dashboard');
@@ -2635,8 +2690,8 @@
 
         if (res && res.status === 'success') {
           appState.currentTeacher = res.teacher;
-          localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
-          localStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
           setActiveTeacherCode(res.teacher.classCode);
           
           usernameInput.value = '';
@@ -2660,7 +2715,6 @@
       }
     }
 
-    // --- PROFILE EDITING HANDLERS ---
     function openEditTeacherProfileView() {
       if (!appState.currentTeacher) return;
       document.getElementById('edit-fullname').value = appState.currentTeacher.fullName || '';
@@ -2706,9 +2760,9 @@
 
         if (res && res.status === 'success') {
           appState.currentTeacher = res.teacher;
-          localStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
           if (newPassword) {
-            localStorage.setItem(STORAGE_KEYS.TEACHER_CRED, newPassword);
+            safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, newPassword);
           }
           setActiveTeacherCode(res.teacher.classCode);
           updateTeacherNavUI();
@@ -2724,7 +2778,6 @@
       }
     }
 
-    // --- ACCOUNT DELETION HANDLER ---
     async function handleDeleteTeacherAccount() {
       if (!appState.currentTeacher) return;
 
@@ -2758,8 +2811,8 @@
     function handleTeacherLogoutDirect() {
       appState.currentTeacher = null;
       appState.scores = [];
-      localStorage.removeItem(STORAGE_KEYS.TEACHER_PROFILE);
-      localStorage.removeItem(STORAGE_KEYS.TEACHER_CRED);
+      safeStorage.removeItem(STORAGE_KEYS.TEACHER_PROFILE);
+      safeStorage.removeItem(STORAGE_KEYS.TEACHER_CRED);
 
       document.getElementById('login-username').value = '';
       document.getElementById('login-password').value = '';
@@ -2791,16 +2844,15 @@
     }
 
     function copyGeneratedLink() {
-      const input = document.getElementById('display-student-link');
-      if (!input) return;
       try {
-        input.select();
+        const copyText = document.getElementById('display-student-link');
+        copyText.select();
         document.execCommand('copy');
         const btn = document.getElementById('btn-copy-link');
         btn.textContent = 'Copied!';
         setTimeout(() => btn.textContent = 'Copy', 1500);
       } catch (e) {
-        alert('Link copied to clipboard failed. Please select and copy manually.');
+        alert('Unable to copy link automatically.');
       }
     }
 
@@ -2810,20 +2862,20 @@
     }
 
     function setActiveTeacherCode(code) {
-      if (!code) return;
       appState.activeClassCode = code;
-      try { localStorage.setItem(STORAGE_KEYS.ACTIVE_CODE, code); } catch (e) {}
-      const bd = document.getElementById('banner-code-display');
-      if (bd) bd.textContent = code;
-      const cb = document.getElementById('classroom-banner');
-      if (cb) cb.classList.remove('hidden');
+      try { safeStorage.setItem(STORAGE_KEYS.ACTIVE_CODE, code); } catch (e) {}
+      const el = document.getElementById('banner-code-display');
+      if (el) {
+        el.textContent = code;
+        document.getElementById('classroom-banner').classList.remove('hidden');
+      }
     }
 
     function clearActiveTeacherCode() {
       appState.activeClassCode = '';
-      try { localStorage.removeItem(STORAGE_KEYS.ACTIVE_CODE); } catch (e) {}
-      const cb = document.getElementById('classroom-banner');
-      if (cb) cb.classList.add('hidden');
+      try { safeStorage.removeItem(STORAGE_KEYS.ACTIVE_CODE); } catch (e) {}
+      const el = document.getElementById('classroom-banner');
+      if (el) el.classList.add('hidden');
     }
 
     async function pullScoresFromCloud() {
@@ -2832,7 +2884,7 @@
       const spinner = document.getElementById('sync-spinner');
       if (spinner) spinner.classList.add('fa-spin');
 
-      const pass = localStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
+      const pass = safeStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
 
       try {
         const res = await callAppsScriptApi({
@@ -2861,7 +2913,12 @@
       if (!tbody) return;
       const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
 
-      const filtered = appState.scores.filter(s => {
+      const filtered = appState.scores.map((s, idx) => ({ ...s, originalIndex: idx })).filter(s => {
+        if (!appState.currentTeacher) {
+          if (!filterVal) return true;
+          return (s.studentName || '').toUpperCase().includes(filterVal) || (s.studentSection || '').toUpperCase().includes(filterVal);
+        }
+
         const studentCode = (s.classCode || '').toUpperCase();
         const teacherCode = (appState.currentTeacher?.classCode || '').toUpperCase();
 
@@ -2873,26 +2930,27 @@
       });
 
       if (filtered.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-500 text-xs">No records under class code: <strong class="text-brand-700">${appState.currentTeacher?.classCode || 'None'}</strong>.</td></tr>`;
+        let msg = appState.currentTeacher ? `No records under class code: <strong class="text-amber-700">${appState.currentTeacher.classCode}</strong>.` : 'No local history found.';
+        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-500 text-xs">${msg}</td></tr>`;
         return;
       }
 
-      tbody.innerHTML = filtered.slice(0, 100).map((s, idx) => `
-        <tr class="hover:bg-brand-50/70 transition">
+      tbody.innerHTML = filtered.slice(0, 100).map(s => `
+        <tr class="hover:bg-amber-50/70 transition">
           <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${new Date(s.timestamp).toLocaleDateString()}</td>
           <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(s.studentName)}</td>
           <td class="py-2.5 px-3 text-slate-600">${escapeHtml(s.studentSection)}</td>
-          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-brand-100 text-brand-800 font-mono font-bold text-[10px] border border-brand-300">${escapeHtml(s.classCode)}</span></td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-mono font-bold text-[10px] border border-amber-300">${escapeHtml(s.classCode)}</span></td>
           <td class="py-2.5 px-3 text-slate-700">${escapeHtml(s.categoryTitle)} <span class="text-slate-400 text-[9px]">(${escapeHtml(s.submode)})</span></td>
-          <td class="py-2.5 px-3 text-center font-mono font-bold text-brand-700">${s.score}/${s.total}</td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-amber-700">${s.score}/${s.total}</td>
           <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-700">${s.percentage}%</td>
-          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-brand-50 border border-brand-300 text-brand-800">${escapeHtml(s.mastery)}</span></td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 border border-amber-300 text-amber-800">${escapeHtml(s.mastery)}</span></td>
           <td class="py-2.5 px-3 text-center whitespace-nowrap flex items-center justify-center gap-1.5">
-            <button onclick="openStudentReview(${idx})" title="Review questions" class="px-2 py-1 rounded-lg bg-brand-100 text-brand-800 border border-brand-300 hover:bg-brand-200 text-xs font-bold transition flex items-center gap-1">
+            <button onclick="openStudentReview(${s.originalIndex})" title="Review questions" class="px-2 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200 text-xs font-bold transition flex items-center gap-1">
               <i class="fa-solid fa-eye text-[10px]"></i>
               <span class="hidden sm:inline">Review</span>
             </button>
-            <button onclick="deleteStudentRecordByIndex(${idx})" title="Delete entry" class="px-2 py-1 rounded-lg bg-red-100 text-red-700 border border-red-200 hover:bg-red-200 text-xs font-bold transition">
+            <button onclick="deleteStudentRecordByIndex(${s.originalIndex})" title="Delete entry" class="px-2 py-1 rounded-lg bg-red-100 text-red-700 border border-red-200 hover:bg-red-200 text-xs font-bold transition">
               <i class="fa-solid fa-trash-can text-[10px]"></i>
             </button>
           </td>
@@ -2900,17 +2958,15 @@
       `).join('');
     }
 
-    // --- STUDENT WORK AUDIT MODAL ---
     function openStudentReview(recordIndex) {
       const rec = appState.scores[recordIndex];
       if (!rec) return;
 
       const titleEl = document.getElementById('review-student-title');
-      const domainEl = document.getElementById('review-domain-text');
-      const scoreEl = document.getElementById('review-score-text');
-      
       if (titleEl) titleEl.textContent = `${rec.studentName} (${rec.studentSection})`;
-      if (domainEl) domainEl.textContent = `${rec.categoryTitle} - ${rec.submode}`;
+      const domEl = document.getElementById('review-domain-text');
+      if (domEl) domEl.textContent = `${rec.categoryTitle} - ${rec.submode}`;
+      const scoreEl = document.getElementById('review-score-text');
       if (scoreEl) scoreEl.textContent = `${rec.score} / ${rec.total} (${rec.percentage}%)`;
 
       let details = [];
@@ -2921,26 +2977,26 @@
       }
 
       const container = document.getElementById('review-items-container');
-      if (!container) return;
-
-      if (!Array.isArray(details) || details.length === 0) {
-        container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No question breakdown recorded for this submission.</div>`;
-      } else {
-        container.innerHTML = details.map((item, idx) => `
-          <div class="p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-red-50/70 border-red-200'} text-xs space-y-1">
-            <div class="flex items-center justify-between font-bold">
-              <span class="text-slate-800">Item ${idx + 1}: <code class="font-mono">${escapeHtml(item.problem)}</code></span>
-              <span class="${item.isCorrect ? 'text-emerald-700' : 'text-red-600'} flex items-center gap-1 font-semibold">
-                <i class="fa-solid ${item.isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-red-500'}"></i>
-                ${item.isCorrect ? 'Correct' : 'Incorrect'}
-              </span>
+      if (container) {
+        if (!Array.isArray(details) || details.length === 0) {
+          container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No question breakdown recorded for this submission.</div>`;
+        } else {
+          container.innerHTML = details.map((item, idx) => `
+            <div class="p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-red-50/70 border-red-200'} text-xs space-y-1">
+              <div class="flex items-center justify-between font-bold">
+                <span class="text-slate-800">Item ${idx + 1}: <code class="font-mono">${escapeHtml(item.problem)}</code></span>
+                <span class="${item.isCorrect ? 'text-emerald-700' : 'text-red-600'} flex items-center gap-1 font-semibold">
+                  <i class="fa-solid ${item.isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-red-500'}"></i>
+                  ${item.isCorrect ? 'Correct' : 'Incorrect'}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 text-[11px]">
+                <div>Student Input: <span class="font-mono font-bold ${item.isCorrect ? 'text-emerald-800' : 'text-red-700'}">${escapeHtml(item.studentAnswer)}</span></div>
+                <div class="text-right">Expected: <span class="font-mono font-bold text-amber-800">${escapeHtml(item.correctAnswer)}</span></div>
+              </div>
             </div>
-            <div class="grid grid-cols-2 text-[11px]">
-              <div>Student Input: <span class="font-mono font-bold ${item.isCorrect ? 'text-emerald-800' : 'text-red-700'}">${escapeHtml(item.studentAnswer)}</span></div>
-              <div class="text-right">Expected: <span class="font-mono font-bold text-brand-800">${escapeHtml(item.correctAnswer)}</span></div>
-            </div>
-          </div>
-        `).join('');
+          `).join('');
+        }
       }
 
       document.getElementById('modal-review-session').classList.remove('hidden');
@@ -2950,16 +3006,30 @@
       document.getElementById('modal-review-session').classList.add('hidden');
     }
 
-    // --- STUDENT RECORD DELETION ---
     async function deleteStudentRecordByIndex(recordIndex) {
-      if (!appState.currentTeacher) return;
       const rec = appState.scores[recordIndex];
       if (!rec) return;
 
       const confirmed = confirm(`Are you sure you want to delete the record for "${rec.studentName}"? This action cannot be undone.`);
       if (!confirmed) return;
 
-      const pass = localStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
+      if (!appState.currentTeacher) {
+        const localScores = safeStorage.getItem('PRIME_LOCAL_SCORES');
+        if (localScores) {
+          try {
+             let parsedLocal = JSON.parse(localScores);
+             const idx = parsedLocal.findIndex(l => l.timestamp === rec.timestamp && l.studentName === rec.studentName);
+             if (idx !== -1) parsedLocal.splice(idx, 1);
+             safeStorage.setItem('PRIME_LOCAL_SCORES', JSON.stringify(parsedLocal));
+             appState.scores = parsedLocal;
+             renderScoresTable();
+             alert('Local record deleted successfully.');
+          } catch(e){}
+        }
+        return;
+      }
+      
+      const pass = safeStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
 
       try {
         const res = await callAppsScriptApi({
@@ -3027,8 +3097,8 @@
 
     function renderGuides() {
       document.getElementById('guides-container').innerHTML = STUDY_GUIDES.map(g => `
-        <div class="light-glass p-3.5 rounded-2xl space-y-1.5 border border-brand-200">
-          <h3 class="text-sm font-bold text-brand-800 font-serif">${g.title}</h3>
+        <div class="light-glass p-3.5 rounded-2xl space-y-1.5 border border-amber-200">
+          <h3 class="text-sm font-bold text-amber-800 font-serif">${g.title}</h3>
           <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 leading-relaxed">
             ${g.rules.map(r => `<li>${r}</li>`).join('')}
           </ul>
