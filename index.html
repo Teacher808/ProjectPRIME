@@ -1,459 +1,3202 @@
-/**
- * ==============================================================================
- * PROJECT PRIME: Multi-Device Teacher Authentication, Registry & Review Engine
- * ==============================================================================
- */
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>PROJECT PRIME | Mathematics Diagnostic & Practice Suite</title>
 
-const SCORES_SHEET = 'Student_Scores';
-const TEACHERS_SHEET = 'Teachers';
-const SPREADSHEET_ID = '1B-MMXjX3GTqcbJbRsqoxVYydsJFhqS7OcLtv0rql8b4';
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            gold: {
+              50: '#fffbeb',
+              100: '#fef3c7',
+              200: '#fde68a',
+              300: '#fcd34d',
+              400: '#fbbf24',
+              500: '#f59e0b',
+              600: '#d97706',
+              700: '#b45309',
+              800: '#92400e',
+              900: '#78350f'
+            }
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+            serif: ['Cinzel', 'serif']
+          }
+        }
+      }
+    };
+  </script>
 
-function getSpreadsheet() {
-  let ss = SpreadsheetApp.getActiveSpreadsheet();
-  if (!ss && SPREADSHEET_ID && SPREADSHEET_ID.trim() !== '') {
-    try {
-      ss = SpreadsheetApp.openById(SPREADSHEET_ID.trim());
-    } catch (err) {
-      throw new Error('Failed to open spreadsheet with provided SPREADSHEET_ID: ' + err.message);
-    }
-  }
-  if (!ss) {
-    throw new Error('Spreadsheet not found. Provide SPREADSHEET_ID in Code.gs if using a standalone script.');
-  }
-  return ss;
-}
+  <!-- Google Fonts & FontAwesome -->
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700;900&family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-function doGet(e) {
-  try {
-    const params = (e && e.parameter) ? e.parameter : {};
-    const action = String(params.action || '').trim().toLowerCase();
-    const cb = params.callback || null;
-
-    // 1. TEACHER AUTHENTICATION & PROFILE ACTIONS
-    if (action === 'teacher_login') {
-      const u = params.username || params.u || '';
-      const p = params.password || params.p || '';
-      return createJsonResponse(loginTeacher(u, p), cb);
+  <style>
+    :root {
+      --sat: env(safe-area-inset-top, 0px);
+      --sab: env(safe-area-inset-bottom, 0px);
+      --sal: env(safe-area-inset-left, 0px);
+      --sar: env(safe-area-inset-right, 0px);
     }
-    if (action === 'teacher_register') {
-      return createJsonResponse(registerTeacher(params), cb);
+    html, body {
+      min-height: 100vh;
+      min-height: 100dvh;
+      overflow-x: hidden;
+      touch-action: manipulation;
     }
-    if (action === 'teacher_update') {
-      return createJsonResponse(updateTeacherProfile(params), cb);
-    }
-    if (action === 'teacher_delete') {
-      return createJsonResponse(deleteTeacherAccount(params), cb);
+    body {
+      background-color: #faf9f6;
+      color: #0f172a;
+      padding-top: var(--sat);
+      padding-bottom: var(--sab);
+      padding-left: var(--sal);
+      padding-right: var(--sar);
+      font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     }
 
-    // 2. STUDENT SCORE MANAGEMENT
-    if (action === 'delete_score') {
-      return createJsonResponse(deleteStudentScore(params), cb);
+    #math-bg-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      opacity: 0.95;
     }
 
-    // 3. AUTHENTICATED FETCH
-    if (action === 'fetch') {
-      const u = params.username || params.u || '';
-      const p = params.password || params.p || '';
-      const auth = loginTeacher(u, p);
-      if (auth.status !== 'success') {
-        return createJsonResponse({ 
-          status: 'unauthorized', 
-          message: 'Access denied. Please verify credentials.',
-          records: [] 
-        }, cb);
+    .light-glass {
+      background: rgba(255, 255, 255, 0.90);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(217, 119, 6, 0.22);
+      box-shadow: 0 10px 25px -5px rgba(180, 83, 9, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.03);
+    }
+
+    .gold-btn {
+      background: linear-gradient(135deg, #d97706 0%, #b45309 100%);
+      color: #ffffff;
+      border: 1px solid #f59e0b;
+      box-shadow: 0 4px 12px rgba(217, 119, 6, 0.25);
+      transition: all 0.2s ease;
+    }
+    .gold-btn:hover, .gold-btn:active {
+      filter: brightness(1.08);
+      box-shadow: 0 6px 16px rgba(217, 119, 6, 0.35);
+      transform: translateY(-0.5px);
+    }
+
+    .light-btn {
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid #cbd5e1;
+      color: #1e293b;
+      transition: all 0.2s ease;
+    }
+    .light-btn:hover, .light-btn:active {
+      background: #f8fafc;
+      border-color: #d97706;
+      color: #b45309;
+    }
+
+    @media print {
+      body * { visibility: hidden; }
+      #certificate-print-area, #certificate-print-area * { visibility: visible; }
+      #certificate-print-area {
+        position: fixed;
+        left: 0;
+        top: 0;
+        width: 100%;
+        background: #ffffff !important;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-[100dvh] relative selection:bg-gold-500 selection:text-white">
+
+  <!-- ANIMATED MATHEMATICAL CANVAS -->
+  <canvas id="math-bg-canvas"></canvas>
+
+  <div class="relative z-10 flex flex-col flex-grow">
+
+    <!-- TOP NAVIGATION HEADER -->
+    <header class="sticky top-0 z-30 light-glass border-b border-amber-200/80 px-3 py-2.5 sm:px-4 sm:py-3 w-full">
+      <div class="max-w-6xl mx-auto flex items-center justify-between gap-2">
+        <div onclick="switchTab('home')" class="flex items-center gap-2 sm:gap-3 cursor-pointer group shrink-0">
+          <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-br from-amber-500 to-amber-700 flex items-center justify-center text-white font-black text-base sm:text-xl shadow-md shadow-amber-600/30 group-hover:scale-105 transition">
+            <i class="fa-solid fa-square-root-variable"></i>
+          </div>
+          <div>
+            <div class="flex items-center gap-1 sm:gap-2">
+              <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 leading-tight">PROJECT <span class="text-amber-600 font-serif">PRIME</span></h1>
+              <span class="hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse mr-1"></span>Live
+              </span>
+            </div>
+            <p class="text-[10px] text-slate-500 hidden sm:block font-medium">Program for Remediation and Improvement in Mathematics Education</p>
+          </div>
+        </div>
+
+        <div class="flex items-center gap-1 sm:gap-2 overflow-x-auto">
+          <button onclick="switchTab('home')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
+            <i class="fa-solid fa-house text-amber-600"></i>
+            <span class="hidden sm:inline">Home</span>
+          </button>
+
+          <button onclick="handleInstallClick()" id="btn-install-app" class="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 bg-emerald-50 border border-emerald-300 text-emerald-800 hover:bg-emerald-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-download text-emerald-600"></i>
+            <span class="hidden sm:inline">Install App</span>
+          </button>
+
+          <button onclick="openTeacherAuthModal()" id="btn-nav-teacher" class="px-2.5 py-1.5 rounded-lg text-xs font-bold flex items-center gap-1 bg-amber-50 border border-amber-300 text-amber-800 hover:bg-amber-100 transition whitespace-nowrap">
+            <i class="fa-solid fa-user-tie text-amber-600"></i>
+            <span id="nav-teacher-label">Teacher Portal</span>
+          </button>
+
+          <button onclick="switchTab('scores')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
+            <i class="fa-solid fa-chart-simple text-amber-600"></i>
+            <span class="hidden sm:inline">Registry</span>
+          </button>
+
+          <button onclick="switchTab('guides')" class="px-2.5 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1 light-btn whitespace-nowrap">
+            <i class="fa-solid fa-book-open text-amber-600"></i>
+            <span class="hidden sm:inline">Guides</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Active Class Code Banner -->
+      <div id="classroom-banner" class="hidden mt-2 max-w-6xl mx-auto bg-amber-50/90 border border-amber-300 px-3 py-1.5 rounded-lg text-[11px] sm:text-xs text-amber-900 flex items-center justify-between shadow-sm">
+        <div class="flex items-center gap-2 truncate font-medium">
+          <i class="fa-solid fa-school text-amber-600 shrink-0"></i>
+          <span class="truncate">Teacher Class Code: <strong id="banner-code-display" class="font-mono text-amber-700 font-bold"></strong></span>
+        </div>
+        <button onclick="clearActiveTeacherCode()" class="text-amber-700 hover:text-red-600 text-xs underline font-semibold ml-2 shrink-0">Clear</button>
+      </div>
+    </header>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-grow max-w-6xl w-full mx-auto px-3 py-4 sm:px-4 sm:py-6">
+
+      <!-- 1. HOME VIEW (DOMAINS) -->
+      <section id="view-home" class="space-y-4 sm:space-y-6">
+        <div class="text-center space-y-1.5 py-2 sm:py-4">
+          <span class="inline-block px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest bg-amber-100 text-amber-800 border border-amber-300">
+            Interactive Diagnostic Engine
+          </span>
+          <h2 class="text-2xl sm:text-3xl md:text-4xl font-extrabold text-slate-900 font-serif">Mathematical Curriculum Domains</h2>
+          <p class="text-slate-600 text-xs sm:text-sm max-w-xl mx-auto px-2 font-medium">
+            Practice modular arithmetic drills, sign operations, GEMDAS sequences, and rational fractions with precise numerator and denominator controls.
+          </p>
+        </div>
+        <div id="categories-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"></div>
+      </section>
+
+      <!-- 2. PRACTICE CONFIGURATION VIEW -->
+      <section id="view-config" class="hidden max-w-xl mx-auto space-y-4">
+        <div class="light-glass p-5 sm:p-6 rounded-3xl shadow-xl space-y-4 border border-amber-200">
+          <div class="flex items-center justify-between border-b border-amber-200 pb-3">
+            <div>
+              <span id="config-domain-badge" class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Category</span>
+              <h3 id="config-domain-title" class="text-lg sm:text-xl font-bold text-slate-900 font-serif">Configure Practice</h3>
+            </div>
+            <button onclick="switchTab('home')" class="text-slate-500 hover:text-amber-700 text-xs font-semibold">
+              <i class="fa-solid fa-arrow-left mr-1"></i> Back
+            </button>
+          </div>
+
+          <div class="space-y-4">
+            <!-- Item Count -->
+            <div>
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Number of Questions (5 to 100)</label>
+              <div class="flex items-center gap-3">
+                <input type="range" id="config-count-range" min="5" max="100" step="5" value="10" oninput="syncConfigCount(this.value)" class="flex-grow accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                <input type="number" id="config-count-num" min="5" max="100" value="10" oninput="syncConfigCount(this.value)" class="w-14 bg-white border border-amber-300 rounded-lg py-1 px-1.5 text-center font-bold text-amber-700 text-sm shadow-sm">
+              </div>
+            </div>
+
+            <!-- Number of Terms Selector -->
+            <div id="config-terms-box" class="hidden">
+              <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-list-ol mr-1"></i> Number of Terms (Operands)
+              </label>
+              <div class="grid grid-cols-4 gap-2">
+                <button type="button" id="btn-terms-2" onclick="setConfigTerms(2)" class="py-2 rounded-lg text-xs font-bold border transition gold-btn">2</button>
+                <button type="button" id="btn-terms-3" onclick="setConfigTerms(3)" class="py-2 rounded-lg text-xs font-bold border transition light-btn">3</button>
+                <button type="button" id="btn-terms-4" onclick="setConfigTerms(4)" class="py-2 rounded-lg text-xs font-bold border transition light-btn">4</button>
+                <button type="button" id="btn-terms-5" onclick="setConfigTerms(5)" class="py-2 rounded-lg text-xs font-bold border transition light-btn">5</button>
+              </div>
+            </div>
+
+            <!-- EXPONENTS CONTROLS -->
+            <div id="config-exponents-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
+              <div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-superscript mr-1"></i> Laws of Exponents
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  <button type="button" id="btn-exp-product" onclick="setConfigExponentLaw('product')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Product Rule</button>
+                  <button type="button" id="btn-exp-quotient" onclick="setConfigExponentLaw('quotient')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Quotient Rule</button>
+                  <button type="button" id="btn-exp-power_power" onclick="setConfigExponentLaw('power_power')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Power</button>
+                  <button type="button" id="btn-exp-power_product" onclick="setConfigExponentLaw('power_product')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Product</button>
+                  <button type="button" id="btn-exp-power_quotient" onclick="setConfigExponentLaw('power_quotient')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Power of Quotient</button>
+                  <button type="button" id="btn-exp-negative" onclick="setConfigExponentLaw('negative')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Negative Rule</button>
+                  <button type="button" id="btn-exp-zero" onclick="setConfigExponentLaw('zero')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition light-btn text-center">Zero Rule</button>
+                  <button type="button" id="btn-exp-mixed" onclick="setConfigExponentLaw('mixed')" class="py-1.5 px-2 rounded-lg text-[10px] font-bold border transition gold-btn text-center">Mixed Laws</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- RADICALS CONTROLS -->
+            <div id="config-radicals-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
+              <div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-square-root-variable mr-1"></i> Root Index
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5 mb-3">
+                  <button type="button" id="btn-radtype-sqrt" onclick="setConfigRadicalType('sqrt')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Square Roots</button>
+                  <button type="button" id="btn-radtype-cbrt" onclick="setConfigRadicalType('cbrt')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Cube Roots</button>
+                  <button type="button" id="btn-radtype-4th" onclick="setConfigRadicalType('4th')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">4th Roots</button>
+                  <button type="button" id="btn-radtype-mixed" onclick="setConfigRadicalType('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Mixed Roots</button>
+                </div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  Problem Type
+                </label>
+                <div class="grid grid-cols-2 gap-1.5">
+                  <button type="button" id="btn-radmode-simp" onclick="setConfigRadicalMode('simp')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Simplify Radicals</button>
+                  <button type="button" id="btn-radmode-arith" onclick="setConfigRadicalMode('arith')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Arithmetic Ops</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- PERCENTAGES CONTROLS -->
+            <div id="config-percentages-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
+              <div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-percent mr-1"></i> Percentage Skill Progression
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  <button type="button" id="btn-pct-conversion" onclick="setConfigPercentageMode('conversion')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition gold-btn text-center">Conversions</button>
+                  <button type="button" id="btn-pct-basic" onclick="setConfigPercentageMode('basic')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Percent of Base</button>
+                  <button type="button" id="btn-pct-change" onclick="setConfigPercentageMode('change')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Percent Change</button>
+                  <button type="button" id="btn-pct-applied" onclick="setConfigPercentageMode('applied')" class="py-1.5 px-2 rounded-lg text-[11px] font-bold border transition light-btn text-center">Applied & Word</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- FRACTIONS ADVANCED CONTROLS -->
+            <div id="config-fractions-box" class="hidden space-y-3.5 p-3.5 bg-amber-50/70 rounded-2xl border border-amber-300">
+              <div>
+                <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                  <i class="fa-solid fa-shapes mr-1"></i> Fraction Classification Form
+                </label>
+                <div class="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                  <button type="button" id="btn-frac-similar" onclick="setConfigFractionType('similar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Similar</button>
+                  <button type="button" id="btn-frac-dissimilar" onclick="setConfigFractionType('dissimilar')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Dissimilar</button>
+                  <button type="button" id="btn-frac-mixed" onclick="setConfigFractionType('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Mixed Numbers</button>
+                  <button type="button" id="btn-frac-all" onclick="setConfigFractionType('all')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Mixed Types</button>
+                </div>
+              </div>
+
+              <div>
+                <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">
+                  Fraction Value Distribution
+                </label>
+                <div class="grid grid-cols-3 gap-1.5">
+                  <button type="button" id="btn-fracsign-mixed" onclick="setConfigFractionSign('mixed')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition gold-btn text-center">Positive & Negative</button>
+                  <button type="button" id="btn-fracsign-pos" onclick="setConfigFractionSign('pos')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Positive Only</button>
+                  <button type="button" id="btn-fracsign-neg" onclick="setConfigFractionSign('neg')" class="py-1.5 px-2 rounded-lg text-xs font-bold border transition light-btn text-center">Negative Only</button>
+                </div>
+              </div>
+
+              <!-- Numerator Digits -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Numerator Digits (1 to 4)</label>
+                  <span id="label-num-digits" class="text-xs font-mono font-bold text-amber-700">1 Digit</span>
+                </div>
+                <input type="range" id="config-frac-num-digits" min="1" max="4" value="1" oninput="syncFracNumDigits(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
+              </div>
+
+              <!-- Denominator Digits -->
+              <div>
+                <div class="flex justify-between items-center mb-1">
+                  <label class="text-[11px] font-bold text-slate-700 uppercase tracking-wider">Denominator Digits (1 to 4)</label>
+                  <span id="label-den-digits" class="text-xs font-mono font-bold text-amber-700">1 Digit</span>
+                </div>
+                <input type="range" id="config-frac-den-digits" min="1" max="4" value="1" oninput="syncFracDenDigits(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
+              </div>
+
+              <!-- Denominator Range (1 to 100) -->
+              <div class="pt-1 border-t border-amber-200">
+                <label class="block text-[11px] font-bold text-amber-800 uppercase tracking-wider mb-1.5">
+                  Denominator Value Range (1 to 100)
+                </label>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold mb-1">
+                      <span>Min Denominator</span>
+                      <span id="label-den-min" class="text-amber-700 font-mono">2</span>
+                    </div>
+                    <input type="range" id="config-frac-den-min" min="1" max="99" value="2" oninput="syncFracDenMin(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                  </div>
+                  <div>
+                    <div class="flex justify-between text-[10px] text-slate-500 font-bold mb-1">
+                      <span>Max Denominator</span>
+                      <span id="label-den-max" class="text-amber-700 font-mono">12</span>
+                    </div>
+                    <input type="range" id="config-frac-den-max" min="2" max="100" value="12" oninput="syncFracDenMax(this.value)" class="w-full accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Table Focus -->
+            <div id="config-numberfield-box" class="hidden">
+              <label class="block text-xs font-bold text-amber-800 uppercase tracking-wider mb-1">
+                <i class="fa-solid fa-table-cells mr-1"></i> Number Field / Table Focus (1 to 12)
+              </label>
+              <select id="config-numberfield-select" onchange="appState.config.numberField = this.value" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-xs font-semibold text-slate-800 outline-none shadow-sm">
+                <option value="none">Free Number Field (Use Digits Only)</option>
+                <option value="1">Table 1</option>
+                <option value="2">Table 2</option>
+                <option value="3">Table 3</option>
+                <option value="4">Table 4</option>
+                <option value="5">Table 5</option>
+                <option value="6">Table 6</option>
+                <option value="7">Table 7</option>
+                <option value="8">Table 8</option>
+                <option value="9">Table 9</option>
+                <option value="10">Table 10</option>
+                <option value="11">Table 11</option>
+                <option value="12">Table 12</option>
+                <option value="random">Random Mixed Drill</option>
+              </select>
+            </div>
+
+            <!-- Standard Digits -->
+            <div id="config-digits-box">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Number of Digits (1 to 10)</label>
+              <div class="flex items-center gap-3">
+                <input type="range" id="config-digits-range" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="flex-grow accent-amber-600 h-2 bg-slate-200 rounded-lg">
+                <input type="number" id="config-digits-num" min="1" max="10" value="2" oninput="syncConfigDigits(this.value)" class="w-14 bg-white border border-amber-300 rounded-lg py-1 px-1.5 text-center font-bold text-amber-700 text-sm shadow-sm">
+              </div>
+            </div>
+
+            <!-- Regrouping -->
+            <div id="config-regrouping-box">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Regrouping (Carrying / Borrowing)</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="btn-regroup-with" onclick="setConfigRegrouping('with')" class="p-2 rounded-lg text-xs font-bold border transition gold-btn">With Regrouping</button>
+                <button type="button" id="btn-regroup-without" onclick="setConfigRegrouping('without')" class="p-2 rounded-lg text-xs font-bold border transition light-btn">Without Regrouping</button>
+              </div>
+            </div>
+
+            <!-- Integers -->
+            <div id="config-integers-box" class="hidden">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Sign Distribution Mode</label>
+              <div class="grid grid-cols-3 gap-1.5">
+                <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2 rounded-lg text-xs font-bold border gold-btn">Mixed (+ / -)</button>
+                <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2 rounded-lg text-xs font-bold border light-btn">Both (-)</button>
+                <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2 rounded-lg text-xs font-bold border light-btn">Both (+)</button>
+              </div>
+            </div>
+
+            <!-- Operations Selection -->
+            <div id="config-operations-box">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1">Operations Included</label>
+              <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-add" checked onchange="toggleOperation('+')" class="accent-amber-600 w-3.5 h-3.5">
+                  <span class="text-xs font-bold text-slate-800">Add (+)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-sub" checked onchange="toggleOperation('-')" class="accent-amber-600 w-3.5 h-3.5">
+                  <span class="text-xs font-bold text-slate-800">Sub (−)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-mul" checked onchange="toggleOperation('*')" class="accent-amber-600 w-3.5 h-3.5">
+                  <span class="text-xs font-bold text-slate-800">Mul (×)</span>
+                </label>
+                <label class="flex items-center gap-1.5 p-2 rounded-lg bg-white border border-amber-200 cursor-pointer shadow-sm">
+                  <input type="checkbox" id="op-div" checked onchange="toggleOperation('/')" class="accent-amber-600 w-3.5 h-3.5">
+                  <span class="text-xs font-bold text-slate-800">Div (÷)</span>
+                </label>
+              </div>
+            </div>
+          </div>
+
+          <div class="pt-2 flex gap-2">
+            <button onclick="switchTab('home')" class="w-1/3 py-2.5 rounded-xl font-bold light-btn text-xs">Cancel</button>
+            <button onclick="startQuizSession()" class="w-2/3 py-2.5 rounded-xl font-bold gold-btn text-xs flex items-center justify-center gap-1.5">
+              <span>Start Practice</span>
+              <i class="fa-solid fa-play text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 3. COMPACT ZERO-SCROLL QUIZ VIEW -->
+      <section id="view-quiz" class="hidden flex flex-col justify-between max-w-xl mx-auto space-y-2.5">
+        <div class="light-glass px-3 py-2 rounded-xl flex items-center justify-between text-xs border border-amber-200">
+          <div class="flex items-center gap-1.5 truncate">
+            <span class="font-bold text-amber-700 font-mono" id="quiz-progress-text">Q 1 of 10</span>
+            <span class="text-slate-300">|</span>
+            <span class="text-slate-700 font-semibold truncate" id="quiz-cat-name">Rational Fractions</span>
+          </div>
+          <div class="flex items-center gap-2 shrink-0">
+            <div class="flex items-center gap-1" id="quiz-chances-container"></div>
+            <span class="text-[11px] text-slate-600 font-mono font-bold" id="quiz-score-preview">Score: 0</span>
+          </div>
+        </div>
+
+        <div class="light-glass p-5 sm:p-6 rounded-3xl text-center flex flex-col items-center justify-center min-h-[140px] shadow-xl border border-amber-300">
+          <div class="text-[10px] uppercase tracking-wider text-amber-700 font-bold mb-1" id="quiz-problem-submode">Solve Equation</div>
+          <div id="quiz-problem-display" class="font-mono text-2xl sm:text-3xl md:text-4xl font-black text-slate-900 tracking-wider my-2 break-words select-all">1/2 + 3/4 = ?</div>
+          <div id="quiz-problem-tip" class="text-[11px] text-slate-500 italic">Type answer (fractions as a/b or -a/b, mixed as w a/b).</div>
+        </div>
+
+        <div id="quiz-feedback-box" class="hidden p-3 rounded-xl text-xs font-medium border transition-all duration-300"></div>
+
+        <div class="light-glass p-3 rounded-2xl space-y-2 border border-amber-200">
+          <div class="flex gap-1.5">
+            <input type="text" id="quiz-answer-input" inputmode="text" autocomplete="off" autocorrect="off" spellcheck="false" placeholder="e.g., -5/6 or -1 1/2" onkeydown="handleQuizInputKeydown(event)" class="flex-grow bg-white border border-amber-300 focus:border-amber-600 rounded-xl px-3 py-2 text-base sm:text-lg font-bold font-mono text-slate-900 outline-none shadow-inner">
+            <button id="btn-check-answer" onclick="checkCurrentAnswer()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs sm:text-sm flex items-center gap-1 shrink-0">
+              <span>Check</span>
+              <i class="fa-solid fa-circle-check"></i>
+            </button>
+          </div>
+
+          <div class="grid grid-cols-7 gap-1.5 pt-1">
+            <!-- Numbers Row 1 & 2 -->
+            <button type="button" onclick="insertToolbarSymbol('1')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">1</button>
+            <button type="button" onclick="insertToolbarSymbol('2')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">2</button>
+            <button type="button" onclick="insertToolbarSymbol('3')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">3</button>
+            <button type="button" onclick="insertToolbarSymbol('4')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">4</button>
+            <button type="button" onclick="insertToolbarSymbol('5')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">5</button>
+            <button type="button" onclick="insertToolbarSymbol('6')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">6</button>
+            <button type="button" onclick="insertToolbarSymbol('7')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">7</button>
+            
+            <button type="button" onclick="insertToolbarSymbol('8')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">8</button>
+            <button type="button" onclick="insertToolbarSymbol('9')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">9</button>
+            <button type="button" onclick="insertToolbarSymbol('0')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">0</button>
+            
+            <!-- Operations & Symbols -->
+            <button type="button" onclick="insertToolbarSymbol('-')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">(-)</button>
+            <button type="button" onclick="insertToolbarSymbol('.')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">.</button>
+            <button type="button" onclick="insertToolbarSymbol('%')" class="p-1.5 rounded-lg bg-amber-50 text-amber-800 border border-amber-300 text-xs sm:text-sm font-mono font-bold">%</button>
+            <button type="button" onclick="insertToolbarSymbol('/')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">a/b</button>
+            
+            <!-- Advanced Symbols & Actions Row 3 -->
+            <button type="button" onclick="insertToolbarSymbol(' ')" class="p-1.5 rounded-lg light-btn text-[10px] sm:text-xs font-mono font-bold uppercase">Spc</button>
+            <button type="button" onclick="insertToolbarSymbol('√')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">√x</button>
+            <button type="button" onclick="insertToolbarSymbol('∛')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">³√x</button>
+            <button type="button" onclick="openExponentSuperscriptPrompt()" class="p-1.5 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 text-xs sm:text-sm font-bold">xⁿ</button>
+            <button type="button" onclick="insertToolbarSymbol('(')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">(</button>
+            <button type="button" onclick="insertToolbarSymbol(')')" class="p-1.5 rounded-lg light-btn text-xs sm:text-sm font-mono font-bold">)</button>
+            <button type="button" onclick="handleBackspace()" class="p-1.5 rounded-lg bg-red-100 text-red-700 border border-red-300 hover:bg-red-200 text-xs sm:text-sm font-bold flex items-center justify-center transition">
+              <i class="fa-solid fa-delete-left"></i>
+            </button>
+          </div>
+        </div>
+
+        <div class="text-center pt-1">
+          <button onclick="confirmExitQuiz()" class="text-[11px] text-slate-400 hover:text-red-600 font-semibold underline">Exit Session</button>
+        </div>
+      </section>
+
+      <!-- 4. RESULTS VIEW -->
+      <section id="view-results" class="hidden max-w-md mx-auto space-y-4">
+        <div class="light-glass p-6 rounded-3xl shadow-2xl text-center space-y-4 border border-amber-300">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
+            <i class="fa-solid fa-award"></i>
+          </div>
+          <div>
+            <h3 class="text-xl font-extrabold text-slate-900 font-serif">Practice Completed!</h3>
+            <p class="text-[11px] text-slate-500 mt-0.5">Confirm student details to submit scores to your teacher's registry.</p>
+          </div>
+
+          <div class="bg-amber-50/80 p-3.5 rounded-2xl border border-amber-200 flex items-center justify-around shadow-sm">
+            <div>
+              <div class="text-2xl font-black text-amber-700 font-mono" id="results-score-display">0 / 0</div>
+              <div class="text-[10px] text-slate-500 uppercase font-semibold">Score</div>
+            </div>
+            <div class="h-6 w-px bg-amber-200"></div>
+            <div>
+              <div class="text-2xl font-black text-emerald-700 font-mono" id="results-percentage-display">0%</div>
+              <div class="text-[10px] text-slate-500 uppercase font-semibold">Accuracy</div>
+            </div>
+            <div class="h-6 w-px bg-amber-200"></div>
+            <div>
+              <div class="text-xs font-bold text-amber-900 mt-1" id="results-mastery-display">Proficient</div>
+              <div class="text-[10px] text-slate-500 uppercase font-semibold">Rating</div>
+            </div>
+          </div>
+
+          <div class="space-y-3 text-left">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-700 uppercase tracking-wider mb-1">Student Full Name <span class="text-red-500">*</span></label>
+              <input type="text" id="student-name-input" placeholder="e.g., Juan Dela Cruz" class="w-full bg-white border border-amber-300 rounded-xl p-2.5 text-xs font-semibold text-slate-900 outline-none shadow-sm">
+            </div>
+            <div class="grid grid-cols-2 gap-2">
+              <div>
+                <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">Grade & Section</label>
+                <input type="text" id="student-section-input" placeholder="e.g., 9-Einstein" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+              </div>
+              <div>
+                <label class="block text-[10px] font-bold text-slate-700 uppercase tracking-wider mb-1">Teacher Code</label>
+                <input type="text" id="student-code-input" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-700 uppercase outline-none shadow-sm">
+              </div>
+            </div>
+          </div>
+
+          <div id="results-sync-status" class="text-[11px] text-slate-600 flex items-center justify-center gap-1.5 py-1">
+            <i class="fa-solid fa-cloud text-amber-600"></i>
+            <span>Ready to record to gradebook</span>
+          </div>
+
+          <div class="flex gap-2 pt-1">
+            <button onclick="switchTab('home')" class="py-2.5 rounded-xl font-bold light-btn text-xs w-1/2">Home</button>
+            <button onclick="triggerAutoSaveSubmission()" class="py-2.5 rounded-xl font-bold gold-btn text-xs w-1/2 flex items-center justify-center gap-1.5">
+              <span>Certificate</span>
+              <i class="fa-solid fa-check-double text-[10px]"></i>
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. TEACHER REGISTRY VIEW -->
+      <section id="view-scores" class="hidden space-y-4">
+        <div id="scores-locked-state" class="light-glass p-6 sm:p-10 rounded-3xl text-center space-y-3 max-w-md mx-auto border border-amber-300 hidden">
+          <div class="w-12 h-12 rounded-full bg-amber-100 text-amber-700 border border-amber-300 flex items-center justify-center text-2xl mx-auto shadow-sm">
+            <i class="fa-solid fa-lock"></i>
+          </div>
+          <h3 class="text-lg font-black text-slate-900 font-serif">Teacher Authentication Required</h3>
+          <p class="text-xs text-slate-600 leading-relaxed">
+            Student score registries are confidential. Log in with your Teacher Account to view submissions, review questions, export gradebooks, or manage student records.
+          </p>
+          <button onclick="openTeacherAuthModal()" class="px-5 py-2 rounded-xl font-bold gold-btn text-xs flex items-center gap-1.5 mx-auto">
+            <i class="fa-solid fa-arrow-right-to-bracket text-[10px]"></i>
+            <span>Open Teacher Portal</span>
+          </button>
+        </div>
+
+        <div id="scores-unlocked-state" class="hidden space-y-4">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-amber-200 pb-3">
+            <div>
+              <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider" id="registry-title-label">Teacher Gradebook</span>
+              <h2 class="text-xl font-black text-slate-900 font-serif">Student Score Registry</h2>
+            </div>
+            <div class="flex items-center gap-2">
+              <button onclick="pullScoresFromCloud()" class="px-3 py-1.5 rounded-xl text-xs font-bold bg-amber-100 border border-amber-300 text-amber-800 hover:bg-amber-200 flex items-center gap-1 shadow-sm">
+                <i class="fa-solid fa-rotate text-amber-700" id="sync-spinner"></i>
+                <span>Refresh</span>
+              </button>
+              <button onclick="exportScoresToCSV()" class="px-3 py-1.5 rounded-xl text-xs font-bold gold-btn flex items-center gap-1">
+                <i class="fa-solid fa-file-excel"></i>
+                <span>CSV</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="light-glass p-3 rounded-2xl flex flex-col sm:flex-row items-center gap-2 border border-amber-200">
+            <div class="relative flex-grow w-full">
+              <i class="fa-solid fa-filter absolute left-3 top-2.5 text-slate-400 text-xs"></i>
+              <input type="text" id="filter-classcode" placeholder="Filter student name or section..." oninput="renderScoresTable()" class="w-full bg-white border border-amber-200 rounded-xl pl-8 pr-3 py-1.5 text-xs font-mono text-slate-800 outline-none shadow-inner">
+            </div>
+            <div class="text-xs text-slate-600 font-mono whitespace-nowrap self-end sm:self-center">
+              Active Code: <strong id="filter-code-tag" class="text-amber-700"></strong>
+            </div>
+          </div>
+
+          <div class="light-glass rounded-2xl overflow-hidden shadow-lg border border-amber-200">
+            <div class="overflow-x-auto w-full">
+              <table class="w-full text-left text-xs whitespace-nowrap">
+                <thead class="bg-amber-100/70 text-amber-900 uppercase font-bold text-[10px] tracking-wider border-b border-amber-200">
+                  <tr>
+                    <th class="py-2.5 px-3">Date</th>
+                    <th class="py-2.5 px-3">Student Name</th>
+                    <th class="py-2.5 px-3">Section</th>
+                    <th class="py-2.5 px-3 text-center">Class Code</th>
+                    <th class="py-2.5 px-3">Category</th>
+                    <th class="py-2.5 px-3 text-center">Score</th>
+                    <th class="py-2.5 px-3 text-center">%</th>
+                    <th class="py-2.5 px-3 text-center">Rating</th>
+                    <th class="py-2.5 px-3 text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="scores-table-body" class="divide-y divide-amber-100/80 bg-white/70"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. STUDY GUIDES VIEW -->
+      <section id="view-guides" class="hidden max-w-3xl mx-auto space-y-4">
+        <div class="border-b border-amber-200 pb-3 flex items-center justify-between">
+          <div>
+            <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider">Reference Center</span>
+            <h2 class="text-xl font-black text-slate-900 font-serif">Rules & Instructional Guides</h2>
+          </div>
+          <button onclick="switchTab('home')" class="text-xs font-bold light-btn px-2.5 py-1 rounded-lg">
+            <i class="fa-solid fa-arrow-left mr-1"></i> Home
+          </button>
+        </div>
+
+        <div class="flex gap-2 border-b border-slate-200 pb-2">
+          <button onclick="setGuideTab('teachers')" id="tab-btn-teachers-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold transition gold-btn flex items-center gap-1.5">
+            <i class="fa-solid fa-chalkboard-user"></i>
+            <span>Teacher's Manual</span>
+          </button>
+          <button onclick="setGuideTab('math')" id="tab-btn-math-guide" class="px-3 py-1.5 rounded-xl text-xs font-bold transition light-btn flex items-center gap-1.5">
+            <i class="fa-solid fa-square-root-variable"></i>
+            <span>Math Reference</span>
+          </button>
+        </div>
+
+        <div id="guides-teacher-view" class="space-y-3">
+          <div class="light-glass p-4 rounded-2xl border border-amber-200 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 font-mono font-black text-xs flex items-center justify-center border border-amber-300">1</span>
+              <h3 class="text-sm font-bold text-slate-900">Student Question Review & Diagnostics</h3>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed pl-8">
+              Teachers can click <strong>Review</strong> next to any submission in the Registry to inspect each math equation, the learner's response, the expected answer, and whether each item was solved correctly.
+            </p>
+          </div>
+
+          <div class="light-glass p-4 rounded-2xl border border-amber-200 space-y-1.5">
+            <div class="flex items-center gap-2">
+              <span class="w-6 h-6 rounded-lg bg-amber-100 text-amber-800 font-mono font-black text-xs flex items-center justify-center border border-amber-300">2</span>
+              <h3 class="text-sm font-bold text-slate-900">Student Record Deletion & Self-Service</h3>
+            </div>
+            <p class="text-xs text-slate-600 leading-relaxed pl-8">
+              Teachers can delete inaccurate or duplicate student submissions directly from the Registry. Under the Teacher Portal, teachers can also update their profile credentials or delete their own teacher account permanently. Students can also view their local history in the registry without needing to login.
+            </p>
+          </div>
+        </div>
+
+        <div id="guides-math-view" class="hidden space-y-3">
+          <div id="guides-container" class="space-y-3"></div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- MODAL: TEACHER ACCOUNT & PROFILE MANAGEMENT PORTAL -->
+  <div id="modal-teacher-portal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="light-glass max-w-sm w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-amber-300 max-h-[90dvh] overflow-y-auto">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-user-tie text-amber-600 text-base"></i>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 font-serif" id="teacher-modal-title">Teacher Portal</h3>
+        </div>
+        <button onclick="closeTeacherAuthModal()" class="text-slate-400 hover:text-slate-700"><i class="fa-solid fa-xmark text-sm"></i></button>
+      </div>
+
+      <!-- VIEW: LOGIN -->
+      <div id="teacher-view-login" class="space-y-2.5">
+        <p class="text-[11px] text-slate-600">Log in to view student submissions, manage links, review answers, and manage your account.</p>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Teacher Username / ID</label>
+          <input type="text" id="login-username" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Password</label>
+          <input type="password" id="login-password" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <button onclick="handleTeacherLogin()" id="btn-login" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Login to Account</button>
+        <div class="text-center pt-1.5">
+          <button onclick="toggleTeacherView('register')" class="text-[11px] text-amber-700 underline font-semibold">New Teacher? Register Here</button>
+        </div>
+      </div>
+
+      <!-- VIEW: REGISTER -->
+      <div id="teacher-view-register" class="hidden space-y-2.5">
+        <p class="text-[11px] text-slate-600">Create your teacher profile to generate automated student links and monitor practice records.</p>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Full Name</label>
+          <input type="text" id="reg-fullname" placeholder="e.g., Maria Reyes" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Teacher ID / Username</label>
+          <input type="text" id="reg-username" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-bold text-slate-900 uppercase outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Base Class Code (Optional)</label>
+          <input type="text" id="reg-classcode" placeholder="e.g., REYES" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-700 uppercase outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Assigned Section(s)</label>
+          <input type="text" id="reg-sections" placeholder="e.g., 9-Einstein, 9-Newton" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Password</label>
+          <input type="password" id="reg-password" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <button onclick="handleTeacherRegister()" id="btn-register" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Create Account</button>
+        <div class="text-center pt-1.5">
+          <button onclick="toggleTeacherView('login')" class="text-[11px] text-amber-700 underline font-semibold">Already have an account? Log in</button>
+        </div>
+      </div>
+
+      <!-- VIEW: DASHBOARD -->
+      <div id="teacher-view-dashboard" class="hidden space-y-3">
+        <div class="bg-amber-50/90 p-2.5 rounded-2xl border border-amber-300 space-y-0.5 shadow-sm">
+          <div class="text-[11px] text-slate-600">Teacher: <strong id="dash-teacher-name" class="text-slate-900 font-bold"></strong></div>
+          <div class="text-[11px] text-slate-600">Class Code: <strong id="dash-teacher-code" class="text-amber-800 font-mono font-bold"></strong></div>
+          <div class="text-[10px] text-slate-500">Sections: <span id="dash-teacher-sections" class="text-slate-700 font-medium">None</span></div>
+        </div>
+
+        <div class="space-y-1.5">
+          <label class="block text-[10px] font-bold text-slate-600 uppercase">Generate Student Practice Link</label>
+          <div class="flex items-center gap-1.5">
+            <input type="text" id="gen-section-subcode" placeholder="Section (e.g. 9A)" class="w-1/2 bg-white border border-amber-300 rounded-xl p-1.5 text-xs text-slate-900 uppercase outline-none shadow-sm">
+            <button onclick="generateCustomStudentLink()" class="w-1/2 py-1.5 rounded-xl font-bold gold-btn text-xs">Update Link</button>
+          </div>
+        </div>
+
+        <div class="space-y-1">
+          <div class="text-[10px] text-slate-600 font-bold">Shareable Practice Link:</div>
+          <div class="flex items-center gap-1">
+            <input type="text" id="display-student-link" readonly class="w-full bg-white border border-slate-300 rounded-lg p-1.5 text-[10px] font-mono text-slate-700 shadow-inner">
+            <button onclick="copyGeneratedLink()" id="btn-copy-link" class="px-2.5 py-1.5 rounded-lg text-xs font-bold gold-btn shrink-0">Copy</button>
+          </div>
+        </div>
+
+        <div class="pt-1 flex gap-2">
+          <button onclick="viewTeacherScores()" class="w-1/2 py-2 rounded-xl font-bold bg-amber-100 border border-amber-300 text-amber-900 text-xs shadow-sm">Gradebook</button>
+          <button onclick="openEditTeacherProfileView()" class="w-1/2 py-2 rounded-xl font-bold light-btn text-xs flex items-center justify-center gap-1 text-slate-700">
+            <i class="fa-solid fa-pen-to-square text-[10px] text-amber-600"></i>
+            <span>Edit Profile</span>
+          </button>
+        </div>
+
+        <div class="border-t border-amber-200/80 pt-2 flex items-center justify-between">
+          <button onclick="handleTeacherLogout()" class="text-xs text-slate-500 hover:text-slate-800 font-semibold underline">Log Out</button>
+          <button onclick="handleDeleteTeacherAccount()" class="text-xs text-red-600 hover:text-red-700 font-bold flex items-center gap-1">
+            <i class="fa-solid fa-trash-can text-[10px]"></i>
+            <span>Delete Account</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- VIEW: EDIT TEACHER PROFILE -->
+      <div id="teacher-view-edit" class="hidden space-y-2.5">
+        <div class="flex items-center justify-between">
+          <span class="text-[11px] font-bold text-amber-700 uppercase tracking-wide">Edit Account Information</span>
+          <button onclick="toggleTeacherView('dashboard')" class="text-[11px] text-slate-500 underline font-semibold">Cancel</button>
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Full Name</label>
+          <input type="text" id="edit-fullname" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Class Code</label>
+          <input type="text" id="edit-classcode" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs font-mono font-bold text-amber-800 uppercase outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">Assigned Section(s)</label>
+          <input type="text" id="edit-sections" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <div>
+          <label class="block text-[10px] font-bold text-slate-600 uppercase mb-1">New Password (Leave blank to keep)</label>
+          <input type="password" id="edit-newpassword" placeholder="••••••••" class="w-full bg-white border border-amber-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <div class="pt-1 border-t border-amber-200">
+          <label class="block text-[10px] font-bold text-red-600 uppercase mb-1">Verify Current Password <span class="text-red-600">*</span></label>
+          <input type="password" id="edit-curpassword" placeholder="Current password required" class="w-full bg-white border border-red-300 rounded-xl p-2 text-xs text-slate-900 outline-none shadow-sm">
+        </div>
+        <button onclick="handleTeacherProfileUpdate()" id="btn-update-profile" class="w-full py-2.5 rounded-xl font-bold gold-btn text-xs">Save Changes</button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- MODAL: DETAILED STUDENT QUESTION REVIEW -->
+  <div id="modal-review-session" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="light-glass max-w-lg w-full p-5 rounded-3xl shadow-2xl space-y-3 border border-amber-300 max-h-[90dvh] flex flex-col bg-white">
+      <div class="flex items-center justify-between border-b border-amber-200 pb-2.5">
+        <div>
+          <span class="text-[10px] font-bold text-amber-700 uppercase tracking-wider font-mono">Submission Audit</span>
+          <h3 class="text-sm sm:text-base font-bold text-slate-900 font-serif" id="review-student-title">Review Student Work</h3>
+        </div>
+        <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+      </div>
+
+      <div class="bg-amber-50/90 p-2.5 rounded-2xl border border-amber-200 text-xs flex justify-between items-center shadow-sm">
+        <div>
+          <span class="text-slate-500 font-medium">Domain:</span> <strong id="review-domain-text" class="text-slate-800"></strong>
+        </div>
+        <div>
+          <span class="text-slate-500 font-medium">Score:</span> <strong id="review-score-text" class="text-amber-800 font-mono"></strong>
+        </div>
+      </div>
+
+      <div id="review-items-container" class="space-y-2 overflow-y-auto flex-grow pr-1 max-h-[55dvh]">
+        <!-- Populated dynamically -->
+      </div>
+
+      <div class="pt-2 border-t border-amber-200 flex justify-end">
+        <button onclick="closeReviewModal()" class="px-4 py-2 rounded-xl font-bold light-btn text-xs">Close Review</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CERTIFICATE -->
+  <div id="modal-certificate" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="max-w-lg w-full space-y-3">
+      <div id="certificate-print-area" class="light-glass p-6 sm:p-8 rounded-3xl border-2 border-amber-500 text-center space-y-4 shadow-2xl relative overflow-hidden bg-white">
+        <div class="text-[10px] font-bold uppercase tracking-widest text-amber-700 font-serif">PROJECT PRIME • Achievement Record</div>
+        <h2 class="text-xl sm:text-2xl font-black text-slate-900 uppercase tracking-wide font-serif">Certificate of Mastery</h2>
+        <p class="text-xs text-slate-600 font-medium">This hereby certifies that</p>
+        <div id="cert-student-name" class="text-xl sm:text-2xl font-extrabold text-amber-800 border-b-2 border-amber-400 pb-1 inline-block px-4 font-serif">Juan Dela Cruz</div>
+        <div id="cert-student-section" class="text-xs font-semibold text-slate-600">Grade 8 - Section</div>
+        <p class="text-xs text-slate-600 max-w-sm mx-auto">
+          has successfully completed practice in <strong id="cert-category" class="text-slate-900">Rational Fractions</strong> (<span id="cert-details" class="text-amber-800">Standard</span>).
+        </p>
+        <div class="grid grid-cols-3 gap-2 max-w-xs mx-auto bg-amber-50/90 p-2.5 rounded-2xl border border-amber-300 shadow-sm">
+          <div>
+            <div id="cert-score" class="text-lg font-black text-amber-800 font-mono">10/10</div>
+            <div class="text-[9px] uppercase text-slate-500 font-bold">Score</div>
+          </div>
+          <div>
+            <div id="cert-accuracy" class="text-lg font-black text-emerald-700 font-mono">100%</div>
+            <div class="text-[9px] uppercase text-slate-500 font-bold">Accuracy</div>
+          </div>
+          <div>
+            <div id="cert-rating" class="text-[11px] font-bold text-amber-900 mt-1 font-serif">Mastery</div>
+            <div class="text-[9px] uppercase text-slate-500 font-bold">Rating</div>
+          </div>
+        </div>
+        <div class="flex items-center justify-between text-[10px] text-slate-500 pt-3 border-t border-amber-200">
+          <span>Teacher Code: <strong id="cert-code" class="text-amber-800 font-mono font-bold">GENERAL</strong></span>
+          <span id="cert-date">Date</span>
+        </div>
+      </div>
+      <div class="flex justify-center gap-2">
+        <button onclick="window.print()" class="px-4 py-2 rounded-xl font-bold gold-btn text-xs flex items-center gap-1.5"><i class="fa-solid fa-print"></i> Print</button>
+        <button onclick="closeCertificateModal()" class="px-4 py-2 rounded-xl font-bold light-btn text-xs">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INSTALLATION GUIDE (PWA FALLBACK) -->
+  <div id="modal-install-guide" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-3">
+    <div class="light-glass max-w-sm w-full p-6 rounded-3xl shadow-2xl space-y-4 border border-emerald-300 relative bg-white">
+      <div class="flex items-center justify-between border-b border-emerald-200 pb-2.5">
+        <div class="flex items-center gap-2">
+          <i class="fa-solid fa-download text-emerald-600 text-lg"></i>
+          <h3 class="text-base font-bold text-slate-900 font-serif">Install App for Offline Use</h3>
+        </div>
+        <button onclick="document.getElementById('modal-install-guide').classList.add('hidden')" class="text-slate-400 hover:text-slate-700 p-1"><i class="fa-solid fa-xmark text-sm"></i></button>
+      </div>
+      <div class="space-y-3 text-sm text-slate-700">
+        <p>You can install <strong>PROJECT PRIME</strong> directly to your device for full-screen, offline access!</p>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2 shadow-sm">
+          <p class="font-bold text-slate-800"><i class="fa-brands fa-apple mr-1"></i> iOS / iPadOS (Safari):</p>
+          <p>1. Tap the <strong>Share</strong> button <i class="fa-solid fa-arrow-up-from-bracket mx-1"></i> at the bottom.</p>
+          <p>2. Scroll down and tap <strong>"Add to Home Screen"</strong> <i class="fa-solid fa-square-plus mx-1 text-slate-400"></i>.</p>
+        </div>
+        <div class="bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs space-y-2 shadow-sm">
+          <p class="font-bold text-slate-800"><i class="fa-brands fa-android mr-1"></i><i class="fa-brands fa-windows mr-1"></i> Android / Windows / Mac:</p>
+          <p>1. Open the browser menu (three dots <i class="fa-solid fa-ellipsis-vertical mx-1"></i> or settings).</p>
+          <p>2. Select <strong>"Install App"</strong> or <strong>"Add to Home screen"</strong>.</p>
+        </div>
+      </div>
+      <button onclick="document.getElementById('modal-install-guide').classList.add('hidden')" class="w-full px-4 py-2.5 rounded-xl font-bold bg-emerald-100 text-emerald-800 border border-emerald-400 hover:bg-emerald-200 transition text-xs">Got it!</button>
+    </div>
+  </div>
+
+  <!-- APPLICATION ENGINE -->
+  <script>
+    const WEB_APP_EXEC_URL = 'https://script.google.com/macros/s/AKfycbxP5AeEgtftRFP1LFZwEi5Gvh6nmmCTaLLPKSjOw3L_oUaKqAa1IU5LE6IFWEvB2Kz6/exec';
+
+    const STORAGE_KEYS = {
+      ACTIVE_CODE: 'PRIME_ACTIVE_TEACHER_CODE',
+      TEACHER_PROFILE: 'PRIME_LOGGED_TEACHER',
+      TEACHER_CRED: 'PRIME_TEACHER_CRED',
+      SAVED_STUDENT_NAME: 'PRIME_SAVED_STUDENT_NAME',
+      SAVED_STUDENT_SEC: 'PRIME_SAVED_STUDENT_SEC'
+    };
+    
+    const safeStorage = {
+      data: {},
+      setItem: function(k, v) {
+        try { window.localStorage.setItem(k, v); } catch (e) { this.data[k] = v; }
+      },
+      getItem: function(k) {
+        try { return window.localStorage.getItem(k) || this.data[k]; } catch (e) { return this.data[k] || null; }
+      },
+      removeItem: function(k) {
+        try { window.localStorage.removeItem(k); } catch (e) { delete this.data[k]; }
+      }
+    };
+
+    const SUPERSCRIPT_MAP = { '0':'⁰','1':'¹','2':'²','3':'³','4':'⁴','5':'⁵','6':'⁶','7':'⁷','8':'⁸','9':'⁹','-':'⁻','+':'⁺' };
+    const NORMAL_MAP = { '⁰':'0','¹':'1','²':'2','³':'3','⁴':'4','⁵':'5','⁶':'6','⁷':'7','⁸':'8','⁹':'9','⁻':'-','⁺':'+' };
+
+    function toSuperscript(str) { return String(str).split('').map(c => SUPERSCRIPT_MAP[c] || c).join(''); }
+
+    function parseFractionToValue(rawStr) {
+      if (!rawStr) return NaN;
+      if (/[a-zA-Z]/.test(rawStr)) return NaN; // Prevent variables from parsing as mixed fractions
+      let s = String(rawStr).trim().replace(/−/g, '-').replace(/\s+/g, ' ');
+      let mixedMatch = s.match(/^(-?\d+)\s+(\d+)\/(\d+)$/);
+      if (mixedMatch) {
+        let whole = parseInt(mixedMatch[1], 10);
+        let num = parseInt(mixedMatch[2], 10);
+        let den = parseInt(mixedMatch[3], 10);
+        if (den === 0) return NaN;
+        let sign = whole < 0 ? -1 : 1;
+        return whole + (sign * (num / den));
+      }
+      let fracMatch = s.match(/^(-?\d+)\/(-?\d+)$/);
+      if (fracMatch) {
+        let num = parseInt(fracMatch[1], 10);
+        let den = parseInt(fracMatch[2], 10);
+        if (den === 0) return NaN;
+        return num / den;
+      }
+      return parseFloat(s);
+    }
+
+    function normalizeMathInput(str) {
+      let s = String(str || '').trim().replace(/\s+/g, ' ').replace(/−/g, '-').replace(/\*/g, '');
+      s = s.replace(/\^\(([^)]+)\)/g, '^$1'); 
+      let out = ''; let inSup = false;
+      for (const ch of s) {
+        if (NORMAL_MAP[ch] !== undefined) {
+          if (!inSup) { out += '^'; inSup = true; }
+          out += NORMAL_MAP[ch];
+        } else { inSup = false; out += ch; }
+      }
+      return out.toLowerCase().replace(/(^|[^0-9])1(√|³√|⁴√)/g, '$1$2').replace(/[\$%]/g, '').trim();
+    }
+
+    const DOMAINS = [
+      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
+      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
+      { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Adjust numerator & denominator digits, denominator range (1–100), and types.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Product, Quotient, Power of a Power, and Negative/Zero exponent rules.', hasExponentsControl: true },
+      { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Simplify and compute arithmetic expressions with square, cube, and 4th roots.', hasRadicalsControl: true, hasOperations: true, hasTerms: true },
+      { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false },
+      { id: 'percentages', title: 'Percentages', badge: 'Domain 9', icon: 'fa-percent', desc: 'Conversions, percent of a number, percent change, and multi-step real-world applications.', hasPercentageMode: true }
+    ];
+
+    const STUDY_GUIDES = [
+      { title: '1. Order of Operations (PEMDAS / GEMDAS)', rules: ['G / P: Evaluate operations inside Grouping symbols or Parentheses first.', 'E: Evaluate Exponents and powers next.', 'M / D: Perform Multiplication and Division from left to right.', 'A / S: Perform Addition and Subtraction from left to right.'] },
+      { title: '2. Rational Fractions (Similar, Dissimilar & Mixed)', rules: ['Similar: Denominators are the same. Combine numerators over the common denominator.', 'Dissimilar: Find Least Common Denominator (LCD), convert each term, then combine.', 'Mixed Numbers: Convert to improper fractions first (e.g., 2 1/3 = 7/3), compute, then simplify.'] },
+      { title: '3. Laws of Exponents', rules: ['Product: x^a · x^b = x^(a+b)', 'Quotient: x^a / x^b = x^(a-b)', 'Power of Power: (x^a)^b = x^(a·b)', 'Negative Exponent: x^(-a) = 1 / x^a', 'Zero Exponent: x^0 = 1'] },
+      { title: '4. Roots and Radicals', rules: ['Product: √a · √b = √(ab)', 'Quotient: √a / √b = √(a/b)', 'Addition: Only like radicals can be added (e.g. 2√3 + 4√3 = 6√3)'] },
+      { title: '5. Percentages & Applications', rules: ['Conversions: Decimal to percent, multiply by 100. Percent to decimal, divide by 100.', 'Percent of a Number: Multiply the decimal form of the percent by the number.', 'Percent Change: (New - Old) / Old × 100.', 'Successive Change Misconception: A 20% increase followed by a 20% decrease does NOT result in the original amount.'] }
+    ];
+
+    const appState = {
+      activeTab: 'home',
+      selectedDomain: DOMAINS[0],
+      config: { 
+        count: 10, 
+        numberField: 'none', 
+        digits: 2, 
+        regrouping: 'with', 
+        integerMode: 'mixed', 
+        operations: ['+', '-', '*', '/'],
+        terms: 2,
+        fractionType: 'dissimilar',
+        fractionSign: 'mixed',
+        fracNumDigits: 1,
+        fracDenDigits: 1,
+        fracDenMin: 2,
+        fracDenMax: 12,
+        exponentLaw: 'mixed',
+        radicalType: 'mixed',
+        radicalMode: 'simp',
+        percentageMode: 'conversion'
+      },
+      quiz: { questions: [], currentIndex: 0, score: 0, chances: 3, answeredCurrent: false },
+      scores: [],
+      activeClassCode: '',
+      currentTeacher: null
+    };
+
+    let deferredPrompt;
+
+    window.addEventListener('beforeinstallprompt', (e) => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      // Stash the event so it can be triggered later.
+      deferredPrompt = e;
+    });
+
+    function handleInstallClick() {
+      if (deferredPrompt) {
+        // Show the install prompt
+        deferredPrompt.prompt();
+        // Wait for the user to respond to the prompt
+        deferredPrompt.userChoice.then((choiceResult) => {
+          if (choiceResult.outcome === 'accepted') {
+            console.log('User accepted the install prompt');
+          } else {
+            console.log('User dismissed the install prompt');
+          }
+          deferredPrompt = null;
+        });
+      } else {
+        // If native prompt is unavailable (like on iOS), show the manual instruction guide
+        document.getElementById('modal-install-guide').classList.remove('hidden');
+      }
+    }
+
+    function injectManifest() {
+      const manifest = {
+        name: "PROJECT PRIME",
+        short_name: "PRIME",
+        description: "Mathematics Diagnostic & Practice Suite",
+        start_url: window.location.href.split('?')[0],
+        display: "standalone",
+        background_color: "#faf9f6",
+        theme_color: "#d97706",
+        icons: [
+          {
+            src: "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' fill='%23d97706' rx='115'/%3E%3Ctext x='50%25' y='50%25' font-size='300' font-family='sans-serif' font-weight='bold' fill='white' text-anchor='middle' dominant-baseline='central'%3E%26%238730;%3C/text%3E%3C/svg%3E",
+            sizes: "512x512",
+            type: "image/svg+xml",
+            purpose: "any maskable"
+          }
+        ]
+      };
+      const stringManifest = JSON.stringify(manifest);
+      const blob = new Blob([stringManifest], { type: 'application/manifest+json' });
+      const manifestURL = URL.createObjectURL(blob);
+      const link = document.createElement('link');
+      link.rel = 'manifest';
+      link.href = manifestURL;
+      document.head.appendChild(link);
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      injectManifest();
+      initAnimatedMathCanvas();
+      loadSavedState();
+      renderCategoriesGrid();
+      renderGuides();
+      checkUrlParameters();
+    });
+
+    // --- ANIMATED CANVAS ENGINE ---
+    function initAnimatedMathCanvas() {
+      const canvas = document.getElementById('math-bg-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      let w = canvas.width = window.innerWidth;
+      let h = canvas.height = window.innerHeight;
+
+      window.addEventListener('resize', () => {
+        w = canvas.width = window.innerWidth;
+        h = canvas.height = window.innerHeight;
+      });
+
+      const symbols = ['∫', '∑', 'π', 'ϕ', '∞', '√x', '∂y/∂x', 'lim', 'f(x)', '±', 'θ', 'λ', 'eⁱᵖ+1=0', 'x²', 'Δ', '∇'];
+      const particles = [];
+      const particleCount = Math.floor(Math.min(50, (w * h) / 22000));
+
+      for (let i = 0; i < particleCount; i++) {
+        particles.push({
+          x: Math.random() * w,
+          y: Math.random() * h,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
+          size: Math.random() * 2 + 1.5,
+          symbol: Math.random() < 0.4 ? symbols[Math.floor(Math.random() * symbols.length)] : null,
+          alpha: Math.random() * 0.5 + 0.35,
+          fontSize: Math.floor(Math.random() * 10 + 12)
+        });
+      }
+
+      let angle = 0;
+      function animate() {
+        ctx.clearRect(0, 0, w, h);
+
+        ctx.save();
+        ctx.translate(w * 0.85, h * 0.22);
+        ctx.rotate(angle * 0.25);
+        ctx.beginPath();
+        for (let i = 0; i < 360; i += 3) {
+          const rad = (i * Math.PI) / 180;
+          const r = 2.5 * Math.exp(0.0055 * i);
+          const px = r * Math.cos(rad);
+          const py = r * Math.sin(rad);
+          if (i === 0) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = 'rgba(217, 119, 6, 0.22)';
+        ctx.lineWidth = 1.2;
+        ctx.stroke();
+        ctx.restore();
+
+        ctx.beginPath();
+        for (let x = 0; x < w; x += 15) {
+          const y = h * 0.82 + Math.sin(x * 0.006 + angle) * 28 + Math.cos(x * 0.003 - angle) * 14;
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = 'rgba(180, 83, 9, 0.16)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        for (let i = 0; i < particles.length; i++) {
+          const p = particles[i];
+          p.x += p.vx;
+          p.y += p.vy;
+
+          if (p.x < -40) p.x = w + 40;
+          if (p.x > w + 40) p.x = -40;
+          if (p.y < -40) p.y = h + 40;
+          if (p.y > h + 40) p.y = -40;
+
+          if (p.symbol) {
+            ctx.font = `${p.fontSize}px 'JetBrains Mono', monospace`;
+            ctx.fillStyle = `rgba(180, 83, 9, ${p.alpha})`;
+            ctx.fillText(p.symbol, p.x, p.y);
+          } else {
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(217, 119, 6, ${p.alpha})`;
+            ctx.fill();
+          }
+
+          for (let j = i + 1; j < particles.length; j++) {
+            const p2 = particles[j];
+            const dist = Math.hypot(p.x - p2.x, p.y - p2.y);
+            if (dist < 115) {
+              ctx.beginPath();
+              ctx.moveTo(p.x, p.y);
+              ctx.lineTo(p2.x, p2.y);
+              ctx.strokeStyle = `rgba(217, 119, 6, ${0.20 * (1 - dist / 115)})`;
+              ctx.lineWidth = 0.8;
+              ctx.stroke();
+            }
+          }
+        }
+
+        angle += 0.004;
+        requestAnimationFrame(animate);
+      }
+      animate();
+    }
+
+    function loadSavedState() {
+      try {
+        const savedTeacher = safeStorage.getItem(STORAGE_KEYS.TEACHER_PROFILE);
+        if (savedTeacher) {
+          appState.currentTeacher = JSON.parse(savedTeacher);
+          updateTeacherNavUI();
+        }
+
+        const savedCode = safeStorage.getItem(STORAGE_KEYS.ACTIVE_CODE);
+        if (savedCode) {
+          setActiveTeacherCode(savedCode);
+        }
+
+        const savedName = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+        if (savedName) document.getElementById('student-name-input').value = savedName;
+
+        const savedSec = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_SEC);
+        if (savedSec) document.getElementById('student-section-input').value = savedSec;
+      } catch (e) {
+        console.warn('safeStorage warning:', e);
+      }
+    }
+
+    function checkUrlParameters() {
+      const params = new URLSearchParams(window.location.search);
+      const teacherParam = params.get('teacher') || params.get('code');
+      const secParam = params.get('sec') || params.get('section');
+
+      if (teacherParam) {
+        const cleanCode = (secParam ? `${teacherParam}-${secParam}` : teacherParam).trim().toUpperCase();
+        setActiveTeacherCode(cleanCode);
+      }
+      if (secParam) {
+        document.getElementById('student-section-input').value = secParam.toUpperCase();
+      }
+    }
+
+    function switchTab(tabName) {
+      appState.activeTab = tabName;
+      ['home', 'config', 'quiz', 'results', 'scores', 'guides'].forEach(v => {
+        const el = document.getElementById('view-' + v);
+        if (el) el.classList.toggle('hidden', v !== tabName);
+      });
+
+      if (tabName === 'scores') {
+        updateScoresViewSecurity();
+      }
+      window.scrollTo(0, 0);
+    }
+
+    function setGuideTab(view) {
+      const isTeacher = view === 'teachers';
+      document.getElementById('guides-teacher-view').classList.toggle('hidden', !isTeacher);
+      document.getElementById('guides-math-view').classList.toggle('hidden', isTeacher);
+
+      const btnTeachers = document.getElementById('tab-btn-teachers-guide');
+      const btnMath = document.getElementById('tab-btn-math-guide');
+
+      btnTeachers.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${isTeacher ? 'gold-btn' : 'light-btn'}`;
+      btnMath.className = `px-3 py-1.5 rounded-xl text-xs font-bold transition flex items-center gap-1.5 ${!isTeacher ? 'gold-btn' : 'light-btn'}`;
+    }
+
+    function updateScoresViewSecurity() {
+      document.getElementById('scores-locked-state').classList.add('hidden');
+      document.getElementById('scores-unlocked-state').classList.remove('hidden');
+
+      if (!appState.currentTeacher) {
+        document.getElementById('registry-title-label').textContent = 'Local Device History';
+        document.getElementById('filter-code-tag').textContent = 'LOCAL (NOT SYNCED)';
+        pullLocalScores();
+      } else {
+        document.getElementById('registry-title-label').textContent = 'Teacher Gradebook';
+        document.getElementById('filter-code-tag').textContent = appState.currentTeacher.classCode;
+        pullScoresFromCloud();
+      }
+    }
+    
+    function pullLocalScores() {
+      const local = safeStorage.getItem('PRIME_LOCAL_SCORES');
+      if (local) {
+        try {
+          appState.scores = JSON.parse(local);
+        } catch (e) {
+          appState.scores = [];
+        }
+      } else {
+        appState.scores = [];
+      }
+      renderScoresTable();
+    }
+
+    function renderCategoriesGrid() {
+      const grid = document.getElementById('categories-grid');
+      if (!grid) return;
+      grid.innerHTML = DOMAINS.map(d => `
+        <div onclick="openDomainConfig('${d.id}')" class="light-glass p-4 rounded-2xl cursor-pointer hover:border-amber-400 transition group flex flex-col justify-between space-y-2">
+          <div class="space-y-1.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[9px] font-bold uppercase tracking-wider text-amber-700 font-mono">${d.badge}</span>
+              <div class="w-7 h-7 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center text-amber-700 group-hover:bg-amber-600 group-hover:text-white transition shadow-sm">
+                <i class="fa-solid ${d.icon} text-xs"></i>
+              </div>
+            </div>
+            <h3 class="text-base font-extrabold text-slate-900 group-hover:text-amber-700 transition font-serif">${d.title}</h3>
+            <p class="text-[11px] text-slate-600 leading-snug line-clamp-2">${d.desc}</p>
+          </div>
+          <div class="pt-1.5 border-t border-amber-100 flex items-center justify-between text-[11px] font-bold text-amber-700">
+            <span>Start Practice</span>
+            <i class="fa-solid fa-arrow-right text-[10px] group-hover:translate-x-1 transition"></i>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function openDomainConfig(domainId) {
+      const domain = DOMAINS.find(d => d.id === domainId) || DOMAINS[0];
+      appState.selectedDomain = domain;
+      document.getElementById('config-domain-badge').textContent = domain.badge;
+      document.getElementById('config-domain-title').textContent = domain.title;
+
+      const toggleVis = (id, cond) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.toggle('hidden', !cond);
+      };
+
+      toggleVis('config-terms-box', domain.hasTerms);
+      toggleVis('config-fractions-box', domain.hasFractionsControl);
+      toggleVis('config-exponents-box', domain.hasExponentsControl);
+      toggleVis('config-radicals-box', domain.hasRadicalsControl);
+      toggleVis('config-percentages-box', domain.hasPercentageMode);
+      toggleVis('config-numberfield-box', domain.hasNumberField);
+      toggleVis('config-digits-box', domain.hasDigits);
+      toggleVis('config-regrouping-box', domain.hasRegrouping);
+      toggleVis('config-integers-box', domain.hasIntegersMode);
+      toggleVis('config-operations-box', domain.hasOperations);
+      
+      setConfigTerms(appState.config.terms || (domain.id === 'gemdas' ? 3 : 2));
+      if (domain.hasFractionsControl) {
+        setConfigFractionType(appState.config.fractionType || 'dissimilar');
+        setConfigFractionSign(appState.config.fractionSign || 'mixed');
+        syncFracNumDigits(appState.config.fracNumDigits || 1);
+        syncFracDenDigits(appState.config.fracDenDigits || 1);
+        syncFracDenMin(appState.config.fracDenMin || 2);
+        syncFracDenMax(appState.config.fracDenMax || 12);
+      }
+      if (domain.hasRadicalsControl) {
+        setConfigRadicalType(appState.config.radicalType || 'mixed');
+        setConfigRadicalMode(appState.config.radicalMode || 'simp');
+      }
+      if (domain.hasExponentsControl) {
+        setConfigExponentLaw(appState.config.exponentLaw || 'mixed');
+      }
+      if (domain.hasPercentageMode) {
+        setConfigPercentageMode(appState.config.percentageMode || 'conversion');
+      }
+
+      switchTab('config');
+    }
+
+    function setConfigTerms(num) {
+      appState.config.terms = parseInt(num, 10) || 2;
+      [2, 3, 4, 5].forEach(t => {
+        const btn = document.getElementById('btn-terms-' + t);
+        if (btn) {
+          btn.className = `py-2 rounded-lg text-xs font-bold border transition ${t === appState.config.terms ? 'gold-btn' : 'light-btn'}`;
+        }
+      });
+    }
+    
+    function setConfigExponentLaw(law) {
+      appState.config.exponentLaw = law;
+      const laws = ['product', 'quotient', 'power_power', 'power_product', 'power_quotient', 'negative', 'zero', 'mixed'];
+      laws.forEach(l => {
+        const btn = document.getElementById('btn-exp-' + l);
+        if (btn) btn.className = `py-1.5 px-2 rounded-lg text-[10px] font-bold border transition text-center ${l === law ? 'gold-btn' : 'light-btn'}`;
+      });
+    }
+
+    function setConfigRadicalType(type) {
+      appState.config.radicalType = type;
+      ['sqrt', 'cbrt', '4th', 'mixed'].forEach(t => {
+        const btn = document.getElementById('btn-radtype-' + t);
+        if (btn) btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${t === type ? 'gold-btn' : 'light-btn'}`;
+      });
+    }
+
+    function setConfigRadicalMode(mode) {
+      appState.config.radicalMode = mode;
+      const btnSimp = document.getElementById('btn-radmode-simp');
+      const btnArith = document.getElementById('btn-radmode-arith');
+      if (btnSimp) btnSimp.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${mode === 'simp' ? 'gold-btn' : 'light-btn'}`;
+      if (btnArith) btnArith.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${mode === 'arith' ? 'gold-btn' : 'light-btn'}`;
+
+      const opsBox = document.getElementById('config-operations-box');
+      const termsBox = document.getElementById('config-terms-box');
+      if (opsBox) opsBox.classList.toggle('hidden', mode === 'simp');
+      if (termsBox) termsBox.classList.toggle('hidden', mode === 'simp');
+    }
+
+    function setConfigPercentageMode(mode) {
+      appState.config.percentageMode = mode;
+      ['conversion', 'basic', 'change', 'applied'].forEach(m => {
+        const btn = document.getElementById('btn-pct-' + m);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-[11px] font-bold border transition text-center ${m === mode ? 'gold-btn' : 'light-btn'}`;
+        }
+      });
+    }
+
+    function setConfigFractionType(type) {
+      appState.config.fractionType = type;
+      ['similar', 'dissimilar', 'mixed', 'all'].forEach(t => {
+        const btn = document.getElementById('btn-frac-' + t);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${t === type ? 'gold-btn' : 'light-btn'}`;
+        }
+      });
+    }
+
+    function setConfigFractionSign(sign) {
+      appState.config.fractionSign = sign;
+      ['mixed', 'pos', 'neg'].forEach(s => {
+        const btn = document.getElementById('btn-fracsign-' + s);
+        if (btn) {
+          btn.className = `py-1.5 px-2 rounded-lg text-xs font-bold border transition text-center ${s === sign ? 'gold-btn' : 'light-btn'}`;
+        }
+      });
+    }
+
+    function syncFracNumDigits(val) {
+      const n = Math.max(1, Math.min(4, parseInt(val, 10) || 1));
+      appState.config.fracNumDigits = n;
+      document.getElementById('config-frac-num-digits').value = n;
+      document.getElementById('label-num-digits').textContent = `${n} Digit${n > 1 ? 's' : ''}`;
+    }
+
+    function syncFracDenDigits(val) {
+      const n = Math.max(1, Math.min(4, parseInt(val, 10) || 1));
+      appState.config.fracDenDigits = n;
+      document.getElementById('config-frac-den-digits').value = n;
+      document.getElementById('label-den-digits').textContent = `${n} Digit${n > 1 ? 's' : ''}`;
+    }
+
+    function syncFracDenMin(val) {
+      let minVal = Math.max(1, Math.min(99, parseInt(val, 10) || 1));
+      if (minVal >= appState.config.fracDenMax) {
+        minVal = appState.config.fracDenMax - 1;
+      }
+      appState.config.fracDenMin = minVal;
+      document.getElementById('config-frac-den-min').value = minVal;
+      document.getElementById('label-den-min').textContent = minVal;
+      document.getElementById('config-frac-den-max').min = minVal + 1;
+    }
+
+    function syncFracDenMax(val) {
+      let maxVal = Math.max(2, Math.min(100, parseInt(val, 10) || 100));
+      if (maxVal <= appState.config.fracDenMin) {
+        maxVal = appState.config.fracDenMin + 1;
+      }
+      appState.config.fracDenMax = maxVal;
+      document.getElementById('config-frac-den-max').value = maxVal;
+      document.getElementById('label-den-max').textContent = maxVal;
+      document.getElementById('config-frac-den-min').max = maxVal - 1;
+    }
+
+    function syncConfigCount(val) {
+      const n = Math.max(5, Math.min(100, parseInt(val, 10) || 10));
+      appState.config.count = n;
+      document.getElementById('config-count-range').value = n;
+      document.getElementById('config-count-num').value = n;
+    }
+
+    function syncConfigDigits(val) {
+      const n = Math.max(1, Math.min(10, parseInt(val, 10) || 2));
+      appState.config.digits = n;
+      document.getElementById('config-digits-range').value = n;
+      document.getElementById('config-digits-num').value = n;
+    }
+
+    function setConfigRegrouping(mode) {
+      appState.config.regrouping = mode;
+      document.getElementById('btn-regroup-with').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'with' ? 'gold-btn' : 'light-btn'}`;
+      document.getElementById('btn-regroup-without').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'without' ? 'gold-btn' : 'light-btn'}`;
+    }
+
+    function setConfigIntegerMode(mode) {
+      appState.config.integerMode = mode;
+      ['mixed', 'both-neg', 'both-pos'].forEach(m => {
+        const btn = document.getElementById('btn-int-' + m);
+        if (btn) btn.className = `p-2 rounded-lg text-xs font-bold border ${m === mode ? 'gold-btn' : 'light-btn'}`;
+      });
+    }
+
+    function toggleOperation(op) {
+      const map = { '+': 'op-add', '-': 'op-sub', '*': 'op-mul', '/': 'op-div' };
+      const checkedOps = [];
+      Object.entries(map).forEach(([symbol, id]) => {
+        if (document.getElementById(id).checked) checkedOps.push(symbol);
+      });
+      if (checkedOps.length === 0) {
+        document.getElementById(map[op]).checked = true;
+        checkedOps.push(op);
+      }
+      appState.config.operations = checkedOps;
+    }
+
+    function randInt(min, max) { 
+      min = Math.floor(min); 
+      max = Math.floor(max); 
+      if (min > max) [min, max] = [max, min];
+      return Math.floor(Math.random() * (max - min + 1)) + min; 
+    }
+    
+    function gcd(a, b) { 
+      a = Math.abs(a); 
+      b = Math.abs(b); 
+      while (b) { [a, b] = [b, a % b]; } 
+      return a || 1; 
+    }
+
+    function generateOperandByDigits(digits) {
+      const d = Math.max(1, Math.min(10, digits));
+      if (d === 1) return randInt(1, 9);
+      return randInt(Math.pow(10, d - 1), Math.pow(10, d) - 1);
+    }
+
+    function generateQuestionForDomain(domainId, cfg) {
+      const ops = cfg.operations.length ? cfg.operations : ['+'];
+      const numTerms = (['whole', 'integers', 'gemdas', 'fractions', 'decimals'].includes(domainId)) ? (cfg.terms || 2) : 2;
+
+      // 1. WHOLE NUMBERS
+      if (domainId === 'whole') {
+        const nf = cfg.numberField;
+        const tableVal = nf === 'random' ? randInt(1, 12) : (nf !== 'none' ? parseInt(nf, 10) : null);
+
+        if (numTerms === 2 && tableVal) {
+          const b = tableVal;
+          const factor = randInt(1, 12);
+          const op = ops[randInt(0, ops.length - 1)];
+          let a, answer, display, submode, hint;
+          if (op === '+') { a = randInt(1, 20); answer = a + b; display = `${a} + ${b}`; submode = `Table ${b} Addition`; hint = `${a} + ${b} = ${answer}.`; }
+          else if (op === '-') { a = b + randInt(1, 20); answer = a - b; display = `${a} − ${b}`; submode = `Table ${b} Subtraction`; hint = `${a} − ${b} = ${answer}.`; }
+          else if (op === '*') { a = factor; answer = a * b; display = `${a} × ${b}`; submode = `Table ${b} Multiplication`; hint = `${a} × ${b} = ${answer}.`; }
+          else { answer = factor; a = answer * b; display = `${a} ÷ ${b}`; submode = `Table ${b} Division`; hint = `${a} ÷ ${b} = ${answer}.`; }
+          return { display: `${display} = ?`, answer: String(answer), hint, submode, tip: 'Type the exact whole number.' };
+        }
+
+        let operands = [];
+        let operators = [];
+
+        for (let i = 0; i < numTerms; i++) {
+          operands.push(generateOperandByDigits(Math.min(3, cfg.digits)));
+          if (i > 0) operators.push(ops[randInt(0, ops.length - 1)]);
+        }
+
+        let running = operands[0];
+        let displayParts = [operands[0]];
+
+        for (let i = 1; i < numTerms; i++) {
+          let op = operators[i - 1];
+          let nextVal = operands[i];
+
+          if (op === '-' && running < nextVal) {
+            if (ops.includes('+')) { op = '+'; operators[i - 1] = '+'; }
+            else { running = nextVal + running; displayParts[0] = running; }
+          }
+          if (op === '/') {
+            nextVal = Math.max(1, randInt(1, 9));
+            operands[i] = nextVal;
+            running = running * nextVal;
+            displayParts[0] = running;
+            running = Math.floor(running / nextVal);
+          } else if (op === '*') {
+            nextVal = randInt(1, 9);
+            operands[i] = nextVal;
+            running *= nextVal;
+          } else if (op === '+') {
+            running += nextVal;
+          } else {
+            running -= nextVal;
+          }
+
+          const sym = op === '*' ? '×' : (op === '/' ? '÷' : (op === '-' ? '−' : '+'));
+          displayParts.push(sym);
+          displayParts.push(nextVal);
+        }
+
+        const display = displayParts.join(' ');
+        const submode = `${numTerms}-Term Whole Numbers`;
+        const hint = `Evaluate step-by-step: ${display} = ${running}.`;
+        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type the whole number answer.' };
+      }
+
+      // 2. SIGNED INTEGERS
+      if (domainId === 'integers') {
+        const fmt = n => (n < 0 ? `(${n})` : `${n}`);
+        let operands = [];
+        let operators = [];
+
+        for (let i = 0; i < numTerms; i++) {
+          let val = generateOperandByDigits(Math.min(3, cfg.digits));
+          if (cfg.integerMode === 'both-neg') { val = -val; }
+          else if (cfg.integerMode === 'mixed') { if (Math.random() < 0.5) val = -val; }
+          operands.push(val);
+          if (i > 0) operators.push(ops[randInt(0, ops.length - 1)]);
+        }
+
+        let running = operands[0];
+        let displayParts = [fmt(operands[0])];
+
+        for (let i = 1; i < numTerms; i++) {
+          let op = operators[i - 1];
+          let val = operands[i];
+          if (op === '*') { val = randInt(-5, 5) || 2; operands[i] = val; running *= val; }
+          else if (op === '/') { val = randInt(1, 4); operands[i] = val; running = running * val; displayParts[0] = fmt(running); running = Math.floor(running / val); }
+          else if (op === '+') running += val;
+          else running -= val;
+
+          const sym = op === '*' ? '×' : (op === '/' ? '÷' : (op === '-' ? '−' : '+'));
+          displayParts.push(sym);
+          displayParts.push(fmt(val));
+        }
+
+        const display = displayParts.join(' ');
+        const submode = `${numTerms}-Term Signed Integers`;
+        const hint = `Compute step-by-step applying integer rules: ${display} = ${running}.`;
+        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Include negative sign (-) if answer is negative.' };
+      }
+
+      // 3. GEMDAS ENGINE
+      if (domainId === 'gemdas') {
+        const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
+        const activeOps = allowedOps.length ? allowedOps : ['+'];
+        const numTerms = Math.max(2, Math.min(5, cfg.terms || 3));
+
+        function getOperatorsSequence(length) {
+          let pool = [];
+          let distinctNeeded = Math.min(length, activeOps.length);
+          let shuffled = [...activeOps].sort(() => 0.5 - Math.random());
+          for (let i = 0; i < distinctNeeded; i++) pool.push(shuffled[i]);
+          while (pool.length < length) {
+            pool.push(activeOps[randInt(0, activeOps.length - 1)]);
+          }
+          return pool.sort(() => 0.5 - Math.random());
+        }
+
+        const symMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+        let displayStr = '';
+        let evalAns = 0;
+        let hintSteps = [];
+
+        const opList = getOperatorsSequence(numTerms - 1);
+
+        if (numTerms === 2) {
+          const op = opList[0];
+          const hasGrouping = Math.random() < 0.35 && ['+', '-'].includes(op);
+          let a = randInt(2, 12), b = randInt(2, 9);
+          
+          if (op === '/') {
+            b = randInt(2, 6);
+            evalAns = randInt(2, 8);
+            a = b * evalAns;
+          } else if (op === '*') {
+            evalAns = a * b;
+          } else if (op === '+') {
+            evalAns = a + b;
+          } else {
+            if (a < b) [a, b] = [b, a];
+            evalAns = a - b;
+          }
+
+          if (hasGrouping) {
+            displayStr = `(${a} ${symMap[op]} ${b})²`;
+            evalAns = evalAns * evalAns;
+            hintSteps.push(`Step 1 (Parentheses): (${a} ${symMap[op]} ${b}) = ${Math.sqrt(evalAns)}`);
+            hintSteps.push(`Step 2 (Exponent): ${Math.sqrt(evalAns)}² = ${evalAns}`);
+          } else {
+            displayStr = `${a} ${symMap[op]} ${b}`;
+            hintSteps.push(`Solve: ${displayStr} = ${evalAns}`);
+          }
+        } 
+        else if (numTerms === 3) {
+          const op1 = opList[0];
+          const op2 = opList[1];
+          const pattern = randInt(1, 4);
+
+          if (pattern === 1) {
+            let a = randInt(2, 9), b = randInt(2, 9), c = randInt(2, 8);
+            let inside = 0;
+            if (op1 === '/') { b = randInt(2, 5); inside = randInt(2, 6); a = b * inside; }
+            else if (op1 === '*') inside = a * b;
+            else if (op1 === '+') inside = a + b;
+            else { if (a < b) [a, b] = [b, a]; inside = a - b; }
+
+            if (op2 === '/') {
+              let factor = randInt(2, 4);
+              inside = factor * randInt(2, 5);
+              if (op1 === '+') { a = Math.floor(inside / 2); b = inside - a; }
+              else if (op1 === '*') { a = inside; b = 1; }
+              else if (op1 === '-') { a = inside + 3; b = 3; }
+              c = factor;
+              evalAns = Math.floor(inside / c);
+            } else if (op2 === '*') { evalAns = inside * c; }
+            else if (op2 === '+') { evalAns = inside + c; }
+            else { evalAns = inside - c; }
+
+            displayStr = `(${a} ${symMap[op1]} ${b}) ${symMap[op2]} ${c}`;
+            hintSteps.push(`Step 1 (Parentheses): (${a} ${symMap[op1]} ${b}) = ${inside}`);
+            hintSteps.push(`Step 2 (${symMap[op2]}): ${inside} ${symMap[op2]} ${c} = ${evalAns}`);
+          } else if (pattern === 2) {
+            let a = randInt(2, 8), b = randInt(2, 9), c = randInt(2, 6);
+            let inside = 0;
+            if (op2 === '/') { c = randInt(2, 4); inside = randInt(2, 6); b = c * inside; }
+            else if (op2 === '*') inside = b * c;
+            else if (op2 === '+') inside = b + c;
+            else { if (b < c) [b, c] = [c, b]; inside = b - c; }
+
+            if (op1 === '/') {
+              let factor = inside || 2;
+              evalAns = randInt(2, 6);
+              a = factor * evalAns;
+            } else if (op1 === '*') { evalAns = a * inside; }
+            else if (op1 === '+') { evalAns = a + inside; }
+            else { a = inside + randInt(2, 10); evalAns = a - inside; }
+
+            displayStr = `${a} ${symMap[op1]} (${b} ${symMap[op2]} ${c})`;
+            hintSteps.push(`Step 1 (Parentheses): (${b} ${symMap[op2]} ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (${symMap[op1]}): ${a} ${symMap[op1]} ${inside} = ${evalAns}`);
+          } else if (pattern === 3 && activeOps.length >= 2) {
+            let base = randInt(2, 5);
+            let expVal = base * base;
+            let b = randInt(2, 6), c = randInt(1, 8);
+            
+            if (op1 === '*') {
+              let prod = expVal * b;
+              evalAns = op2 === '+' ? prod + c : prod - c;
+              displayStr = `${base}² × ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (Exponent): ${base}² = ${expVal}`);
+              hintSteps.push(`Step 2 (Multiplication): ${expVal} × ${b} = ${prod}`);
+              hintSteps.push(`Step 3 (${symMap[op2]}): ${prod} ${symMap[op2]} ${c} = ${evalAns}`);
+            } else {
+              let prod = b * c;
+              evalAns = op1 === '+' ? expVal + prod : expVal - prod;
+              displayStr = `${base}² ${symMap[op1]} ${b} × ${c}`;
+              hintSteps.push(`Step 1 (Exponent): ${base}² = ${expVal}`);
+              hintSteps.push(`Step 2 (Multiplication): ${b} × ${c} = ${prod}`);
+              hintSteps.push(`Step 3 (${symMap[op1]}): ${expVal} ${symMap[op1]} ${prod} = ${evalAns}`);
+            }
+          } else {
+            let a = randInt(2, 10), b = randInt(2, 8), c = randInt(2, 6);
+            if (op1 === '*' || op1 === '/') {
+              let first = (op1 === '*') ? a * b : a;
+              if (op1 === '/') { b = randInt(2, 5); first = randInt(2, 6); a = b * first; }
+              evalAns = (op2 === '+') ? first + c : ((op2 === '-') ? first - c : first * c);
+              displayStr = `${a} ${symMap[op1]} ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (MD Precedence): ${a} ${symMap[op1]} ${b} = ${first}`);
+              hintSteps.push(`Step 2 (${symMap[op2]}): ${first} ${symMap[op2]} ${c} = ${evalAns}`);
+            } else {
+              let second = (op2 === '*') ? b * c : b;
+              if (op2 === '/') { c = randInt(2, 4); second = randInt(2, 5); b = c * second; }
+              evalAns = (op1 === '+') ? a + second : a - second;
+              displayStr = `${a} ${symMap[op1]} ${b} ${symMap[op2]} ${c}`;
+              hintSteps.push(`Step 1 (MD Precedence): ${b} ${symMap[op2]} ${c} = ${second}`);
+              hintSteps.push(`Step 2 (${symMap[op1]}): ${a} ${symMap[op1]} ${second} = ${evalAns}`);
+            }
+          }
+        } 
+        else {
+          let b = randInt(2, 6), c = randInt(1, 5);
+          let inside = b + c;
+          let m = randInt(2, 4);
+          let divD = randInt(2, 4), q = randInt(2, 5);
+          let divN = divD * q;
+          let extra = randInt(1, 10);
+
+          let chosen = [...opList];
+          let hasM = chosen.includes('*'), hasD = chosen.includes('/'), hasS = chosen.includes('-');
+
+          if (hasM && hasD) {
+            evalAns = (m * inside) - q + (numTerms === 5 ? extra : 0);
+            displayStr = `${m} × (${b} + ${c}) − ${divN} ÷ ${divD}` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Multiplication & Division): ${m} × ${inside} = ${m * inside}, and ${divN} ÷ ${divD} = ${q}`);
+            hintSteps.push(`Step 3 (Addition & Subtraction): ${m * inside} − ${q}` + (numTerms === 5 ? ` + ${extra} = ${evalAns}` : ` = ${evalAns}`));
+          } else if (hasM) {
+            let k = randInt(2, 6);
+            evalAns = m * inside + k + (numTerms === 5 ? extra : 0);
+            displayStr = `${m} × (${b} + ${c}) + ${k}` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Multiplication): ${m} × ${inside} = ${m * inside}`);
+            hintSteps.push(`Step 3 (Addition): ${evalAns}`);
+          } else {
+            let offset = randInt(10, 25);
+            evalAns = offset - inside + (numTerms === 5 ? extra : 0);
+            displayStr = `${offset} − (${b} + ${c})` + (numTerms === 5 ? ` + ${extra}` : '');
+            hintSteps.push(`Step 1 (Grouping): (${b} + ${c}) = ${inside}`);
+            hintSteps.push(`Step 2 (Addition/Subtraction): Result = ${evalAns}`);
+          }
+        }
+
+        const submode = `GEMDAS (${numTerms} Terms: ${activeOps.map(o => symMap[o]).join(' ')})`;
+        const hint = hintSteps.join(' → ');
+        return { 
+          display: `${displayStr} = ?`, 
+          answer: String(evalAns), 
+          hint: hint, 
+          submode: submode, 
+          tip: 'Solve using exact GEMDAS sequence: Grouping → Exponents → Multiplication/Division → Addition/Subtraction.' 
+        };
+      }
+
+      // 4. RATIONAL FRACTIONS
+      if (domainId === 'fractions') {
+        const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
+        const activeOps = allowedOps.length ? allowedOps : ['+'];
+        const fracType = cfg.fractionType || 'dissimilar';
+        const fracSign = cfg.fractionSign || 'mixed';
+        const numDigits = cfg.fracNumDigits || 1;
+        const denDigits = cfg.fracDenDigits || 1;
+        let denMin = Math.max(1, cfg.fracDenMin || 2);
+        let denMax = Math.min(100, cfg.fracDenMax || 12);
+        if (denMin > denMax) [denMin, denMax] = [denMax, denMin];
+
+        function generateConstrainedDenominator() {
+          const dMin = Math.pow(10, denDigits - 1);
+          const dMax = Math.pow(10, denDigits) - 1;
+          const effMin = Math.max(denMin, dMin);
+          const effMax = Math.min(denMax, dMax);
+
+          if (effMin <= effMax) {
+            return randInt(effMin, effMax);
+          }
+          return randInt(denMin, denMax);
+        }
+
+        function generateFractionTerm(fixedDenom = null) {
+          let den = fixedDenom || generateConstrainedDenominator();
+          if (den <= 0) den = 2;
+
+          let whole = 0;
+          const makeMixed = (fracType === 'mixed') || (fracType === 'all' && Math.random() < 0.5);
+          if (makeMixed) {
+            whole = randInt(1, 4);
+          }
+
+          let numMin = Math.pow(10, numDigits - 1);
+          let numMax = Math.pow(10, numDigits) - 1;
+
+          let num = 1;
+          if (!makeMixed && numDigits === denDigits && den > 1) {
+            const maxAllowed = Math.min(numMax, den - 1);
+            if (numMin <= maxAllowed) {
+              num = randInt(numMin, maxAllowed);
+            } else {
+              num = randInt(1, den - 1);
+            }
+          } else {
+            num = randInt(numMin, numMax);
+          }
+
+          let totalNum = (whole * den) + num;
+
+          let isNeg = false;
+          if (fracSign === 'neg') isNeg = true;
+          else if (fracSign === 'mixed') isNeg = Math.random() < 0.5;
+
+          if (isNeg) {
+            totalNum = -totalNum;
+          }
+
+          let str = '';
+          if (whole > 0) {
+            str = `${whole} ${num}/${den}`;
+            if (isNeg) str = `-${str}`;
+          } else {
+            str = isNeg ? `-${num}/${den}` : `${num}/${den}`;
+          }
+
+          return {
+            whole,
+            num,
+            den,
+            improperNum: totalNum,
+            improperDen: den,
+            display: isNeg ? `(${str})` : str
+          };
+        }
+
+        const sharedDenom = (fracType === 'similar') ? generateConstrainedDenominator() : null;
+
+        let termsList = [];
+        let operators = [];
+
+        for (let i = 0; i < numTerms; i++) {
+          termsList.push(generateFractionTerm(sharedDenom));
+          if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
+        }
+
+        let runningNum = termsList[0].improperNum;
+        let runningDen = termsList[0].improperDen;
+
+        for (let i = 1; i < numTerms; i++) {
+          let op = operators[i - 1];
+          let nextNum = termsList[i].improperNum;
+          let nextDen = termsList[i].improperDen;
+
+          if (op === '+') {
+            runningNum = (runningNum * nextDen) + (nextNum * runningDen);
+            runningDen = runningDen * nextDen;
+          } else if (op === '-') {
+            runningNum = (runningNum * nextDen) - (nextNum * runningDen);
+            runningDen = runningDen * nextDen;
+          } else if (op === '*') {
+            runningNum = runningNum * nextNum;
+            runningDen = runningDen * nextDen;
+          } else if (op === '/') {
+            if (nextNum === 0) nextNum = 1;
+            runningNum = runningNum * nextDen;
+            runningDen = runningDen * nextNum;
+          }
+
+          let g = gcd(runningNum, runningDen);
+          runningNum = Math.floor(runningNum / g);
+          runningDen = Math.floor(runningDen / g);
+          if (runningDen < 0) { runningNum = -runningNum; runningDen = -runningDen; }
+        }
+
+        let finalAnsStr = '';
+        let mixedEquivStr = '';
+
+        if (runningDen === 1) {
+          finalAnsStr = `${runningNum}`;
+        } else {
+          finalAnsStr = `${runningNum}/${runningDen}`;
+          let absNum = Math.abs(runningNum);
+          if (absNum > runningDen) {
+            let w = Math.floor(absNum / runningDen);
+            let rem = absNum % runningDen;
+            if (rem > 0) {
+              mixedEquivStr = `${runningNum < 0 ? '-' : ''}${w} ${rem}/${runningDen}`;
+            }
+          }
+        }
+
+        let displayParts = [termsList[0].display];
+        const symMap = { '+': '+', '-': '−', '*': '×', '/': '÷' };
+        for (let i = 1; i < numTerms; i++) {
+          displayParts.push(symMap[operators[i - 1]]);
+          displayParts.push(termsList[i].display);
+        }
+
+        const display = displayParts.join(' ');
+        let submode = `${fracType.toUpperCase()} (${numDigits}N/${denDigits}D, Denom ${denMin}–${denMax})`;
+        if (fracSign === 'mixed') submode += ' [Signed]';
+
+        let hint = `Convert mixed numbers to improper fractions, resolve signs, and simplify: ${finalAnsStr}`;
+        if (mixedEquivStr) hint += ` (or ${mixedEquivStr})`;
+
+        return { 
+          display: `${display} = ?`, 
+          answer: finalAnsStr, 
+          altAnswer: mixedEquivStr,
+          targetValue: runningNum / runningDen,
+          isFraction: true,
+          hint: hint, 
+          submode: submode, 
+          tip: 'Enter in simplest form a/b, mixed number w a/b, or whole number.' 
+        };
+      }
+
+      // 5. DECIMALS
+      if (domainId === 'decimals') {
+        const allowedOps = ops.filter(o => ['+', '-'].includes(o));
+        const activeOps = allowedOps.length ? allowedOps : ['+'];
+
+        let operands = [];
+        let operators = [];
+
+        for (let i = 0; i < numTerms; i++) {
+          operands.push(parseFloat((randInt(10, 150) / 10).toFixed(1)));
+          if (i > 0) operators.push(activeOps[randInt(0, activeOps.length - 1)]);
+        }
+
+        let running = operands[0];
+        let displayParts = [operands[0].toFixed(1)];
+
+        for (let i = 1; i < numTerms; i++) {
+          let op = operators[i - 1];
+          let val = operands[i];
+
+          if (op === '-' && running < val) {
+            op = '+';
+            operators[i - 1] = '+';
+          }
+          if (op === '+') running += val;
+          else running -= val;
+
+          displayParts.push(op === '-' ? '−' : '+');
+          displayParts.push(val.toFixed(1));
+        }
+
+        running = parseFloat(running.toFixed(2));
+        const display = displayParts.join(' ');
+        const submode = `${numTerms}-Term Decimal Arithmetic`;
+        const hint = `Compute step-by-step: ${display} = ${running}.`;
+        return { display: `${display} = ?`, answer: String(running), hint, submode, tip: 'Type exact decimal.' };
+      }
+
+      // 6. EXPONENTS
+      if (domainId === 'exponents') {
+        const mode = cfg.exponentLaw || 'mixed';
+        const types = ['product', 'quotient', 'power_power', 'power_product', 'power_quotient', 'negative', 'zero'];
+        const type = mode === 'mixed' ? types[randInt(0, 6)] : mode;
+
+        let base = ['x', 'y', 'a', 'b', 'm', 'n'][randInt(0, 5)];
+        let display = '', answer = '', hint = '', tip = 'Type in simplified exponent form (e.g. x^5).', submode = '';
+
+        if (type === 'product') {
+          let e1 = randInt(2, 9), e2 = randInt(2, 9);
+          display = `${base}^${e1} · ${base}^${e2} = ?`;
+          answer = `${base}^${e1 + e2}`;
+          hint = `Add the exponents: ${e1} + ${e2} = ${e1 + e2}`;
+          submode = 'Product Rule';
+        } else if (type === 'quotient') {
+          let e1 = randInt(5, 12), e2 = randInt(2, e1 - 1);
+          display = `(${base}^${e1}) / (${base}^${e2}) = ?`;
+          answer = `${base}^${e1 - e2}`;
+          hint = `Subtract the exponents: ${e1} - ${e2} = ${e1 - e2}`;
+          submode = 'Quotient Rule';
+        } else if (type === 'power_power') {
+          let e1 = randInt(2, 6), e2 = randInt(2, 5);
+          display = `(${base}^${e1})^${e2} = ?`;
+          answer = `${base}^${e1 * e2}`;
+          hint = `Multiply the exponents: ${e1} × ${e2} = ${e1 * e2}`;
+          submode = 'Power of a Power Rule';
+        } else if (type === 'power_product') {
+          let coef = randInt(2, 5);
+          let e1 = randInt(2, 4);
+          display = `(${coef}${base})^${e1} = ?`;
+          answer = `${Math.pow(coef, e1)}${base}^${e1}`;
+          hint = `Raise both coefficient and variable to power ${e1}: ${coef}^${e1} = ${Math.pow(coef, e1)}`;
+          submode = 'Power of a Product Rule';
+        } else if (type === 'power_quotient') {
+          let base2 = ['p', 'q', 'c', 'd'][randInt(0, 3)];
+          let e1 = randInt(2, 5);
+          display = `(${base}/${base2})^${e1} = ?`;
+          answer = `${base}^${e1}/${base2}^${e1}`;
+          hint = `Raise numerator and denominator to power ${e1}.`;
+          submode = 'Power of a Quotient Rule';
+        } else if (type === 'negative') {
+          let e1 = randInt(2, 8);
+          if (Math.random() > 0.5) {
+            display = `${base}^(-${e1}) = ?`;
+            answer = `1/${base}^${e1}`;
+            hint = `Negative exponent moves base to denominator.`;
+          } else {
+            display = `1 / ${base}^(-${e1}) = ?`;
+            answer = `${base}^${e1}`;
+            hint = `Negative exponent in denominator moves base to numerator.`;
+          }
+          submode = 'Negative Exponent Rule';
+        } else if (type === 'zero') {
+          let coef = randInt(2, 20);
+          display = `(${coef}${base})^0 = ?`;
+          answer = `1`;
+          hint = `Any non-zero expression raised to the 0 power is 1.`;
+          tip = 'Type the numeric value.';
+          submode = 'Zero Exponent Rule';
+        }
+        return { display, answer, hint, submode, tip };
+      }
+
+      // 7. RADICALS
+      if (domainId === 'radicals') {
+        const mode = cfg.radicalMode || 'simp';
+        const type = cfg.radicalType || 'mixed';
+        const rTypes = ['sqrt', 'cbrt', '4th'];
+        const rType = type === 'mixed' ? rTypes[randInt(0, 2)] : type;
+        
+        let sym = rType === 'sqrt' ? '√' : (rType === 'cbrt' ? '³√' : '⁴√');
+        let index = rType === 'sqrt' ? 2 : (rType === 'cbrt' ? 3 : 4);
+        
+        if (mode === 'simp') {
+          let out = randInt(2, 8);
+          let inn = [2, 3, 5, 6, 7][randInt(0, 4)];
+          let val = Math.pow(out, index) * inn;
+          let display = `${sym}${val} = ?`;
+          let answer = `${out}${sym}${inn}`;
+          let hint = `${val} = ${Math.pow(out, index)} × ${inn}. The ${index} root of ${Math.pow(out, index)} is ${out}.`;
+          return { display, answer, hint, submode: `Simplify ${sym}`, tip: `Type outside number, then ${sym} symbol, then inside number.` };
+        } else {
+          // arithmetic
+          const allowedOps = ops.filter(o => ['+', '-', '*', '/'].includes(o));
+          const activeOps = allowedOps.length ? allowedOps : ['+'];
+          const op = activeOps[randInt(0, activeOps.length - 1)];
+
+          if (op === '*' || op === '/') {
+            let out1 = randInt(1, 5), inn1 = [2, 3, 5][randInt(0, 2)];
+            let out2 = randInt(1, 5), inn2 = [2, 3, 5][randInt(0, 2)];
+            if (op === '*') {
+               let outAns = out1 * out2;
+               let innAns = inn1 * inn2;
+               let extraOut = 1;
+               for(let i=2; i<=innAns; i++) {
+                 if (innAns % Math.pow(i, index) === 0) {
+                   extraOut *= i;
+                   innAns /= Math.pow(i, index);
+                   i--;
+                 }
+               }
+               outAns *= extraOut;
+               let ansStr = innAns === 1 ? `${outAns}` : `${outAns}${sym}${innAns}`;
+               if (outAns === 1 && innAns !== 1) ansStr = `${sym}${innAns}`;
+               return {
+                 display: `${out1 > 1 ? out1 : ''}${sym}${inn1} × ${out2 > 1 ? out2 : ''}${sym}${inn2} = ?`,
+                 answer: ansStr,
+                 hint: `Multiply outsides and insides, then simplify.`,
+                 submode: `Radical Multiplication`,
+                 tip: `Format as a${sym}b or whole number.`
+               };
+            } else {
+               let ansOut = randInt(1, 4), ansInn = [2,3,5][randInt(0,2)];
+               let outAns = ansOut, innAns = ansInn;
+               let outAnsStr = innAns === 1 ? `${outAns}` : (outAns===1?`${sym}${innAns}`:`${outAns}${sym}${innAns}`);
+               
+               let displayOut1 = outAns * out2;
+               let displayInn1 = innAns * inn2;
+               return {
+                 display: `${displayOut1 > 1 ? displayOut1 : ''}${sym}${displayInn1} ÷ ${out2 > 1 ? out2 : ''}${sym}${inn2} = ?`,
+                 answer: outAnsStr,
+                 hint: `Divide outsides and insides, then simplify.`,
+                 submode: `Radical Division`,
+                 tip: `Format as a${sym}b or whole number.`
+               };
+            }
+          } else {
+            // addition / subtraction
+            let inn = [2, 3, 5, 6, 7][randInt(0, 4)];
+            let termsCount = Math.max(2, Math.min(5, cfg.terms || 2));
+            let dispArr = [];
+            let totalOut = 0;
+            let hints = [];
+            for (let i = 0; i < termsCount; i++) {
+               let out = randInt(1, 8);
+               let isSub = i > 0 && Math.random() > 0.5;
+               if (isSub) { totalOut -= out; dispArr.push(`− ${out === 1 ? '' : out}${sym}${inn}`); hints.push(`-${out}`); }
+               else { totalOut += out; dispArr.push(`${i > 0 ? '+ ' : ''}${out === 1 ? '' : out}${sym}${inn}`); hints.push(`+${out}`); }
+            }
+            let display = dispArr.join(' ') + ' = ?';
+            let answer = totalOut === 0 ? '0' : (totalOut === 1 ? `${sym}${inn}` : (totalOut === -1 ? `-${sym}${inn}` : `${totalOut}${sym}${inn}`));
+            return { display, answer, hint: `Combine like terms: ${hints.join(' ')} = ${totalOut}`, submode: `Radical Add/Sub`, tip: `Format as a${sym}b or 0.` };
+          }
+        }
+      }
+
+      // 8. LINEAR EQUATIONS
+      if (domainId === 'algebra') {
+        const x = randInt(-10, 12) || 3; const m = randInt(2, 9); const b = randInt(-15, 15); const rhs = m * x + b;
+        return { display: `${m}x ${b >= 0 ? '+ ' + b : '− ' + Math.abs(b)} = ${rhs}`, answer: String(x), hint: `x = ${x}`, submode: 'Linear Equation', tip: 'Type numeric value of x.' };
+      }
+
+      // 9. PERCENTAGES
+      if (domainId === 'percentages') {
+        const mode = cfg.percentageMode || 'conversion';
+        let display = '', answer = '', hint = '', tip = 'Type the numeric value.', submode = '';
+
+        if (mode === 'conversion') {
+          const types = ['frac2pct', 'dec2pct', 'pct2dec', 'pct2frac'];
+          const type = types[randInt(0, 3)];
+          if (type === 'frac2pct') {
+            let den = [2, 4, 5, 10, 20, 25, 50][randInt(0, 6)];
+            let num = randInt(1, den * 1.5);
+            display = `Convert to percent: ${num}/${den}`;
+            answer = String((num / den) * 100) + '%';
+            hint = `Divide ${num} by ${den} to get a decimal, then multiply by 100.`;
+            tip = 'Include the % sign (e.g., 50%).';
+            submode = 'Conversions (Fraction to Percent)';
+          } else if (type === 'dec2pct') {
+            let dec = (randInt(1, 250) / 100).toFixed(2);
+            display = `Convert to percent: ${dec}`;
+            answer = String(parseFloat(dec) * 100) + '%';
+            hint = `Multiply ${dec} by 100 (move decimal two places right).`;
+            tip = 'Include the % sign.';
+            submode = 'Conversions (Decimal to Percent)';
+          } else if (type === 'pct2dec') {
+            let pct = randInt(1, 250);
+            display = `Convert to decimal: ${pct}%`;
+            answer = String(pct / 100);
+            hint = `Divide ${pct} by 100 (move decimal two places left).`;
+            tip = 'Write as a decimal.';
+            submode = 'Conversions (Percent to Decimal)';
+          } else { // pct2frac
+            let pcts = [5, 10, 20, 25, 30, 40, 50, 60, 75, 80, 90, 150];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            display = `Convert to fraction in simplest form: ${pct}%`;
+            let g = gcd(pct, 100);
+            answer = `${pct/g}/${100/g}`;
+            hint = `Write ${pct}/100 and simplify by dividing numerator and denominator by ${g}.`;
+            tip = 'Format as a/b (e.g., 1/4).';
+            submode = 'Conversions (Percent to Fraction)';
+          }
+        } else if (mode === 'basic') {
+          const types = ['pctOfNum', 'whatPct', 'numIsPct'];
+          const type = types[randInt(0, 2)];
+          if (type === 'pctOfNum') {
+            let pcts = [5, 10, 15, 20, 25, 30, 40, 50, 60, 75, 80, 90];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(2, 20) * 10;
+            display = `What is ${pct}% of ${base}?`;
+            answer = String((pct / 100) * base);
+            hint = `Multiply ${pct/100} × ${base} = ${answer}.`;
+            tip = 'Write the exact number.';
+            submode = 'Percent of a Number';
+          } else if (type === 'whatPct') {
+            let pcts = [10, 20, 25, 40, 50, 60, 75, 80];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(2, 10) * 10;
+            let part = (pct / 100) * base;
+            display = `${part} is what percent of ${base}?`;
+            answer = String(pct) + '%';
+            hint = `Divide ${part} by ${base}, then multiply by 100.`;
+            tip = 'Include the % sign.';
+            submode = 'Finding the Percent';
+          } else {
+            let pcts = [10, 20, 25, 40, 50];
+            let pct = pcts[randInt(0, pcts.length - 1)];
+            let base = randInt(4, 20) * 10;
+            let part = (pct / 100) * base;
+            display = `${part} is ${pct}% of what number?`;
+            answer = String(base);
+            hint = `Divide ${part} by ${pct/100}. (${part} ÷ ${pct/100} = ${base})`;
+            tip = 'Write the exact base number.';
+            submode = 'Finding the Base';
+          }
+        } else if (mode === 'change') {
+          let oldVal = randInt(5, 20) * 10;
+          let percentChange = [10, 20, 25, 30, 40, 50][randInt(0, 5)];
+          let isIncrease = Math.random() > 0.5;
+          let changeAmount = (percentChange / 100) * oldVal;
+          let newVal = isIncrease ? oldVal + changeAmount : oldVal - changeAmount;
+
+          if (Math.random() > 0.5) {
+            display = `Find the percent change from ${oldVal} to ${newVal}.`;
+            answer = String(percentChange) + '%';
+            let incDec = isIncrease ? "increase" : "decrease";
+            hint = `Change is |${newVal} - ${oldVal}| = ${changeAmount}. Percent change = (${changeAmount} / ${oldVal}) × 100 = ${percentChange}% ${incDec}.`;
+            tip = 'Write the percentage (e.g., 20%).';
+            submode = 'Calculating Percent Change';
+          } else {
+            display = `If ${oldVal} is ${isIncrease ? 'increased' : 'decreased'} by ${percentChange}%, what is the new value?`;
+            answer = String(newVal);
+            hint = `Find ${percentChange}% of ${oldVal} (${changeAmount}), then ${isIncrease ? 'add to' : 'subtract from'} the original.`;
+            tip = 'Write the exact new value.';
+            submode = `Applying Percent ${isIncrease ? 'Decrease' : 'Decrease'}`;
+          }
+        } else if (mode === 'applied') {
+          const types = ['tax', 'discount', 'successive', 'original'];
+          const type = types[randInt(0, 3)];
+          if (type === 'tax') {
+            let price = randInt(10, 100);
+            let tax = randInt(5, 10);
+            let final = price * (1 + tax / 100);
+            display = `A shirt costs $${price}. If sales tax is ${tax}%, what is the final total price?`;
+            answer = String(parseFloat(final.toFixed(2))); 
+            hint = `Tax amount is $${(price * tax / 100).toFixed(2)}. Add to $${price}.`;
+            tip = 'Enter the number (e.g. 52.5 or 52.50). Do not include $.';
+            submode = 'Real-World: Tax & Markup';
+          } else if (type === 'discount') {
+            let price = randInt(20, 150);
+            let discount = [10, 15, 20, 25, 30, 40, 50][randInt(0, 6)];
+            let final = price * (1 - discount / 100);
+            display = `A jacket originally costs $${price} is on sale for ${discount}% off. What is the sale price?`;
+            answer = String(parseFloat(final.toFixed(2)));
+            hint = `Discount is ${discount}% of $${price} = $${(price * discount / 100).toFixed(2)}. Subtract from $${price}.`;
+            tip = 'Enter the number. Do not include $.';
+            submode = 'Real-World: Discounts';
+          } else if (type === 'successive') {
+            let start = [100, 200, 50][randInt(0, 2)];
+            display = `A $${start} item is marked up by 20%, then discounted by 20%. What is the final price?`;
+            let ansVal = start * 1.2 * 0.8;
+            answer = String(ansVal);
+            hint = `After markup: $${start * 1.2}. Then 20% off $${start * 1.2} is $${start * 1.2 * 0.2} off. Final: $${ansVal}. (Common error: assuming it returns to $${start}).`;
+            tip = 'Enter the final number. Do not include $.';
+            submode = 'Real-World: Multi-Step Change';
+          } else {
+            let final = randInt(2, 10) * 10;
+            let discount = [10, 20, 25, 50][randInt(0, 3)];
+            let original = final / (1 - discount / 100);
+            display = `After a ${discount}% discount, a game costs $${final}. What was the original price?`;
+            answer = String(original);
+            hint = `$${final} represents ${100 - discount}% of the original price. Solve: 0.${100-discount}x = ${final}.`;
+            tip = 'Enter the original number. Do not include $.';
+            submode = 'Real-World: Finding Original Price';
+          }
+        }
+        
+        return { display, answer, hint, submode, tip };
+      }
+    }
+
+    function startQuizSession() {
+      const questions = [];
+      for (let i = 0; i < appState.config.count; i++) {
+        questions.push(generateQuestionForDomain(appState.selectedDomain.id, appState.config));
+      }
+      appState.quiz = { questions, currentIndex: 0, score: 0, chances: 3, answeredCurrent: false };
+      switchTab('quiz');
+      renderCurrentQuestion();
+    }
+
+    function renderCurrentQuestion() {
+      const q = appState.quiz.questions[appState.quiz.currentIndex];
+      appState.quiz.chances = 3;
+      appState.quiz.answeredCurrent = false;
+
+      document.getElementById('quiz-progress-text').textContent = `Q ${appState.quiz.currentIndex + 1} of ${appState.quiz.questions.length}`;
+      document.getElementById('quiz-cat-name').textContent = appState.selectedDomain.title;
+      document.getElementById('quiz-score-preview').textContent = `Score: ${appState.quiz.score}`;
+      document.getElementById('quiz-problem-submode').textContent = q.submode;
+      document.getElementById('quiz-problem-display').textContent = q.display;
+      document.getElementById('quiz-problem-tip').textContent = q.tip;
+      renderChancesHearts();
+
+      const fb = document.getElementById('quiz-feedback-box');
+      fb.classList.add('hidden');
+      const input = document.getElementById('quiz-answer-input');
+      input.value = '';
+      input.disabled = false;
+      input.focus();
+
+      const btn = document.getElementById('btn-check-answer');
+      btn.innerHTML = `<span>Check</span><i class="fa-solid fa-circle-check"></i>`;
+      btn.onclick = checkCurrentAnswer;
+    }
+
+    function renderChancesHearts() {
+      const container = document.getElementById('quiz-chances-container');
+      container.innerHTML = Array.from({ length: 3 }, (_, i) => `<i class="fa-solid fa-heart ${i < appState.quiz.chances ? 'text-amber-500' : 'text-slate-300'} text-xs"></i>`).join('');
+    }
+
+    function handleQuizInputKeydown(e) {
+      if (e.key === 'Enter') {
+        e.preventDefault();
+        if (appState.quiz.answeredCurrent) nextQuestion();
+        else checkCurrentAnswer();
+      }
+    }
+
+    function checkCurrentAnswer() {
+      if (appState.quiz.answeredCurrent) { nextQuestion(); return; }
+      const inputEl = document.getElementById('quiz-answer-input');
+      const rawUser = inputEl.value.trim();
+      if (!rawUser) return;
+
+      const q = appState.quiz.questions[appState.quiz.currentIndex];
+      let isCorrect = false;
+
+      if (q.isFraction) {
+        let userVal = parseFractionToValue(rawUser);
+        if (!isNaN(userVal) && typeof q.targetValue === 'number') {
+          isCorrect = Math.abs(userVal - q.targetValue) < 0.0001;
+        }
+      }
+
+      if (!isCorrect) {
+        let normUser = normalizeMathInput(rawUser);
+        let normAns = normalizeMathInput(q.answer);
+        let normAlt = q.altAnswer ? normalizeMathInput(q.altAnswer) : null;
+        isCorrect = (normUser === normAns) || (normAlt && normUser === normAlt);
+      }
+
+      const fb = document.getElementById('quiz-feedback-box');
+      fb.classList.remove('hidden');
+
+      if (isCorrect) {
+        appState.quiz.score++;
+        appState.quiz.answeredCurrent = true;
+        q.userResponse = rawUser;
+        q.wasCorrect = true;
+        document.getElementById('quiz-score-preview').textContent = `Score: ${appState.quiz.score}`;
+        fb.className = 'p-3 rounded-xl text-xs font-medium border bg-emerald-50 border-emerald-300 text-emerald-900 shadow-sm';
+        fb.innerHTML = `<div class="font-bold text-emerald-800 mb-0.5"><i class="fa-solid fa-circle-check mr-1"></i> Correct!</div><div>${q.hint}</div>`;
+        lockQuestionAndShowNext();
+      } else {
+        appState.quiz.chances--;
+        renderChancesHearts();
+        if (appState.quiz.chances > 0) {
+          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-amber-50 border-amber-300 text-amber-900 shadow-sm';
+          fb.innerHTML = `<div class="font-bold text-amber-800"><i class="fa-solid fa-triangle-exclamation mr-1"></i> Incorrect. ${appState.quiz.chances} attempt(s) left.</div>`;
+          inputEl.select();
+        } else {
+          appState.quiz.answeredCurrent = true;
+          q.userResponse = rawUser;
+          q.wasCorrect = false;
+          fb.className = 'p-3 rounded-xl text-xs font-medium border bg-red-50 border-red-300 text-red-900 shadow-sm';
+          fb.innerHTML = `<div class="font-bold text-red-700 mb-0.5"><i class="fa-solid fa-circle-xmark mr-1"></i> Answer: <span class="font-mono text-amber-800">${q.answer}</span></div><div>${q.hint}</div>`;
+          lockQuestionAndShowNext();
+        }
+      }
+    }
+
+    function lockQuestionAndShowNext() {
+      const btn = document.getElementById('btn-check-answer');
+      const isLast = appState.quiz.currentIndex >= appState.quiz.questions.length - 1;
+      btn.innerHTML = isLast ? `<span>Finish</span><i class="fa-solid fa-flag-checkered"></i>` : `<span>Next</span><i class="fa-solid fa-arrow-right"></i>`;
+      btn.onclick = nextQuestion;
+    }
+
+    function nextQuestion() {
+      if (appState.quiz.currentIndex < appState.quiz.questions.length - 1) {
+        appState.quiz.currentIndex++;
+        renderCurrentQuestion();
+      } else {
+        showQuizResults();
+      }
+    }
+
+    function insertToolbarSymbol(sym) {
+      const input = document.getElementById('quiz-answer-input');
+      const start = input.selectionStart || input.value.length;
+      input.value = input.value.slice(0, start) + sym + input.value.slice(input.selectionEnd || input.value.length);
+      
+      // Move cursor immediately after inserted symbol
+      const newPos = start + sym.length;
+      input.setSelectionRange(newPos, newPos);
+      input.focus();
+    }
+
+    function handleBackspace() {
+      const input = document.getElementById('quiz-answer-input');
+      const start = input.selectionStart || 0;
+      const end = input.selectionEnd || 0;
+      
+      if (start === end && start > 0) {
+        input.value = input.value.slice(0, start - 1) + input.value.slice(end);
+        input.setSelectionRange(start - 1, start - 1);
+      } else if (start !== end) {
+        input.value = input.value.slice(0, start) + input.value.slice(end);
+        input.setSelectionRange(start, start);
+      }
+      input.focus();
+    }
+
+    function openExponentSuperscriptPrompt() {
+      const exp = prompt('Enter exponent value:');
+      if (exp) insertToolbarSymbol(toSuperscript(exp.trim()));
+    }
+
+    function confirmExitQuiz() {
+      if (confirm('Exit current practice session? Progress will not be saved.')) switchTab('home');
+    }
+
+    function getMasteryRating(pct) {
+      if (pct >= 90) return 'Advanced Mastery';
+      if (pct >= 75) return 'Proficient';
+      if (pct >= 50) return 'Developing';
+      return 'Beginning';
+    }
+
+    function showQuizResults() {
+      const score = appState.quiz.score;
+      const total = appState.quiz.questions.length;
+      const pct = Math.round((score / total) * 100);
+      document.getElementById('results-score-display').textContent = `${score} / ${total}`;
+      document.getElementById('results-percentage-display').textContent = `${pct}%`;
+      document.getElementById('results-mastery-display').textContent = getMasteryRating(pct);
+
+      if (appState.activeClassCode) {
+        document.getElementById('student-code-input').value = appState.activeClassCode;
+      }
+
+      switchTab('results');
+
+      const savedName = safeStorage.getItem(STORAGE_KEYS.SAVED_STUDENT_NAME);
+      if (savedName && savedName.trim() !== '') {
+        triggerAutoSaveSubmission();
+      }
+    }
+
+    function callAppsScriptApi(params) {
+      return new Promise((resolve, reject) => {
+        if (typeof google !== 'undefined' && google.script && google.script.run) {
+          if (params.action === 'teacher_register') {
+            google.script.run
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .registerTeacher(params);
+            return;
+          }
+          if (params.action === 'teacher_login') {
+            google.script.run
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .loginTeacher(params.username, params.password);
+            return;
+          }
+          if (params.action === 'teacher_update') {
+            google.script.run
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .updateTeacherProfile(params);
+            return;
+          }
+          if (params.action === 'teacher_delete') {
+            google.script.run
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .deleteTeacherAccount(params);
+            return;
+          }
+          if (params.action === 'delete_score') {
+            google.script.run
+              .withSuccessHandler(res => resolve(typeof res === 'string' ? JSON.parse(res) : res))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .deleteStudentScore(params);
+            return;
+          }
+          if (params.action === 'fetch') {
+            google.script.run
+              .withSuccessHandler(records => resolve({ status: 'success', records: records || [] }))
+              .withFailureHandler(err => reject(new Error(err.message || err)))
+              .queryScoresFromSheet(params.classCode);
+            return;
+          }
+        }
+
+        const targetUrl = (typeof WEB_APP_EXEC_URL !== 'undefined' ? WEB_APP_EXEC_URL : '').trim();
+        if (!targetUrl || !targetUrl.startsWith('https://script.google.com/macros/s/')) {
+          reject(new Error('Missing Web App URL. Set WEB_APP_EXEC_URL in Index.html.'));
+          return;
+        }
+
+        const callbackName = 'prime_cb_' + Date.now() + '_' + Math.floor(Math.random() * 1000000);
+        const script = document.createElement('script');
+
+        let url;
+        try {
+          url = new URL(targetUrl);
+        } catch (e) {
+          reject(new Error('Invalid URL format in WEB_APP_EXEC_URL.'));
+          return;
+        }
+
+        Object.entries(params).forEach(([k, v]) => url.searchParams.set(k, v));
+        url.searchParams.set('callback', callbackName);
+        url.searchParams.set('_nocache', Date.now());
+
+        script.type = 'text/javascript';
+        script.async = true;
+        script.referrerPolicy = 'no-referrer-when-downgrade';
+
+        const timeout = setTimeout(() => {
+          cleanup();
+          reject(new Error('Connection timed out. Check connection or script permissions.'));
+        }, 15000);
+
+        function cleanup() {
+          clearTimeout(timeout);
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[callbackName] = function(data) {
+          cleanup();
+          resolve(data);
+        };
+
+        script.onerror = function() {
+          cleanup();
+          reject(new Error('Could not connect to Google Apps Script. Ensure the script is deployed with access set to "Anyone".'));
+        };
+
+        script.src = url.toString();
+        (document.body || document.head).appendChild(script);
+      });
+    }
+
+    async function triggerAutoSaveSubmission() {
+      const nameInput = document.getElementById('student-name-input');
+      const studentName = nameInput.value.trim();
+      if (!studentName) {
+        alert('Please enter your Full Name so your teacher can credit your work.');
+        nameInput.focus();
+        return;
+      }
+
+      const studentSection = document.getElementById('student-section-input').value.trim() || 'General';
+      const classCode = (document.getElementById('student-code-input').value.trim() || appState.activeClassCode || 'GENERAL').toUpperCase();
+      const score = appState.quiz.score;
+      const total = appState.quiz.questions.length;
+      const percentage = Math.round((score / total) * 100);
+
+      const questionDetails = appState.quiz.questions.map(q => ({
+        problem: q.display,
+        correctAnswer: q.answer,
+        studentAnswer: q.userResponse || 'No answer',
+        isCorrect: !!q.wasCorrect
+      }));
+
+      try {
+        safeStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_NAME, studentName);
+        safeStorage.setItem(STORAGE_KEYS.SAVED_STUDENT_SEC, studentSection);
+      } catch (e) {}
+
+      let extraConfig = '';
+      if (appState.selectedDomain.id === 'fractions') {
+        extraConfig = `${appState.config.fractionType.toUpperCase()} | ${appState.config.fracNumDigits}N/${appState.config.fracDenDigits}D | Den: ${appState.config.fracDenMin}–${appState.config.fracDenMax}`;
+      } else if (['whole', 'integers', 'gemdas', 'decimals'].includes(appState.selectedDomain.id)) {
+        extraConfig = `${appState.config.terms} Terms`;
+      }
+
+      const configDetails = `${appState.config.digits}D | ${extraConfig} | Ops: ${appState.config.operations.join('')}`;
+
+      const record = {
+        timestamp: new Date().toISOString(),
+        studentName,
+        studentSection,
+        classCode,
+        categoryTitle: appState.selectedDomain.title,
+        submode: appState.quiz.questions[0]?.submode || 'Standard',
+        configDetails,
+        score,
+        total,
+        percentage,
+        mastery: getMasteryRating(percentage),
+        questionDetails: JSON.stringify(questionDetails)
+      };
+
+      const localScores = safeStorage.getItem('PRIME_LOCAL_SCORES');
+      let parsedLocal = [];
+      if (localScores) {
+        try { parsedLocal = JSON.parse(localScores); } catch (e) {}
+      }
+      parsedLocal.push(record);
+      safeStorage.setItem('PRIME_LOCAL_SCORES', JSON.stringify(parsedLocal));
+
+      const statusEl = document.getElementById('results-sync-status');
+      statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-600"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
+
+      if (typeof google !== 'undefined' && google.script && google.script.run) {
+        google.script.run
+          .withSuccessHandler(() => {
+            statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i><span class="text-emerald-800 font-semibold">Score recorded to teacher gradebook!</span>`;
+            openCertificateModal(record);
+          })
+          .withFailureHandler(() => {
+            openCertificateModal(record);
+          })
+          .recordScoreToSheet(record);
+        return;
+      }
+
+      try {
+        let endpoint = (typeof WEB_APP_EXEC_URL !== 'undefined' ? WEB_APP_EXEC_URL : '').trim() || window.location.href;
+        const url = new URL(endpoint);
+        url.searchParams.set('action', 'log');
+        Object.entries(record).forEach(([k, v]) => url.searchParams.set(k, v));
+        await fetch(url.toString(), { method: 'GET', mode: 'no-cors' });
+        statusEl.innerHTML = `<i class="fa-solid fa-circle-check text-emerald-600"></i><span class="text-emerald-800 font-semibold">Score recorded to teacher gradebook!</span>`;
+      } catch (err) {
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i><span class="text-amber-800 font-semibold">Recorded offline</span>`;
+      }
+
+      openCertificateModal(record);
+    }
+
+    function openTeacherAuthModal() {
+      document.getElementById('modal-teacher-portal').classList.remove('hidden');
+      if (appState.currentTeacher) {
+        toggleTeacherView('dashboard');
+        updateTeacherNavUI();
+      } else {
+        toggleTeacherView('login');
+        setTimeout(() => {
+          const u = document.getElementById('login-username');
+          if (u) u.focus();
+        }, 100);
+      }
+    }
+
+    function closeTeacherAuthModal() {
+      document.getElementById('modal-teacher-portal').classList.add('hidden');
+    }
+
+    function toggleTeacherView(viewName) {
+      document.getElementById('teacher-view-login').classList.toggle('hidden', viewName !== 'login');
+      document.getElementById('teacher-view-register').classList.toggle('hidden', viewName !== 'register');
+      document.getElementById('teacher-view-dashboard').classList.toggle('hidden', viewName !== 'dashboard');
+      document.getElementById('teacher-view-edit').classList.toggle('hidden', viewName !== 'edit');
+    }
+
+    function updateTeacherNavUI() {
+      const btnLabel = document.getElementById('nav-teacher-label');
+      if (appState.currentTeacher) {
+        btnLabel.textContent = appState.currentTeacher.username;
+        document.getElementById('dash-teacher-name').textContent = appState.currentTeacher.fullName;
+        document.getElementById('dash-teacher-code').textContent = appState.currentTeacher.classCode;
+        document.getElementById('dash-teacher-sections').textContent = appState.currentTeacher.sections || 'None';
+        generateCustomStudentLink();
+      } else {
+        btnLabel.textContent = 'Teacher Portal';
+      }
+    }
+
+    async function handleTeacherRegister() {
+      const fullName = document.getElementById('reg-fullname').value.trim();
+      const username = document.getElementById('reg-username').value.trim().toUpperCase();
+      const password = document.getElementById('reg-password').value.trim();
+      const classCode = (document.getElementById('reg-classcode').value.trim() || username).toUpperCase();
+      const sections = document.getElementById('reg-sections').value.trim();
+
+      if (!fullName || !username || !password) {
+        alert('Please fill out all required fields.');
+        return;
+      }
+
+      const btn = document.getElementById('btn-register');
+      btn.disabled = true;
+      btn.textContent = 'Registering Account...';
+
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_register',
+          fullName: fullName,
+          username: username,
+          password: password,
+          classCode: classCode,
+          sections: sections
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+
+        if (res && res.status === 'success') {
+          appState.currentTeacher = res.teacher;
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
+          setActiveTeacherCode(res.teacher.classCode);
+          updateTeacherNavUI();
+          toggleTeacherView('dashboard');
+          alert('Account created successfully!');
+        } else {
+          alert(res.message || 'Registration failed.');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Create Account';
+        alert('Registration error: ' + (err.message || err));
+      }
+    }
+
+    async function handleTeacherLogin() {
+      const usernameInput = document.getElementById('login-username');
+      const passwordInput = document.getElementById('login-password');
+      const username = usernameInput.value.trim().toUpperCase();
+      const password = passwordInput.value.trim();
+
+      if (!username || !password) {
+        alert('Please enter both your Teacher Username and Password.');
+        if (!username) usernameInput.focus();
+        else passwordInput.focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-login');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Authenticating...`;
+
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_login',
+          username: username,
+          password: password
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Login to Account';
+
+        if (res && res.status === 'success') {
+          appState.currentTeacher = res.teacher;
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, password);
+          setActiveTeacherCode(res.teacher.classCode);
+          
+          usernameInput.value = '';
+          passwordInput.value = '';
+
+          updateTeacherNavUI();
+          toggleTeacherView('dashboard');
+          
+          if (appState.activeTab === 'scores') {
+            updateScoresViewSecurity();
+          }
+        } else {
+          alert(res.message || 'Invalid username or password. Please try again.');
+          passwordInput.value = '';
+          passwordInput.focus();
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Login to Account';
+        alert('Login error: ' + (err.message || err));
+      }
+    }
+
+    function openEditTeacherProfileView() {
+      if (!appState.currentTeacher) return;
+      document.getElementById('edit-fullname').value = appState.currentTeacher.fullName || '';
+      document.getElementById('edit-classcode').value = appState.currentTeacher.classCode || '';
+      document.getElementById('edit-sections').value = appState.currentTeacher.sections || '';
+      document.getElementById('edit-newpassword').value = '';
+      document.getElementById('edit-curpassword').value = '';
+      toggleTeacherView('edit');
+    }
+
+    async function handleTeacherProfileUpdate() {
+      if (!appState.currentTeacher) return;
+
+      const fullName = document.getElementById('edit-fullname').value.trim();
+      const classCode = document.getElementById('edit-classcode').value.trim().toUpperCase();
+      const sections = document.getElementById('edit-sections').value.trim();
+      const newPassword = document.getElementById('edit-newpassword').value.trim();
+      const curPassword = document.getElementById('edit-curpassword').value.trim();
+
+      if (!curPassword) {
+        alert('Please enter your current password to authorize changes.');
+        document.getElementById('edit-curpassword').focus();
+        return;
+      }
+
+      const btn = document.getElementById('btn-update-profile');
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin mr-1"></i> Saving Changes...`;
+
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_update',
+          username: appState.currentTeacher.username,
+          currentPassword: curPassword,
+          fullName: fullName,
+          classCode: classCode,
+          sections: sections,
+          newPassword: newPassword
+        });
+
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+
+        if (res && res.status === 'success') {
+          appState.currentTeacher = res.teacher;
+          safeStorage.setItem(STORAGE_KEYS.TEACHER_PROFILE, JSON.stringify(res.teacher));
+          if (newPassword) {
+            safeStorage.setItem(STORAGE_KEYS.TEACHER_CRED, newPassword);
+          }
+          setActiveTeacherCode(res.teacher.classCode);
+          updateTeacherNavUI();
+          toggleTeacherView('dashboard');
+          alert('Profile information updated successfully!');
+        } else {
+          alert(res.message || 'Could not update profile. Verify your current password.');
+        }
+      } catch (err) {
+        btn.disabled = false;
+        btn.textContent = 'Save Changes';
+        alert('Update error: ' + (err.message || err));
+      }
+    }
+
+    async function handleDeleteTeacherAccount() {
+      if (!appState.currentTeacher) return;
+
+      const confirmed = confirm('DANGER: Are you sure you want to delete your teacher account permanently? All stored records under your class code will be removed from the registry.');
+      if (!confirmed) return;
+
+      const confirmPass = prompt(`To confirm deletion of @${appState.currentTeacher.username}, please type your account password:`);
+      if (!confirmPass) {
+        alert('Account deletion aborted: password was not entered.');
+        return;
+      }
+
+      try {
+        const res = await callAppsScriptApi({
+          action: 'teacher_delete',
+          username: appState.currentTeacher.username,
+          password: confirmPass.trim()
+        });
+
+        if (res && res.status === 'success') {
+          alert('Your teacher account has been permanently deleted.');
+          handleTeacherLogoutDirect();
+        } else {
+          alert(res.message || 'Failed to delete account. Password incorrect.');
+        }
+      } catch (err) {
+        alert('Deletion error: ' + (err.message || err));
+      }
+    }
+
+    function handleTeacherLogoutDirect() {
+      appState.currentTeacher = null;
+      appState.scores = [];
+      safeStorage.removeItem(STORAGE_KEYS.TEACHER_PROFILE);
+      safeStorage.removeItem(STORAGE_KEYS.TEACHER_CRED);
+
+      document.getElementById('login-username').value = '';
+      document.getElementById('login-password').value = '';
+
+      updateTeacherNavUI();
+      clearActiveTeacherCode();
+      toggleTeacherView('login');
+      closeTeacherAuthModal();
+
+      if (appState.activeTab === 'scores') {
+        updateScoresViewSecurity();
+      }
+    }
+
+    function handleTeacherLogout() {
+      if (!confirm('Log out of your teacher account?')) return;
+      handleTeacherLogoutDirect();
+    }
+
+    function generateCustomStudentLink() {
+      if (!appState.currentTeacher) return;
+      const baseCode = appState.currentTeacher.classCode;
+      const subSec = document.getElementById('gen-section-subcode').value.trim().toUpperCase().replace(/[^A-Z0-9]/g, '');
+
+      let link = `${window.location.origin}${window.location.pathname}?teacher=${encodeURIComponent(baseCode)}`;
+      if (subSec) link += `&sec=${encodeURIComponent(subSec)}`;
+
+      document.getElementById('display-student-link').value = link;
+    }
+
+    function copyGeneratedLink() {
+      try {
+        const copyText = document.getElementById('display-student-link');
+        copyText.select();
+        document.execCommand('copy');
+        const btn = document.getElementById('btn-copy-link');
+        btn.textContent = 'Copied!';
+        setTimeout(() => btn.textContent = 'Copy', 1500);
+      } catch (e) {
+        alert('Unable to copy link automatically.');
+      }
+    }
+
+    function viewTeacherScores() {
+      closeTeacherAuthModal();
+      switchTab('scores');
+    }
+
+    function setActiveTeacherCode(code) {
+      appState.activeClassCode = code;
+      try { safeStorage.setItem(STORAGE_KEYS.ACTIVE_CODE, code); } catch (e) {}
+      const el = document.getElementById('banner-code-display');
+      if (el) {
+        el.textContent = code;
+        document.getElementById('classroom-banner').classList.remove('hidden');
+      }
+    }
+
+    function clearActiveTeacherCode() {
+      appState.activeClassCode = '';
+      try { safeStorage.removeItem(STORAGE_KEYS.ACTIVE_CODE); } catch (e) {}
+      const el = document.getElementById('classroom-banner');
+      if (el) el.classList.add('hidden');
+    }
+
+    async function pullScoresFromCloud() {
+      if (!appState.currentTeacher) return;
+
+      const spinner = document.getElementById('sync-spinner');
+      if (spinner) spinner.classList.add('fa-spin');
+
+      const pass = safeStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
+
+      try {
+        const res = await callAppsScriptApi({
+          action: 'fetch',
+          username: appState.currentTeacher.username,
+          password: pass,
+          classCode: appState.currentTeacher.classCode
+        });
+
+        if (res && res.status === 'success' && Array.isArray(res.records)) {
+          appState.scores = res.records;
+          renderScoresTable();
+        } else if (res && res.status === 'unauthorized') {
+          handleTeacherLogoutDirect();
+          alert('Session expired. Please log in again.');
+        }
+      } catch (err) {
+        console.warn('Pull error:', err);
+      } finally {
+        if (spinner) spinner.classList.remove('fa-spin');
+      }
+    }
+
+    function renderScoresTable() {
+      const tbody = document.getElementById('scores-table-body');
+      if (!tbody) return;
+      const filterVal = (document.getElementById('filter-classcode')?.value || '').trim().toUpperCase();
+
+      const filtered = appState.scores.map((s, idx) => ({ ...s, originalIndex: idx })).filter(s => {
+        if (!appState.currentTeacher) {
+          if (!filterVal) return true;
+          return (s.studentName || '').toUpperCase().includes(filterVal) || (s.studentSection || '').toUpperCase().includes(filterVal);
+        }
+
+        const studentCode = (s.classCode || '').toUpperCase();
+        const teacherCode = (appState.currentTeacher?.classCode || '').toUpperCase();
+
+        const matchesTeacher = studentCode === teacherCode || studentCode.startsWith(teacherCode + '-');
+        if (!matchesTeacher) return false;
+
+        if (!filterVal) return true;
+        return studentCode.includes(filterVal) || (s.studentName || '').toUpperCase().includes(filterVal) || (s.studentSection || '').toUpperCase().includes(filterVal);
+      });
+
+      if (filtered.length === 0) {
+        let msg = appState.currentTeacher ? `No records under class code: <strong class="text-amber-700">${appState.currentTeacher.classCode}</strong>.` : 'No local history found.';
+        tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-center text-slate-500 text-xs">${msg}</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = filtered.slice(0, 100).map(s => `
+        <tr class="hover:bg-amber-50/70 transition">
+          <td class="py-2.5 px-3 text-slate-500 whitespace-nowrap">${new Date(s.timestamp).toLocaleDateString()}</td>
+          <td class="py-2.5 px-3 font-bold text-slate-900">${escapeHtml(s.studentName)}</td>
+          <td class="py-2.5 px-3 text-slate-600">${escapeHtml(s.studentSection)}</td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded bg-amber-100 text-amber-800 font-mono font-bold text-[10px] border border-amber-300">${escapeHtml(s.classCode)}</span></td>
+          <td class="py-2.5 px-3 text-slate-700">${escapeHtml(s.categoryTitle)} <span class="text-slate-400 text-[9px]">(${escapeHtml(s.submode)})</span></td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-amber-700">${s.score}/${s.total}</td>
+          <td class="py-2.5 px-3 text-center font-mono font-bold text-emerald-700">${s.percentage}%</td>
+          <td class="py-2.5 px-3 text-center"><span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-amber-50 border border-amber-300 text-amber-800">${escapeHtml(s.mastery)}</span></td>
+          <td class="py-2.5 px-3 text-center whitespace-nowrap flex items-center justify-center gap-1.5">
+            <button onclick="openStudentReview(${s.originalIndex})" title="Review questions" class="px-2 py-1 rounded-lg bg-amber-100 text-amber-800 border border-amber-300 hover:bg-amber-200 text-xs font-bold transition flex items-center gap-1">
+              <i class="fa-solid fa-eye text-[10px]"></i>
+              <span class="hidden sm:inline">Review</span>
+            </button>
+            <button onclick="deleteStudentRecordByIndex(${s.originalIndex})" title="Delete entry" class="px-2 py-1 rounded-lg bg-red-100 text-red-700 border border-red-200 hover:bg-red-200 text-xs font-bold transition">
+              <i class="fa-solid fa-trash-can text-[10px]"></i>
+            </button>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function openStudentReview(recordIndex) {
+      const rec = appState.scores[recordIndex];
+      if (!rec) return;
+
+      const titleEl = document.getElementById('review-student-title');
+      if (titleEl) titleEl.textContent = `${rec.studentName} (${rec.studentSection})`;
+      const domEl = document.getElementById('review-domain-text');
+      if (domEl) domEl.textContent = `${rec.categoryTitle} - ${rec.submode}`;
+      const scoreEl = document.getElementById('review-score-text');
+      if (scoreEl) scoreEl.textContent = `${rec.score} / ${rec.total} (${rec.percentage}%)`;
+
+      let details = [];
+      try {
+        details = typeof rec.questionDetails === 'string' ? JSON.parse(rec.questionDetails) : (rec.questionDetails || []);
+      } catch (e) {
+        details = [];
+      }
+
+      const container = document.getElementById('review-items-container');
+      if (container) {
+        if (!Array.isArray(details) || details.length === 0) {
+          container.innerHTML = `<div class="p-4 text-center text-xs text-slate-500 italic">No question breakdown recorded for this submission.</div>`;
+        } else {
+          container.innerHTML = details.map((item, idx) => `
+            <div class="p-2.5 rounded-xl border ${item.isCorrect ? 'bg-emerald-50/70 border-emerald-200' : 'bg-red-50/70 border-red-200'} text-xs space-y-1">
+              <div class="flex items-center justify-between font-bold">
+                <span class="text-slate-800">Item ${idx + 1}: <code class="font-mono">${escapeHtml(item.problem)}</code></span>
+                <span class="${item.isCorrect ? 'text-emerald-700' : 'text-red-600'} flex items-center gap-1 font-semibold">
+                  <i class="fa-solid ${item.isCorrect ? 'fa-circle-check text-emerald-600' : 'fa-circle-xmark text-red-500'}"></i>
+                  ${item.isCorrect ? 'Correct' : 'Incorrect'}
+                </span>
+              </div>
+              <div class="grid grid-cols-2 text-[11px]">
+                <div>Student Input: <span class="font-mono font-bold ${item.isCorrect ? 'text-emerald-800' : 'text-red-700'}">${escapeHtml(item.studentAnswer)}</span></div>
+                <div class="text-right">Expected: <span class="font-mono font-bold text-amber-800">${escapeHtml(item.correctAnswer)}</span></div>
+              </div>
+            </div>
+          `).join('');
+        }
+      }
+
+      document.getElementById('modal-review-session').classList.remove('hidden');
+    }
+
+    function closeReviewModal() {
+      document.getElementById('modal-review-session').classList.add('hidden');
+    }
+
+    async function deleteStudentRecordByIndex(recordIndex) {
+      const rec = appState.scores[recordIndex];
+      if (!rec) return;
+
+      const confirmed = confirm(`Are you sure you want to delete the record for "${rec.studentName}"? This action cannot be undone.`);
+      if (!confirmed) return;
+
+      if (!appState.currentTeacher) {
+        const localScores = safeStorage.getItem('PRIME_LOCAL_SCORES');
+        if (localScores) {
+          try {
+             let parsedLocal = JSON.parse(localScores);
+             const idx = parsedLocal.findIndex(l => l.timestamp === rec.timestamp && l.studentName === rec.studentName);
+             if (idx !== -1) parsedLocal.splice(idx, 1);
+             safeStorage.setItem('PRIME_LOCAL_SCORES', JSON.stringify(parsedLocal));
+             appState.scores = parsedLocal;
+             renderScoresTable();
+             alert('Local record deleted successfully.');
+          } catch(e){}
+        }
+        return;
       }
       
-      const records = queryScoresFromSheet(auth.teacher.classCode);
-      return createJsonResponse({ 
-        status: 'success', 
-        teacher: auth.teacher.username,
-        classCode: auth.teacher.classCode,
-        count: records.length, 
-        records: records 
-      }, cb);
-    }
+      const pass = safeStorage.getItem(STORAGE_KEYS.TEACHER_CRED) || '';
 
-    // 4. STUDENT SCORE LOGGING
-    if (action === 'log' || params.studentName) {
-      const result = recordScoreToSheet({
-        timestamp: params.timestamp || new Date().toISOString(),
-        studentName: params.studentName,
-        studentSection: params.studentSection,
-        classCode: params.classCode,
-        categoryTitle: params.categoryTitle,
-        submode: params.submode,
-        configDetails: params.configDetails,
-        score: params.score,
-        total: params.total,
-        percentage: params.percentage,
-        mastery: params.mastery,
-        questionDetails: params.questionDetails || '[]'
-      });
-      return createJsonResponse(result, cb);
-    }
+      try {
+        const res = await callAppsScriptApi({
+          action: 'delete_score',
+          username: appState.currentTeacher.username,
+          password: pass,
+          studentName: rec.studentName,
+          timestamp: rec.timestamp
+        });
 
-    // 5. PING
-    if (action === 'ping') {
-      return createJsonResponse({ status: 'active', message: 'Online' }, cb);
-    }
-
-    // 6. SERVE HTML
-    return HtmlService.createHtmlOutputFromFile('Index')
-      .setTitle('PROJECT PRIME | Multi-Teacher Diagnostic & Practice Suite')
-      .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL)
-      .addMetaTag('viewport', 'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover');
-
-  } catch (err) {
-    return createJsonResponse({ status: 'error', message: err.toString() }, e?.parameter?.callback);
-  }
-}
-
-function doPost(e) {
-  try {
-    let payload = {};
-    if (e && e.postData && e.postData.contents) {
-      try { payload = JSON.parse(e.postData.contents); } catch (err) { payload = e.parameter || {}; }
-    } else if (e && e.parameter) {
-      payload = e.parameter;
-    }
-
-    if (payload.action === 'teacher_login') {
-      return createJsonResponse(loginTeacher(payload.username, payload.password));
-    }
-    if (payload.action === 'teacher_register') {
-      return createJsonResponse(registerTeacher(payload));
-    }
-    if (payload.action === 'teacher_update') {
-      return createJsonResponse(updateTeacherProfile(payload));
-    }
-    if (payload.action === 'teacher_delete') {
-      return createJsonResponse(deleteTeacherAccount(payload));
-    }
-    if (payload.action === 'delete_score') {
-      return createJsonResponse(deleteStudentScore(payload));
-    }
-    if (payload.action === 'fetch') {
-      const auth = loginTeacher(payload.username, payload.password);
-      if (auth.status !== 'success') {
-        return createJsonResponse({ status: 'unauthorized', message: 'Access denied.', records: [] });
-      }
-      const records = queryScoresFromSheet(auth.teacher.classCode);
-      return createJsonResponse({ status: 'success', count: records.length, records: records });
-    }
-
-    const result = recordScoreToSheet(payload);
-    return createJsonResponse(result);
-  } catch (err) {
-    return createJsonResponse({ status: 'error', message: err.toString() });
-  }
-}
-
-function createJsonResponse(data, callbackName) {
-  let output = JSON.stringify(data);
-  let mimeType = ContentService.MimeType.JSON;
-
-  if (callbackName) {
-    output = callbackName + '(' + output + ');';
-    mimeType = ContentService.MimeType.JAVASCRIPT;
-  }
-
-  return ContentService.createTextOutput(output).setMimeType(mimeType);
-}
-
-function registerTeacher(data) {
-  const ss = getSpreadsheet();
-  let sheet = ss.getSheetByName(TEACHERS_SHEET);
-
-  if (!sheet) {
-    sheet = ss.insertSheet(TEACHERS_SHEET);
-    const headers = ['Created At', 'Full Name', 'Username / ID', 'Password Hash', 'Class Code', 'Sections'];
-    sheet.appendRow(headers);
-    sheet.getRange(1, 1, 1, headers.length).setBackground('#0f172a').setFontColor('#fbbf24').setFontWeight('bold');
-    sheet.setFrozenRows(1);
-    sheet.setRowHeight(1, 36);
-  }
-
-  const username = String(data.username || '').trim().toUpperCase();
-  const password = String(data.password || '').trim();
-  const fullName = String(data.fullName || '').trim();
-  const classCode = String(data.classCode || username).trim().toUpperCase();
-  const sections = String(data.sections || '').trim();
-
-  if (!username || !password) {
-    return { status: 'error', message: 'Username and password are required.' };
-  }
-
-  const rows = sheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][2]).toUpperCase() === username) {
-      return { status: 'error', message: 'Teacher ID / Username already exists.' };
-    }
-  }
-
-  sheet.appendRow([new Date(), fullName, username, password, classCode, sections]);
-
-  return {
-    status: 'success',
-    teacher: {
-      fullName: fullName,
-      username: username,
-      classCode: classCode,
-      sections: sections
-    }
-  };
-}
-
-function loginTeacher(username, password) {
-  const ss = getSpreadsheet();
-  const sheet = ss.getSheetByName(TEACHERS_SHEET);
-  if (!sheet) return { status: 'error', message: 'No registered teacher database found.' };
-
-  const targetUser = String(username || '').trim().toUpperCase();
-  const targetPass = String(password || '').trim();
-
-  if (!targetUser || !targetPass) {
-    return { status: 'error', message: 'Username and password cannot be empty.' };
-  }
-
-  const rows = sheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    const rowUser = String(rows[i][2] || '').trim().toUpperCase();
-    const rowPass = String(rows[i][3] || '').trim();
-
-    if (rowUser === targetUser && rowPass === targetPass) {
-      return {
-        status: 'success',
-        teacher: {
-          fullName: String(rows[i][1] || ''),
-          username: rowUser,
-          classCode: String(rows[i][4] || rowUser).trim().toUpperCase(),
-          sections: String(rows[i][5] || '')
+        if (res && res.status === 'success') {
+          alert('Record deleted successfully.');
+          pullScoresFromCloud();
+        } else {
+          alert(res.message || 'Failed to delete record.');
         }
-      };
-    }
-  }
-
-  return { status: 'error', message: 'Invalid Teacher Username or Password.' };
-}
-
-function updateTeacherProfile(data) {
-  const ss = getSpreadsheet();
-  const sheet = ss.getSheetByName(TEACHERS_SHEET);
-  if (!sheet) return { status: 'error', message: 'Teacher database not found.' };
-
-  const targetUser = String(data.username || '').trim().toUpperCase();
-  const currentPass = String(data.currentPassword || data.password || '').trim();
-
-  const auth = loginTeacher(targetUser, currentPass);
-  if (auth.status !== 'success') {
-    return { status: 'unauthorized', message: 'Password verification failed.' };
-  }
-
-  const rows = sheet.getDataRange().getValues();
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][2] || '').trim().toUpperCase() === targetUser) {
-      const rowIndex = i + 1;
-      const newFullName = data.fullName !== undefined ? String(data.fullName).trim() : rows[i][1];
-      const newPassword = data.newPassword && String(data.newPassword).trim() !== '' ? String(data.newPassword).trim() : rows[i][3];
-      const newClassCode = data.classCode ? String(data.classCode).trim().toUpperCase() : rows[i][4];
-      const newSections = data.sections !== undefined ? String(data.sections).trim() : rows[i][5];
-
-      sheet.getRange(rowIndex, 2).setValue(newFullName);
-      sheet.getRange(rowIndex, 4).setValue(newPassword);
-      sheet.getRange(rowIndex, 5).setValue(newClassCode);
-      sheet.getRange(rowIndex, 6).setValue(newSections);
-
-      return {
-        status: 'success',
-        message: 'Profile updated successfully.',
-        teacher: {
-          fullName: newFullName,
-          username: targetUser,
-          classCode: newClassCode,
-          sections: newSections
-        }
-      };
-    }
-  }
-
-  return { status: 'error', message: 'Teacher record not found.' };
-}
-
-function deleteTeacherAccount(data) {
-  const ss = getSpreadsheet();
-  const teacherSheet = ss.getSheetByName(TEACHERS_SHEET);
-  if (!teacherSheet) return { status: 'error', message: 'Teacher database not found.' };
-
-  const targetUser = String(data.username || '').trim().toUpperCase();
-  const password = String(data.password || '').trim();
-
-  const auth = loginTeacher(targetUser, password);
-  if (auth.status !== 'success') {
-    return { status: 'unauthorized', message: 'Authentication failed. Incorrect password.' };
-  }
-
-  const targetCode = auth.teacher.classCode;
-  const rows = teacherSheet.getDataRange().getValues();
-  let found = false;
-
-  for (let i = 1; i < rows.length; i++) {
-    if (String(rows[i][2] || '').trim().toUpperCase() === targetUser) {
-      teacherSheet.deleteRow(i + 1);
-      found = true;
-      break;
-    }
-  }
-
-  if (!found) {
-    return { status: 'error', message: 'Teacher account could not be found.' };
-  }
-
-  const scoreSheet = ss.getSheetByName(SCORES_SHEET);
-  if (scoreSheet) {
-    const scoreData = scoreSheet.getDataRange().getValues();
-    for (let j = scoreData.length - 1; j >= 1; j--) {
-      const code = String(scoreData[j][3] || '').trim().toUpperCase();
-      if (code === targetCode || code.startsWith(targetCode + '-')) {
-        scoreSheet.deleteRow(j + 1);
+      } catch (err) {
+        alert('Deletion error: ' + (err.message || err));
       }
     }
-  }
 
-  return { status: 'success', message: 'Teacher profile and corresponding score records removed.' };
-}
-
-function deleteStudentScore(data) {
-  const ss = getSpreadsheet();
-  const scoreSheet = ss.getSheetByName(SCORES_SHEET);
-  if (!scoreSheet) return { status: 'error', message: 'Score registry not found.' };
-
-  const auth = loginTeacher(data.username, data.password);
-  if (auth.status !== 'success') {
-    return { status: 'unauthorized', message: 'Access denied. Password verification failed.' };
-  }
-
-  const teacherCode = auth.teacher.classCode;
-  const targetTime = data.timestamp ? new Date(data.timestamp).getTime() : 0;
-  const targetStudent = String(data.studentName || '').trim().toUpperCase();
-
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
-  try {
-    const rows = scoreSheet.getDataRange().getValues();
-    // Loop backwards to safely delete rows without affecting indices of yet-to-be-checked rows
-    for (let i = rows.length - 1; i >= 1; i--) {
-      const rowCode = String(rows[i][3] || '').trim().toUpperCase();
-      const rowStudent = String(rows[i][1] || '').trim().toUpperCase();
-      const cellTime = rows[i][0] ? new Date(rows[i][0]).getTime() : 0;
-
-      const matchCode = rowCode === teacherCode || rowCode.startsWith(teacherCode + '-');
-      const matchTime = Math.abs(cellTime - targetTime) < 5000;
-
-      if (matchCode && rowStudent === targetStudent && matchTime) {
-        scoreSheet.deleteRow(i + 1);
-        return { status: 'success', message: 'Student record deleted successfully.' };
+    function exportScoresToCSV() {
+      if (!appState.scores.length || !appState.currentTeacher) { 
+        alert('No authorized student records available to export.'); 
+        return; 
       }
-    }
-    return { status: 'not_found', message: 'Record not found or already deleted.' };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function recordScoreToSheet(data) {
-  const lock = LockService.getScriptLock();
-  lock.waitLock(10000);
-
-  try {
-    const ss = getSpreadsheet();
-    let sheet = ss.getSheetByName(SCORES_SHEET);
-
-    if (!sheet) {
-      sheet = ss.insertSheet(SCORES_SHEET);
-      const headers = [
-        'Timestamp', 'Student Name', 'Grade & Section', 'Teacher Class Code',
-        'Category', 'Submode / Operation', 'Configuration Details',
-        'Score', 'Total Items', 'Accuracy %', 'Mastery Rating', 'Question Details'
-      ];
-      sheet.appendRow(headers);
-      sheet.getRange(1, 1, 1, headers.length)
-        .setBackground('#0f172a').setFontColor('#fbbf24').setFontWeight('bold').setHorizontalAlignment('center');
-      sheet.setFrozenRows(1);
-      sheet.setRowHeight(1, 36);
+      const headers = ['Timestamp', 'Student Name', 'Grade & Section', 'Class Code', 'Category', 'Submode', 'Score', 'Total', 'Accuracy %', 'Mastery'];
+      const rows = appState.scores.map(s => [
+        new Date(s.timestamp).toLocaleString(), 
+        s.studentName, 
+        s.studentSection, 
+        s.classCode, 
+        s.categoryTitle, 
+        s.submode, 
+        s.score, 
+        s.total, 
+        s.percentage + '%', 
+        s.mastery
+      ]);
+      const csv = [headers, ...rows].map(r => r.map(v => `"${String(v ?? '').replace(/"/g, '""')}"`).join(',')).join('\n');
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = `PROJECT_PRIME_${appState.currentTeacher.classCode}_Gradebook.csv`;
+      link.click();
     }
 
-    let pctDisplay = '0%';
-    if (data.percentage !== undefined && data.percentage !== null && data.percentage !== '') {
-      pctDisplay = String(data.percentage).replace('%', '') + '%';
-    } else if (data.score !== undefined && data.total) {
-      pctDisplay = Math.round((Number(data.score) / Number(data.total)) * 100) + '%';
+    function openCertificateModal(rec) {
+      document.getElementById('cert-student-name').textContent = rec.studentName;
+      document.getElementById('cert-student-section').textContent = rec.studentSection;
+      document.getElementById('cert-category').textContent = rec.categoryTitle;
+      document.getElementById('cert-details').textContent = rec.submode;
+      document.getElementById('cert-score').textContent = `${rec.score} / ${rec.total}`;
+      document.getElementById('cert-accuracy').textContent = `${rec.percentage}%`;
+      document.getElementById('cert-rating').textContent = rec.mastery;
+      document.getElementById('cert-code').textContent = rec.classCode;
+      document.getElementById('cert-date').textContent = new Date(rec.timestamp).toLocaleDateString();
+      document.getElementById('modal-certificate').classList.remove('hidden');
     }
 
-    const entryDate = data.timestamp ? new Date(data.timestamp) : new Date();
-
-    sheet.appendRow([
-      entryDate,
-      data.studentName || 'Anonymous Student',
-      data.studentSection || 'General',
-      (data.classCode || 'GENERAL').toUpperCase(),
-      data.categoryTitle || data.categoryId || 'General Math',
-      data.submode || 'Standard',
-      data.configDetails || '',
-      Number(data.score) || 0,
-      Number(data.total) || 0,
-      pctDisplay,
-      data.mastery || 'Completed',
-      typeof data.questionDetails === 'string' ? data.questionDetails : JSON.stringify(data.questionDetails || [])
-    ]);
-
-    const lastRow = sheet.getLastRow();
-    sheet.getRange(lastRow, 4, 1, 1).setHorizontalAlignment('center');
-    sheet.getRange(lastRow, 8, 1, 3).setHorizontalAlignment('center');
-
-    return { status: 'success', row: lastRow };
-  } finally {
-    lock.releaseLock();
-  }
-}
-
-function queryScoresFromSheet(classCode) {
-  const ss = getSpreadsheet();
-  const sheet = ss.getSheetByName(SCORES_SHEET);
-  if (!sheet) return [];
-
-  const data = sheet.getDataRange().getValues();
-  if (data.length <= 1) return [];
-
-  const target = String(classCode || '').trim().toUpperCase();
-  if (!target || target === 'ALL') {
-    return [];
-  }
-
-  const results = [];
-
-  for (let i = 1; i < data.length; i++) {
-    const row = data[i];
-    const rowCode = String(row[3] || '').trim().toUpperCase();
-
-    if (rowCode === target || rowCode.startsWith(target + '-')) {
-      results.push({
-        id: 'cloud_row_' + i + '_' + (row[0] ? new Date(row[0]).getTime() : Date.now()),
-        timestamp: row[0] ? new Date(row[0]).toISOString() : new Date().toISOString(),
-        studentName: String(row[1] || ''),
-        studentSection: String(row[2] || ''),
-        classCode: rowCode,
-        categoryTitle: String(row[4] || ''),
-        submode: String(row[5] || ''),
-        configDetails: String(row[6] || ''),
-        score: Number(row[7]) || 0,
-        total: Number(row[8]) || 0,
-        percentage: parseInt(String(row[9]).replace(/[^\d]/g, ''), 10) || 0,
-        mastery: String(row[10] || 'Completed'),
-        questionDetails: row[11] ? String(row[11]) : '[]'
-      });
+    function closeCertificateModal() {
+      document.getElementById('modal-certificate').classList.add('hidden');
+      switchTab('home');
     }
-  }
 
-  return results.reverse().slice(0, 250);
-}
+    function renderGuides() {
+      document.getElementById('guides-container').innerHTML = STUDY_GUIDES.map(g => `
+        <div class="light-glass p-3.5 rounded-2xl space-y-1.5 border border-amber-200">
+          <h3 class="text-sm font-bold text-amber-800 font-serif">${g.title}</h3>
+          <ul class="list-disc list-inside text-xs text-slate-600 space-y-1 leading-relaxed">
+            ${g.rules.map(r => `<li>${r}</li>`).join('')}
+          </ul>
+        </div>
+      `).join('');
+    }
+
+    function escapeHtml(str) {
+      return String(str || '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
