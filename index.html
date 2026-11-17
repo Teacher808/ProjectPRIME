@@ -137,8 +137,8 @@
           <div>
             <div class="flex items-center gap-1 sm:gap-2">
               <h1 class="text-sm sm:text-base md:text-lg font-black tracking-tight text-slate-900 leading-tight">PROJECT <span class="text-amber-600 font-serif">PRIME</span></h1>
-              <span class="hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300">
-                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse mr-1"></span>Live
+              <span id="network-status-badge" class="hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse mr-1" id="network-status-dot"></span><span id="network-status-text">Live</span>
               </span>
             </div>
             <p class="text-[10px] text-slate-500 hidden sm:block font-medium">Program for Remediation and Improvement in Mathematics Education</p>
@@ -407,6 +407,15 @@
                 <button type="button" id="btn-int-mixed" onclick="setConfigIntegerMode('mixed')" class="p-2 rounded-lg text-xs font-bold border gold-btn">Mixed (+ / -)</button>
                 <button type="button" id="btn-int-both-neg" onclick="setConfigIntegerMode('both-neg')" class="p-2 rounded-lg text-xs font-bold border light-btn">Both (-)</button>
                 <button type="button" id="btn-int-both-pos" onclick="setConfigIntegerMode('both-pos')" class="p-2 rounded-lg text-xs font-bold border light-btn">Both (+)</button>
+              </div>
+            </div>
+
+            <!-- Problem Layout -->
+            <div id="config-layout-box" class="hidden">
+              <label class="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">Problem Layout</label>
+              <div class="grid grid-cols-2 gap-2">
+                <button type="button" id="btn-layout-horizontal" onclick="setConfigLayout('horizontal')" class="p-2 rounded-lg text-xs font-bold border transition gold-btn">Horizontal Equation</button>
+                <button type="button" id="btn-layout-vertical" onclick="setConfigLayout('vertical')" class="p-2 rounded-lg text-xs font-bold border transition light-btn">Vertical Stacked</button>
               </div>
             </div>
 
@@ -984,12 +993,40 @@
       return out.toLowerCase().replace(/(^|[^0-9])1(√|³√|⁴√)/g, '$1$2').replace(/[\$%]/g, '').trim();
     }
 
+    function formatVerticalMath(str) {
+      let expr = str.replace(/\s*=\s*\?\s*$/, ''); // Strip " = ?"
+      let tokens = expr.split(' '); // Operators and numbers are space-separated in these domains
+      
+      // Fallback if the expression is too complex or lacks proper spacing
+      if (tokens.length < 3 || tokens.length % 2 === 0) return escapeHtml(str);
+
+      let html = `<div class="inline-flex flex-col items-end text-right font-mono leading-tight text-[2.5rem] sm:text-[3rem] min-w-[140px] pb-2 px-2">`;
+      for (let i = 0; i < tokens.length; i++) {
+        let t = escapeHtml(tokens[i]);
+        if (i === 0) {
+          html += `<div class="px-2">${t}</div>`;
+        } else if (i % 2 === 1) {
+           if (i === tokens.length - 2) {
+             html += `<div class="border-b-[3px] border-slate-900 pb-1.5 flex justify-between w-full gap-8 mt-1"><span class="text-amber-700 font-black">${t}</span><span class="px-2">${escapeHtml(tokens[i+1])}</span></div>`;
+             i++;
+           } else {
+             html += `<div class="flex justify-between w-full gap-8 mt-1"><span class="text-amber-700 font-black">${t}</span><span class="px-2">${escapeHtml(tokens[i+1])}</span></div>`;
+             i++;
+           }
+        } else {
+           return escapeHtml(str); // Bailout if token pattern breaks
+        }
+      }
+      html += `</div>`;
+      return html;
+    }
+
     const DOMAINS = [
-      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true },
-      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true },
+      { id: 'whole', title: 'Whole Numbers', badge: 'Domain 1', icon: 'fa-hashtag', desc: 'Arithmetic operations (1–12) with multi-term capability and regrouping.', hasNumberField: true, hasDigits: true, hasRegrouping: true, hasOperations: true, hasTerms: true, hasLayoutControl: true },
+      { id: 'integers', title: 'Signed Integers', badge: 'Domain 2', icon: 'fa-plus-minus', desc: 'Positive and negative multi-term operations with sign controls.', hasDigits: true, hasIntegersMode: true, hasOperations: true, hasTerms: true, hasLayoutControl: true },
       { id: 'gemdas', title: 'Order of Operations', badge: 'Domain 3', icon: 'fa-layer-group', desc: 'Step-by-step arithmetic strictly evaluating Grouping, Exponents, MD, and AS.', hasDigits: true, hasOperations: true, hasTerms: true },
       { id: 'fractions', title: 'Rational Fractions', badge: 'Domain 4', icon: 'fa-divide', desc: 'Adjust numerator & denominator digits, denominator range (1–100), and types.', hasOperations: true, hasTerms: true, hasFractionsControl: true },
-      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true },
+      { id: 'decimals', title: 'Decimal Operations', badge: 'Domain 5', icon: 'fa-bullseye', desc: 'Precision arithmetic with tenths and hundredths across multi-term expressions.', hasDigits: true, hasOperations: true, hasTerms: true, hasLayoutControl: true },
       { id: 'exponents', title: 'Exponents & Powers', badge: 'Domain 6', icon: 'fa-superscript', desc: 'Product, Quotient, Power of a Power, and Negative/Zero exponent rules.', hasExponentsControl: true },
       { id: 'radicals', title: 'Roots & Radicals', badge: 'Domain 7', icon: 'fa-square-root-variable', desc: 'Simplify and compute arithmetic expressions with square, cube, and 4th roots.', hasRadicalsControl: true, hasOperations: true, hasTerms: true },
       { id: 'algebra', title: 'Linear Equations', badge: 'Domain 8', icon: 'fa-scale-balanced', desc: 'One-step and two-step linear equations for x.', hasOperations: false, hasTerms: false },
@@ -1009,6 +1046,7 @@
       selectedDomain: DOMAINS[0],
       config: { 
         count: 10, 
+        layout: 'horizontal',
         numberField: 'none', 
         digits: 2, 
         regrouping: 'with', 
@@ -1094,7 +1132,30 @@
       renderCategoriesGrid();
       renderGuides();
       checkUrlParameters();
+      initNetworkListener();
     });
+
+    function initNetworkListener() {
+      const updateStatus = () => {
+        const badge = document.getElementById('network-status-badge');
+        const dot = document.getElementById('network-status-dot');
+        const text = document.getElementById('network-status-text');
+        if (!badge) return;
+        
+        if (navigator.onLine) {
+          badge.className = 'hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 border border-emerald-300 transition-colors';
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse mr-1';
+          text.textContent = 'Live';
+        } else {
+          badge.className = 'hidden md:inline-block text-[9px] font-bold uppercase px-1.5 py-0.5 rounded bg-slate-100 text-slate-600 border border-slate-300 transition-colors';
+          dot.className = 'w-1.5 h-1.5 rounded-full bg-slate-400 inline-block mr-1';
+          text.textContent = 'Offline';
+        }
+      };
+      window.addEventListener('online', updateStatus);
+      window.addEventListener('offline', updateStatus);
+      updateStatus();
+    }
 
     // --- ANIMATED CANVAS ENGINE ---
     function initAnimatedMathCanvas() {
@@ -1332,9 +1393,13 @@
       toggleVis('config-digits-box', domain.hasDigits);
       toggleVis('config-regrouping-box', domain.hasRegrouping);
       toggleVis('config-integers-box', domain.hasIntegersMode);
+      toggleVis('config-layout-box', domain.hasLayoutControl);
       toggleVis('config-operations-box', domain.hasOperations);
       
       setConfigTerms(appState.config.terms || (domain.id === 'gemdas' ? 3 : 2));
+      if (domain.hasLayoutControl) {
+        setConfigLayout(appState.config.layout || 'horizontal');
+      }
       if (domain.hasFractionsControl) {
         setConfigFractionType(appState.config.fractionType || 'dissimilar');
         setConfigFractionSign(appState.config.fractionSign || 'mixed');
@@ -1489,6 +1554,12 @@
         const btn = document.getElementById('btn-int-' + m);
         if (btn) btn.className = `p-2 rounded-lg text-xs font-bold border ${m === mode ? 'gold-btn' : 'light-btn'}`;
       });
+    }
+
+    function setConfigLayout(mode) {
+      appState.config.layout = mode;
+      document.getElementById('btn-layout-horizontal').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'horizontal' ? 'gold-btn' : 'light-btn'}`;
+      document.getElementById('btn-layout-vertical').className = `p-2 rounded-lg text-xs font-bold border transition ${mode === 'vertical' ? 'gold-btn' : 'light-btn'}`;
     }
 
     function toggleOperation(op) {
@@ -2317,7 +2388,14 @@
       document.getElementById('quiz-cat-name').textContent = appState.selectedDomain.title;
       document.getElementById('quiz-score-preview').textContent = `Score: ${appState.quiz.score}`;
       document.getElementById('quiz-problem-submode').textContent = q.submode;
-      document.getElementById('quiz-problem-display').textContent = q.display;
+
+      const displayEl = document.getElementById('quiz-problem-display');
+      if (appState.config.layout === 'vertical' && appState.selectedDomain.hasLayoutControl) {
+        displayEl.innerHTML = formatVerticalMath(q.display);
+      } else {
+        displayEl.textContent = q.display;
+      }
+      
       document.getElementById('quiz-problem-tip').textContent = q.tip;
       renderChancesHearts();
 
@@ -2635,6 +2713,13 @@
       safeStorage.setItem('PRIME_LOCAL_SCORES', JSON.stringify(parsedLocal));
 
       const statusEl = document.getElementById('results-sync-status');
+      
+      if (!navigator.onLine) {
+        statusEl.innerHTML = `<i class="fa-solid fa-triangle-exclamation text-amber-600"></i><span class="text-amber-800 font-semibold">Saved locally (Offline Mode)</span>`;
+        openCertificateModal(record);
+        return;
+      }
+
       statusEl.innerHTML = `<i class="fa-solid fa-spinner fa-spin text-amber-600"></i><span>Saving automatically to Teacher (${classCode})...</span>`;
 
       if (typeof google !== 'undefined' && google.script && google.script.run) {
@@ -2968,6 +3053,12 @@
 
     async function pullScoresFromCloud() {
       if (!appState.currentTeacher) return;
+
+      if (!navigator.onLine) {
+        alert('You are currently offline. Displaying previously cached registry data if available.');
+        renderScoresTable();
+        return;
+      }
 
       const spinner = document.getElementById('sync-spinner');
       if (spinner) spinner.classList.add('fa-spin');
